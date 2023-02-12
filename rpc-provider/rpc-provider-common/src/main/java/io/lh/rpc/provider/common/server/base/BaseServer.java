@@ -68,6 +68,8 @@ public class BaseServer implements Server {
                 .option(ChannelOption.SO_BACKLOG, 128)
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
 
+            System.out.println("port" + Integer.parseInt(port));
+
             ChannelFuture channelFuture = bootstrap.bind(host, Integer.parseInt(port)).sync();
             channelFuture.channel().closeFuture().sync();
 

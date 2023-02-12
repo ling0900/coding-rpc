@@ -27,36 +27,45 @@ public class RpcServiceProviderScanner extends ClassScanner {
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcServiceProviderScanner.class);
 
     public static Map<String, Object> doScannerWithRpcReferenceAnnotationFilter(String scanPackage) {
+
         Map<String, Object> handlerMap = new HashMap<>();
+
         try {
+
             List<String> classNameList = getClassNameList(scanPackage);
 
             if (classNameList == null || classNameList.isEmpty()) return handlerMap;
-
 
             List<Field[]> list = new ArrayList<>();
 
             // getFields()：获得某个类的所有的公共（public）的字段，包括父类中的字段。
             // getDeclaredFields()：获得某个类的所有声明的字段，即包括public、private和proteced，但是不包括父类的申明字段。
 
+            // 判断服务提供者的注解
             for (String className : classNameList) {
+
+                // 判断类上用到了服务提供者的注解
                 Class<?> aClass = Class.forName(className);
                 RpcServiceProvider annotation = aClass.getAnnotation(RpcServiceProvider.class);
-                if (annotation != null) { // 判断类上用到了注解
+                if (annotation != null) {
                     System.out.println("标注了@RpcReference注解的字段名称===>>>" + aClass.getName());
+                    String name = aClass.getName();
+                    String key = name.concat(annotation.group()).concat(annotation.interfaceClassName());
+                    handlerMap.put(key, aClass.newInstance());
                 }
 
+                // 用来检查类内部有没有使用某个注解的
                 Field[] declaredFields = aClass.getDeclaredFields();
-                for (Field declaedField : declaredFields) { // 用来检查类内部有没有使用某个注解的
+                for (Field declaedField : declaredFields) {
                     RpcServiceConsumer rpcServiceProvider = declaedField.getAnnotation(RpcServiceConsumer.class);
                     if (rpcServiceProvider != null) { // 用到了注解
                         System.out.println("标注了@RpcServiceConsumer注解的字段名称===>>>" + declaedField.getName());
                     }
                 }
+
             }
 
-
-
+            // 判断服务消费者的注解
             classNameList.stream().forEach((className) -> {
                 Class<?> aClass = null;
                 try {
@@ -67,22 +76,25 @@ public class RpcServiceProviderScanner extends ClassScanner {
                 // Field[] fields = aClass.getFields();
                 Field[] fields = aClass.getDeclaredFields();
                 aClass.getAnnotations();
-
                 Stream.of(fields).forEach((field) -> {
                     RpcServiceProvider rpcServiceProvider = field.getAnnotation(RpcServiceProvider.class);
-
                     if (rpcServiceProvider != null) { // 用到了注解
                         System.out.println("标注了@RpcReference注解的字段名称===>>>" + field.getName());
                         //LOGGER.info("标注了@RpcReference注解的字段名称===>>>" + field.getName());
                     }
                 });
             });
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
-        // todo 还没有给这个map放入数值。
+        // todo 还没有完全 map放入数值。
         return handlerMap;
     }
 }

@@ -9,4 +9,18 @@
     <artifactId>rpc-test-provider</artifactId>
     <name>rpc-test-provider</name>
 <!--    <url>http://maven.apache.org</url>-->
+
+    <dependencies>
+        <dependency>
+            <groupId>io.lh.rpc</groupId>
+            <artifactId>rpc-test-api</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>io.lh.rpc</groupId>
+            <artifactId>rpc-provider-native</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 </project>

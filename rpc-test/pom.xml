@@ -12,8 +12,10 @@
     <modules>
         <module>rpc-test-scanner</module>
         <module>rpc-test-provider</module>
+        <module>rpc-test-api</module>
     </modules>
     <dependencies>
+
         <dependency>
             <groupId>io.lh.rpc</groupId>
             <artifactId>rpc-common</artifactId>

@@ -9,6 +9,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>rpc-provider-native</module>
+        <module>rpc-provider-common</module>
     </modules>
 
 
