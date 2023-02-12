@@ -1,14 +1,13 @@
 package io.lh.rpc.commom.scanner;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.*;
+import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -112,6 +111,7 @@ public class ClassScanner {
 
     }
 
+    // todo 这个方法待测试验证
     static String findAndAddClassesInPackageByJar(String packageName, String packageDirName, URL url, List<String> classNameList) throws IOException {
 
         // jar，其实是一个压缩包
