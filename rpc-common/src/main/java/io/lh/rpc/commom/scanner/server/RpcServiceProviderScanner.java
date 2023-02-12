@@ -8,7 +8,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 /**
@@ -23,8 +26,8 @@ public class RpcServiceProviderScanner extends ClassScanner {
     // todo LOGGER原理是什么？
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcServiceProviderScanner.class);
 
-    public static Map<String, Objects> doScannerWithRpcReferenceAnnotationFilter(String scanPackage) {
-        Map<String, Objects> handlerMap = new HashMap<>();
+    public static Map<String, Object> doScannerWithRpcReferenceAnnotationFilter(String scanPackage) {
+        Map<String, Object> handlerMap = new HashMap<>();
         try {
             List<String> classNameList = getClassNameList(scanPackage);
 

@@ -3,8 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.lh.rpc</groupId>
-        <artifactId>rpc-test</artifactId>
+        <artifactId>rpc-provider</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <artifactId>rpc-test-scanner</artifactId>
+    <artifactId>rpc-provider-common</artifactId>
 </project>

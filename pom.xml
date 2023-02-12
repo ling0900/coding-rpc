@@ -11,6 +11,7 @@
         <module>rpc-annotation</module>
         <module>rpc-common</module>
         <module>rpc-test</module>
+        <module>rpc-provider</module>
     </modules>
     <version>1.0.0-SNAPSHOT</version>
 

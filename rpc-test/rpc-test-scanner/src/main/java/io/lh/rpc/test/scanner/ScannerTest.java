@@ -7,7 +7,6 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class ScannerTest {
 
@@ -21,7 +20,7 @@ public class ScannerTest {
 
     @Test
     public void testScannerClassNameListByRpcService() {
-        Map<String, Objects> stringObjectsMap = RpcServiceProviderScanner.doScannerWithRpcReferenceAnnotationFilter("io.lh.rpc.test.scanner");
+        Map<String, Object> stringObjectsMap = RpcServiceProviderScanner.doScannerWithRpcReferenceAnnotationFilter("io.lh.rpc.test.scanner");
 
 
     }
