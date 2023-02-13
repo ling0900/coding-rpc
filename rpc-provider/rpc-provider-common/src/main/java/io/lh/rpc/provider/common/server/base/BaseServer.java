@@ -27,7 +27,7 @@ public class BaseServer implements Server {
 
     protected String host = "127.0.0.1";
 
-    protected int port = 27110;
+    protected int port = 8888;
 
     protected Map<String, Object> handlerMap = new HashMap<>();
 
@@ -65,7 +65,7 @@ public class BaseServer implements Server {
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
 
             // sync() 保证执行完成所有任务
-            ChannelFuture channelFuture = bootstrap.bind(8089).sync();
+            ChannelFuture channelFuture = bootstrap.bind(host, port).sync();
             // 等待关闭信号，让业务线程去服务业务了
             channelFuture.channel().closeFuture().sync();
 

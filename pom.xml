@@ -12,6 +12,8 @@
         <module>rpc-common</module>
         <module>rpc-test</module>
         <module>rpc-provider</module>
+        <module>rpc-constants</module>
+        <module>rpc-protocol</module>
     </modules>
     <version>1.0.0-SNAPSHOT</version>
 
