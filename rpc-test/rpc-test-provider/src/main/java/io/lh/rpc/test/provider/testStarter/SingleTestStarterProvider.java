@@ -6,7 +6,7 @@ import org.junit.Test;
 public class SingleTestStarterProvider {
     @Test
     public void testStarter() {
-        RpcSingleServer rpcSingleServer = new RpcSingleServer("127.0.0.1:27660",
+        RpcSingleServer rpcSingleServer = new RpcSingleServer("127.0.0.1:9898",
                 "io.lh.rpc.test");
         rpcSingleServer.startNettyServer();
 

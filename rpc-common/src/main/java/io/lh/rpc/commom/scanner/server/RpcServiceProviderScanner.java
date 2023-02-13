@@ -24,7 +24,7 @@ public class RpcServiceProviderScanner extends ClassScanner {
 
 
     // todo LOGGER原理是什么？
-    private static final Logger LOGGER = LoggerFactory.getLogger(RpcServiceProviderScanner.class);
+    // private static final Logger LOGGER = LoggerFactory.getLogger(RpcServiceProviderScanner.class);
 
     public static Map<String, Object> doScannerWithRpcReferenceAnnotationFilter(String scanPackage) {
 
@@ -50,7 +50,9 @@ public class RpcServiceProviderScanner extends ClassScanner {
                 if (annotation != null) {
                     System.out.println("标注了@RpcReference注解的字段名称===>>>" + aClass.getName());
                     String name = aClass.getName();
-                    String key = name.concat(annotation.group()).concat(annotation.interfaceClassName());
+                    // 这里需要是sevicename！
+                    name = getServiceName(annotation);
+                    String key = name.concat(annotation.version()).concat(annotation.group());
                     handlerMap.put(key, aClass.newInstance());
                 }
 
@@ -62,7 +64,6 @@ public class RpcServiceProviderScanner extends ClassScanner {
                         System.out.println("标注了@RpcServiceConsumer注解的字段名称===>>>" + declaedField.getName());
                     }
                 }
-
             }
 
             // 判断服务消费者的注解
@@ -84,7 +85,6 @@ public class RpcServiceProviderScanner extends ClassScanner {
                     }
                 });
             });
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
@@ -97,4 +97,22 @@ public class RpcServiceProviderScanner extends ClassScanner {
         // todo 还没有完全 map放入数值。
         return handlerMap;
     }
+
+    /**
+     *
+     */
+    private static String getServiceName(RpcServiceProvider rpcServiceProvider) {
+
+        Class tClass = rpcServiceProvider.interfaceClass();
+        if (tClass == void.class) {
+            return rpcServiceProvider.interfaceClassName();
+        }
+
+        String serviceName = tClass.getName();
+        if (serviceName == null || serviceName.trim().isEmpty()) {
+            serviceName = rpcServiceProvider.interfaceClassName();
+        }
+        return serviceName;
+    }
+
 }

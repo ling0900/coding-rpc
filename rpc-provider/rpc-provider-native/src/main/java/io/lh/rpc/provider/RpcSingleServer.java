@@ -11,7 +11,7 @@ public class RpcSingleServer extends BaseServer {
         try {
             this.handlerMap = RpcServiceProviderScanner.doScannerWithRpcReferenceAnnotationFilter(scanPackage);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            System.out.println("00000000000~~~~~~~~~~~~~");
         }
     }
 }

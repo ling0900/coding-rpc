@@ -25,12 +25,9 @@ import java.util.Map;
  */
 public class BaseServer implements Server {
 
-    /**
-     *
-     */
     protected String host = "127.0.0.1";
 
-    protected String port = "27110";
+    protected int port = 27110;
 
     protected Map<String, Object> handlerMap = new HashMap<>();
 
@@ -38,44 +35,44 @@ public class BaseServer implements Server {
         if (! StringUtils.isEmpty(serviceAddress)) {
             String[] ipAndPort = serviceAddress.split(":");
             this.host = ipAndPort[0];
-            this.port = ipAndPort[1];
+            this.port = Integer.parseInt(ipAndPort[1]);
         }
     }
 
     @Override
     public void startNettyServer() {
 
-        EventLoopGroup bossGroup = new NioEventLoopGroup();
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
-
-        ServerBootstrap bootstrap = new ServerBootstrap();
-
+        // 创建对应的EventLoop线程池备用, 分bossGroup和workerGroup
+        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
+        EventLoopGroup workerGroup = new NioEventLoopGroup(3);
         try {
-
-        bootstrap
-                .group(bossGroup, workerGroup)
-                .channel(NioServerSocketChannel.class)
-                .childHandler(new ChannelInitializer<SocketChannel>() {
+            // 创建netty对应的入口核心类 ServerBootstrap
+            ServerBootstrap bootstrap = new ServerBootstrap();
+            // 设置server的各项参数，以及应用处理器
+            bootstrap.group(bossGroup, workerGroup)
+                    .channel(NioServerSocketChannel.class)
+                    .option(ChannelOption.SO_BACKLOG, 128) // tcp协议请求等待队列
+                    .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
+                        // 将各channelHandler绑定到netty的上下文中
                         ch.pipeline()
-                                .addLast(new StringDecoder())
-                                .addLast(new StringEncoder())
+                                .addLast("encoder", new StringDecoder())
+                                .addLast("decoder", new StringEncoder())
                                 .addLast(new RpcServiceProviderHandler(handlerMap));
-
                     }
                 })
-                .option(ChannelOption.SO_BACKLOG, 128)
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
 
-            System.out.println("port" + Integer.parseInt(port));
-
-            ChannelFuture channelFuture = bootstrap.bind(host, Integer.parseInt(port)).sync();
+            // sync() 保证执行完成所有任务
+            ChannelFuture channelFuture = bootstrap.bind(8089).sync();
+            // 等待关闭信号，让业务线程去服务业务了
             channelFuture.channel().closeFuture().sync();
 
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            System.out.println("启动异常");
         } finally {
+            // 收到关闭信号后，优雅关闭server的线程池
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
