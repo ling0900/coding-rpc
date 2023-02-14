@@ -3,7 +3,8 @@ package io.lh.rpc.protocol.header;
 import java.io.Serializable;
 
 public class RpcHeader implements Serializable {
-    //todo uuid
+
+    private static final long serialVersionUID = 5008396687284215527L;
 
     private short magicNum;
 

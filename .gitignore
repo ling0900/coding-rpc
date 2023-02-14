@@ -21,3 +21,6 @@ bin-release/
 /*/target/
 /*/*/target/
 target/
+*.log
+# /rpc-test/rpc-test-provider/d:/
+/*/*/d:/

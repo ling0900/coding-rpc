@@ -3,7 +3,8 @@ package io.lh.rpc.protocol.response;
 import io.lh.rpc.protocol.base.RpcMessage;
 
 public class RpcResponse extends RpcMessage {
-    // todo  uuid
+
+    private static final long serialVersionUID = -1476396128296398868L;
 
     private String error;
     private Object result;

@@ -3,8 +3,7 @@ package io.lh.rpc.protocol.request;
 import io.lh.rpc.protocol.base.RpcMessage;
 
 public class RpcRequest extends RpcMessage {
-
-    // 序列化id 待写  todo private static final long
+    private static final long serialVersionUID = -3713278488615579572L;
 
     private String className;
 

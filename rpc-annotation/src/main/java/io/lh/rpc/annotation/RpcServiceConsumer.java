@@ -79,6 +79,5 @@ public @interface RpcServiceConsumer {
     String port() default "";
     // 服务分组
     String group() default "";
-
     // todo 注解有tostring吗？
 }

@@ -14,6 +14,8 @@
         <module>rpc-provider</module>
         <module>rpc-constants</module>
         <module>rpc-protocol</module>
+        <module>rpc-codec</module>
+        <module>rpc-serialization</module>
     </modules>
     <version>1.0.0-SNAPSHOT</version>
 
