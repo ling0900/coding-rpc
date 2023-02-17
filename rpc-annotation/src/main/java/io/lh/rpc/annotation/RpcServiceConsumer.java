@@ -21,36 +21,50 @@ public @interface RpcServiceConsumer {
 
     /**
      * 服务的class全路径
+     *
+     * @return the class
      */
     Class<?> interfaceClass() default void.class;
 
     /**
      * 注册中心的类型:zookeeper nacos etcd consul
+     *
+     * @return the string
      */
     String registryType() default "zookeeper";
 
     /**
      * 注册中心的地址
+     *
+     * @return the string
      */
     String registryAddress() default "127.0,0.1:2111";
 
     /**
      * 负载均衡类型
+     *
+     * @return the string
      */
     String loadBalanceType() default "zkhash";
 
     /**
      * 序列化类型:protostuff kryo json jdk hessian2 fst
+     *
+     * @return the string
      */
     String serializaitonType() default "protostuff";
 
     /**
      * 超时时间
+     *
+     * @return the long
      */
     long timeout() default 5000;
 
     /**
      * 代理方式 jdk javassist cglib
+     *
+     * @return the string
      */
     String proxy() default "jdk";
 
@@ -58,6 +72,8 @@ public @interface RpcServiceConsumer {
 
     /**
      * 是否异步调用
+     *
+     * @return the boolean
      */
     boolean async() default false;
 
@@ -65,19 +81,50 @@ public @interface RpcServiceConsumer {
 
     /**
      * 是否单向调用
+     *
+     * @return the boolean
      */
     boolean oneway() default false;
 
-    // 注册中心的类型
+    /**
+     * Interface class name string.
+     *
+     * @return the string
+     */
+// 注册中心的类型
     // 服务名
     String interfaceClassName() default "";
-    // 服务版本号
+
+    /**
+     * Version string.
+     *
+     * @return the string
+     */
+// 服务版本号
     String version() default "1.0.0";
-    // 服务ip
+
+    /**
+     * Ip address string.
+     *
+     * @return the string
+     */
+// 服务ip
     String ipAddress() default "";
-    // 服务端口
+
+    /**
+     * Port string.
+     *
+     * @return the string
+     */
+// 服务端口
     String port() default "";
-    // 服务分组
+
+    /**
+     * Group string.
+     *
+     * @return the string
+     */
+// 服务分组
     String group() default "";
     // todo 注解有tostring吗？
 }

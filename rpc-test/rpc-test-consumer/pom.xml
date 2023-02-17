@@ -6,7 +6,11 @@
         <artifactId>rpc-test</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <artifactId>rpc-test-api</artifactId>
-    <name>rpc-test-api</name>
+    <artifactId>rpc-test-consumer</artifactId>
+    <packaging>pom</packaging>
+    <name>rpc-test-consumer</name>
     <url>http://maven.apache.org</url>
+    <modules>
+        <module>rpc-test-consumer-codec</module>
+    </modules>
 </project>

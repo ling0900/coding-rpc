@@ -1,5 +1,8 @@
 package io.lh.rpc.provider.common.server.base;
 
+import io.lh.rpc.codec.RpcCodec;
+import io.lh.rpc.codec.RpcDecoder;
+import io.lh.rpc.codec.RpcEncoder;
 import io.lh.rpc.provider.common.handler.RpcServiceProviderHandler;
 import io.lh.rpc.provider.common.server.api.Server;
 import io.netty.bootstrap.ServerBootstrap;
@@ -57,8 +60,8 @@ public class BaseServer implements Server {
                     protected void initChannel(SocketChannel ch) throws Exception {
                         // 将各channelHandler绑定到netty的上下文中
                         ch.pipeline()
-                                .addLast("encoder", new StringDecoder())
-                                .addLast("decoder", new StringEncoder())
+                                .addLast(new RpcDecoder())
+                                .addLast(new RpcEncoder())
                                 .addLast(new RpcServiceProviderHandler(handlerMap));
                     }
                 })

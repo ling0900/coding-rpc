@@ -26,6 +26,12 @@ public class RpcServiceProviderScanner extends ClassScanner {
     // todo LOGGER原理是什么？
     // private static final Logger LOGGER = LoggerFactory.getLogger(RpcServiceProviderScanner.class);
 
+    /**
+     * Do scanner with rpc reference annotation filter map.
+     *
+     * @param scanPackage the scan package
+     * @return the map
+     */
     public static Map<String, Object> doScannerWithRpcReferenceAnnotationFilter(String scanPackage) {
 
         Map<String, Object> handlerMap = new HashMap<>();
@@ -98,9 +104,6 @@ public class RpcServiceProviderScanner extends ClassScanner {
         return handlerMap;
     }
 
-    /**
-     *
-     */
     private static String getServiceName(RpcServiceProvider rpcServiceProvider) {
 
         Class tClass = rpcServiceProvider.interfaceClass();

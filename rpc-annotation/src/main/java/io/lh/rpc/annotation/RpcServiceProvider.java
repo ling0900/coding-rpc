@@ -20,16 +20,51 @@ import java.lang.annotation.Target;
 public @interface RpcServiceProvider {
 
 
-    // 服务的class全路径
+    /**
+     * Interface class class.
+     *
+     * @return the class
+     */
+// 服务的class全路径
     Class<?> interfaceClass() default void.class;
-    // 服务名
+
+    /**
+     * Interface class name string.
+     *
+     * @return the string
+     */
+// 服务名
     String interfaceClassName() default "";
-    // 服务版本号
+
+    /**
+     * Version string.
+     *
+     * @return the string
+     */
+// 服务版本号
     String version() default "1.0.0";
-    // 服务ip
+
+    /**
+     * Ip address string.
+     *
+     * @return the string
+     */
+// 服务ip
     String ipAddress() default "";
-    // 服务端口
+
+    /**
+     * Port string.
+     *
+     * @return the string
+     */
+// 服务端口
     String port() default "";
-    // 服务分组
+
+    /**
+     * Group string.
+     *
+     * @return the string
+     */
+// 服务分组
     String group() default "";
 }

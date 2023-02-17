@@ -8,7 +8,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
-public class RpsEncoder extends MessageToByteEncoder<RpcProtocol<Object>> implements RpcCodec{
+public class RpcEncoder extends MessageToByteEncoder<RpcProtocol<Object>> implements RpcCodec{
     @Override
     protected void encode(ChannelHandlerContext ctx, RpcProtocol<Object> msg,
                           ByteBuf byteBuf) throws Exception {
