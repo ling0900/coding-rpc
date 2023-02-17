@@ -9,6 +9,7 @@ import java.io.Serializable;
  *
  * @param <T> the type parameter
  */
+@SuppressWarnings("ALL")
 public class RpcProtocol<T> implements Serializable {
 
     private RpcHeader header;

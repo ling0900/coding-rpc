@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
  * The type Rpc test consumer handler.
  *
  */
+@SuppressWarnings("ALL")
 public class RpcTestConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<RpcResponse>> {
     private final Logger logger = LoggerFactory.getLogger(RpcTestConsumerHandler.class);
 

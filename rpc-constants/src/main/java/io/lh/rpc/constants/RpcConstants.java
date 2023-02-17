@@ -3,6 +3,7 @@ package io.lh.rpc.constants;
 /**
  * The type Rpc constants.
  */
+@SuppressWarnings("ALL")
 public class RpcConstants {
 
     /**

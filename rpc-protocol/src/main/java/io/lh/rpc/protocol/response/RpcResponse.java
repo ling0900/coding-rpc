@@ -5,6 +5,7 @@ import io.lh.rpc.protocol.base.RpcMessage;
 /**
  * The type Rpc response.
  */
+@SuppressWarnings("ALL")
 public class RpcResponse extends RpcMessage {
 
     private static final long serialVersionUID = -1476396128296398868L;

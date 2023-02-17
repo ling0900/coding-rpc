@@ -5,6 +5,7 @@ import java.io.Serializable;
 /**
  * The type Rpc message.
  */
+@SuppressWarnings("ALL")
 public class RpcMessage implements Serializable {
 
     private boolean oneWay;

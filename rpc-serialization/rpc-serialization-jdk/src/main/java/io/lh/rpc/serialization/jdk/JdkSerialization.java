@@ -11,6 +11,7 @@ import java.lang.annotation.Annotation;
 /**
  * The type Jdk serialization.
  * ! 为何没有关闭流？？todo
+ * @author lh
  */
 public class JdkSerialization implements Serialization {
 
@@ -18,7 +19,9 @@ public class JdkSerialization implements Serialization {
     @Override
     public <T> byte[] serialize(T obj) {
 
-        if (obj == null) throw new SerializerException("序列化对象 is null");
+        if (obj == null) {
+            throw new SerializerException("序列化对象 is null");
+        }
 
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -34,7 +37,9 @@ public class JdkSerialization implements Serialization {
     @Override
     public <T> T deserialize(byte[] data, Class<T> clazz) {
 
-        if (data == null) throw new SerializerException("反序列化内容 is null");
+        if (data == null) {
+            throw new SerializerException("反序列化内容 is null");
+        }
 
         try {
             ByteArrayInputStream is = new ByteArrayInputStream(data);

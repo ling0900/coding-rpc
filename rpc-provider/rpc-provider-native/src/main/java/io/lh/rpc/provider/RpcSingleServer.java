@@ -7,6 +7,7 @@ import io.lh.rpc.provider.common.server.base.BaseServer;
  * The type Rpc single server.
  * 单个服务RPC
  */
+@SuppressWarnings("ALL")
 public class RpcSingleServer extends BaseServer {
 
     /**

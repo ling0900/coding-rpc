@@ -14,6 +14,7 @@ import java.lang.annotation.Target;
  * 作者：lh
  * 创建时间：2023/02/11
  */
+@SuppressWarnings("ALL")
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Component

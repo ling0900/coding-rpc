@@ -27,7 +27,9 @@ public class SerializationUtil {
      */
     public static String paddingString(String str) {
 
-        if (str.length() >= MAX_SERIALIZATION_TYPE_COUNR) return str;
+        if (str.length() >= MAX_SERIALIZATION_TYPE_COUNR) {
+            return str;
+        }
         int paddingCount = MAX_SERIALIZATION_TYPE_COUNR - str.length();
 
         StringBuilder paddingString = new StringBuilder(str);

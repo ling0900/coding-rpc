@@ -16,15 +16,17 @@ import io.netty.util.CharsetUtil;
 import java.util.List;
 
 /**
- * @date 2023年2月16日
+ * @Date 2023年2月16日
  * @author lh
  * The type Rpc decoder.
  */
 public class RpcDecoder extends ByteToMessageDecoder implements RpcCodec {
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf inByteBuf, List<Object> outList) throws Exception {
+    protected void decode(ChannelHandlerContext ctx, ByteBuf inByteBuf, List<Object> outList) {
 
-        if (inByteBuf.readableBytes() < RpcConstants.HEADER_TOTAL_LEN) return;
+        if (inByteBuf.readableBytes() < RpcConstants.HEADER_TOTAL_LEN) {
+            return;
+        }
 
         inByteBuf.markReaderIndex();
 
@@ -51,7 +53,9 @@ public class RpcDecoder extends ByteToMessageDecoder implements RpcCodec {
         inByteBuf.readBytes(data);
 
         RpcType rpcType = RpcType.findeByType(msgType);
-        if (rpcType == null) return;
+        if (rpcType == null) {
+            return;
+        }
 
         RpcHeader rpcHeader = new RpcHeader();
         rpcHeader.setMagicNum(magicNum);
@@ -64,7 +68,9 @@ public class RpcDecoder extends ByteToMessageDecoder implements RpcCodec {
         //todo
 
         Serialization jdkSerialization = getJdkSerialization();
-        switch (rpcType) { // switch经常配合枚举类使用，看起来美观。
+        // switch经常配合枚举类使用，看起来美观。
+        switch (rpcType) {
+            default:
             case REQUEST:
                 RpcRequest deserializeRequest = jdkSerialization.deserialize(data, RpcRequest.class);
                 if (deserializeRequest != null) {

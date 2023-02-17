@@ -5,6 +5,7 @@ import io.lh.rpc.protocol.base.RpcMessage;
 /**
  * The type Rpc request.
  */
+@SuppressWarnings("ALL")
 public class RpcRequest extends RpcMessage {
     private static final long serialVersionUID = -3713278488615579572L;
 
@@ -12,7 +13,10 @@ public class RpcRequest extends RpcMessage {
 
     private String methodName;
 
-    private Class<?>[] parameterTypes; // 为何这么写，思考以下？
+    /**
+     * 为何这么写，思考以下？
+     */
+    private Class<?>[] parameterTypes;
 
     private Object[] parameters;
 

@@ -10,6 +10,7 @@ import io.netty.channel.socket.SocketChannel;
 /**
  * The type Rpc test con initialize.
  */
+@SuppressWarnings("ALL")
 public class RpcTestConInitialize extends ChannelInitializer<SocketChannel> {
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {

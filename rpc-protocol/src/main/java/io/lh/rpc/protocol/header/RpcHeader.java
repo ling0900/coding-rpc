@@ -5,6 +5,7 @@ import java.io.Serializable;
 /**
  * The type Rpc header.
  */
+@SuppressWarnings("ALL")
 public class RpcHeader implements Serializable {
 
     private static final long serialVersionUID = 5008396687284215527L;

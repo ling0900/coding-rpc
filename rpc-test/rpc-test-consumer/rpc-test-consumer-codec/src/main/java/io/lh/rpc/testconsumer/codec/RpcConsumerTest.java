@@ -6,6 +6,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
+@SuppressWarnings("ALL")
 public class RpcConsumerTest {
     public static void main(String[] args) throws InterruptedException {
         Bootstrap bootstrap = new Bootstrap();

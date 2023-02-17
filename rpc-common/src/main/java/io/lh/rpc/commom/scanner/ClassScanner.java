@@ -15,7 +15,7 @@ import java.util.jar.JarFile;
  * 扫描
  *
  * @author lh
- * @date 2023/02/11
+ * @date 2023 /02/11
  */
 public class ClassScanner {
 
@@ -37,8 +37,10 @@ public class ClassScanner {
     /**
      * 扫描类路径下所有的类信息，然后放到一个list中缓存起来。
      * <></>例如：io.lh.rpc.commom.scanner
-     * @param packageName
+     *
+     * @param packageName the package name
      * @return {@link List}<{@link String}>
+     * @throws IOException the io exception
      */
     public static List<String> getClassNameList(String packageName) throws IOException {
 
@@ -62,10 +64,12 @@ public class ClassScanner {
             // 协议的名称 todo
             String protocol = url.getProtocol();
 
-            if (PROTOCOL_FILE.equals(protocol)) { // 这可能是目录，可能是文件。
+            // 这可能是目录，可能是文件。
+            if (PROTOCOL_FILE.equals(protocol)) {
                 //
                 addClassesInPackageByFile(filePath, packageName, classNameList, true);
-            } else if (PROTOCOL_JAR.equals(protocol)) { // jar包
+                // jar包
+            } else if (PROTOCOL_JAR.equals(protocol)) {
                 //
                 packageName = findAndAddClassesInPackageByJar(packageName, packageDirName, url, classNameList);
             }
@@ -75,10 +79,11 @@ public class ClassScanner {
 
     /**
      * 扫描当前工程中指定包下的所有类信息
-     * @param filePath
-     * @param packageName
-     * @param classNameList
-     * @param hasChildPath
+     *
+     * @param filePath      the file path
+     * @param packageName   the package name
+     * @param classNameList the class name list
+     * @param hasChildPath  the has child path
      */
     static void addClassesInPackageByFile(String filePath, String packageName, List<String> classNameList, boolean hasChildPath) {
 
@@ -86,7 +91,9 @@ public class ClassScanner {
         File file = new File(filePath);
 
         // 不存在或者不是目录
-        if (!file.exists() || !file.isDirectory()) return;
+        if (!file.exists() || !file.isDirectory()) {
+            return;
+        }
 
         // 过滤条件：如果是class文件 或者 目录
         File[] files = file.listFiles(
@@ -111,7 +118,16 @@ public class ClassScanner {
 
     }
 
-    // todo 这个方法待测试验证
+    /**
+     * Find and add classes in package by jar string.
+     * todo 这个方法待测试验证
+     * @param packageName    the package name
+     * @param packageDirName the package dir name
+     * @param url            the url
+     * @param classNameList  the class name list
+     * @return the string
+     * @throws IOException the io exception
+     */
     static String findAndAddClassesInPackageByJar(String packageName, String packageDirName, URL url, List<String> classNameList) throws IOException {
 
         // jar，其实是一个压缩包
@@ -125,7 +141,8 @@ public class ClassScanner {
             JarEntry jarEntry = jars.nextElement();
             String name = jarEntry.getName();
 
-            if (name.startsWith("/")) { // 是目录
+            // 是目录
+            if (name.startsWith("/")) {
                 name = name.substring(1);
             }
 

@@ -17,6 +17,7 @@ import java.util.Map;
  * 作者：lh
  * 创建时间：2023/02/12
  */
+@SuppressWarnings("ALL")
 public class RpcServiceProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<RpcRequest>> {
 
     private final Map<String, Object> hadlerMap;

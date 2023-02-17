@@ -23,8 +23,8 @@ import java.util.Map;
 /**
  * 描述：
  * 版本：1.0.0
- * 作者：lh
  * 创建时间：2023/02/12
+ * @author lh
  */
 public class BaseServer implements Server {
 
@@ -54,7 +54,8 @@ public class BaseServer implements Server {
             // 设置server的各项参数，以及应用处理器
             bootstrap.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
-                    .option(ChannelOption.SO_BACKLOG, 128) // tcp协议请求等待队列
+                    // tcp协议请求等待队列
+                    .option(ChannelOption.SO_BACKLOG, 128)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {

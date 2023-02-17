@@ -6,6 +6,9 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
+/**
+ * @author lh
+ */
 public class NettyHello {
     public static void main(String[] args) {
         NioEventLoopGroup boss = new NioEventLoopGroup();

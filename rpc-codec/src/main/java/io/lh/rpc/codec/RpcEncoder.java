@@ -8,6 +8,10 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
+/**
+ * The type Rpc encoder.
+ * @author lh
+ */
 public class RpcEncoder extends MessageToByteEncoder<RpcProtocol<Object>> implements RpcCodec{
     @Override
     protected void encode(ChannelHandlerContext ctx, RpcProtocol<Object> msg,
