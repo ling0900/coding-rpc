@@ -3,7 +3,16 @@ package io.lh.rpc.protocol.header;
 import io.lh.rpc.constants.RpcConstants;
 import io.lh.rpc.protocol.enumeration.RpcType;
 
+/**
+ * The type Rpc header factory.
+ */
 public class RpcHeaderFactory {
+    /**
+     * Gets request header.
+     *
+     * @param serializationType the serialization type
+     * @return the request header
+     */
     public static RpcHeader getRequestHeader(String serializationType) {
         RpcHeader rpcHeader = new RpcHeader();
 

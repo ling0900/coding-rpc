@@ -22,6 +22,7 @@ public class RpcConstants {
 
     /**
      * REFLECT_TYPE_JDK
+     * 反射的类型JDK
      */
     public static final String REFLECT_TYPE_JDK = "jdk";
 
@@ -99,7 +100,7 @@ public class RpcConstants {
     public static final String SERVICE_LOAD_BALANCER_ZKCONSISTENTHASH = "zkconsistenthash";
 
     /**
-     * Main.
+     * Main.测试用的
      *
      * @param args the args
      */
