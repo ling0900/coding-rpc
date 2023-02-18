@@ -15,7 +15,7 @@ public class RpcServiceHelper {
      * @param group          the group
      * @return 服务名称#服务把本好#服务分组
      */
-    public static String buildServiceKey(String serviceName, String ServiceVersion, String group) {
-        return String.join("#", serviceName, ServiceVersion, group);
+    public static String buildServiceKey(String serviceName, String serviceVersion, String group) {
+        return String.join("#", serviceName, serviceVersion, group);
     }
 }

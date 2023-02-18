@@ -2,6 +2,7 @@ package io.lh.rpc.protocol.enumeration;
 
 /**
  * The enum Rpc type.
+ * @author lh
  */
 public enum RpcType {
     /**

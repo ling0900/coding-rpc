@@ -19,7 +19,6 @@ import net.sf.cglib.reflect.FastMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.annotation.XmlType;
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -140,16 +139,16 @@ public class RpcServiceProviderHandler extends SimpleChannelInboundHandler<RpcPr
 
         switch (this.reflectType) {
             case RpcConstants.REFLECT_TYPE_JDK:
-                return this.invokeJDKMethod(serviceBean, methodName, parameterTypes, parameters, serviceClass);
+                return this.invokeJdkMethod(serviceBean, methodName, parameterTypes, parameters, serviceClass);
             case RpcConstants.REFLECT_TYPE_CGLIB:
-                return this.invokeCGLibMethod(serviceBean, methodName, parameterTypes, parameters, serviceClass);
+                return this.invokeCglibMethod(serviceBean, methodName, parameterTypes, parameters, serviceClass);
             default:
                 throw new IllegalArgumentException(String.format("找不到匹配的反射类型%s", this.reflectType));
         }
 
     }
 
-    private Object invokeJDKMethod(Object serviceBean, String methodName,
+    private Object invokeJdkMethod(Object serviceBean, String methodName,
                                    Class<?>[] parameterTypes, Object[] parameters, Class<?> serviceClass) throws Throwable {
         Method method = serviceClass.getMethod(methodName, parameterTypes);
         method.setAccessible(true);
@@ -157,8 +156,8 @@ public class RpcServiceProviderHandler extends SimpleChannelInboundHandler<RpcPr
 
     }
 
-    private Object invokeCGLibMethod(Object serviceBean, String methodName,
-                                   Class<?>[] parameterTypes, Object[] parameters, Class<?> serviceClass) throws Throwable {
+    private Object invokeCglibMethod(Object serviceBean, String methodName,
+                                     Class<?>[] parameterTypes, Object[] parameters, Class<?> serviceClass) throws Throwable {
 
         FastClass fastServiceClass = FastClass.create(serviceClass);
         FastMethod fastServiceClassMethod = fastServiceClass.getMethod(methodName, parameterTypes);

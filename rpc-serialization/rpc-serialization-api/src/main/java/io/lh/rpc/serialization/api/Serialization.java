@@ -2,6 +2,7 @@ package io.lh.rpc.serialization.api;
 
 /**
  * The interface Serialization.
+ * @author lh
  */
 public interface Serialization {
 
