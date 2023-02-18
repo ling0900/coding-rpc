@@ -1,5 +1,6 @@
 package io.lhrpc.consumer.common;
 
+import io.lh.rpc.commom.threadpool.ClientThreadPool;
 import io.lh.rpc.protocol.RpcProtocol;
 import io.lh.rpc.protocol.request.RpcRequest;
 import io.lhrpc.consumer.common.future.RpcFuture;
@@ -64,6 +65,8 @@ public class RpcConsumer {
      */
     public void close() {
         eventLoopGroup.shutdownGracefully();
+        // 关闭线程池，当netty服务关闭后
+        ClientThreadPool.shutdown();
     }
 
     /**

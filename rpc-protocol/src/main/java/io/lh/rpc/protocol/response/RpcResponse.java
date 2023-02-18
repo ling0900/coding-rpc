@@ -15,6 +15,10 @@ public class RpcResponse extends RpcMessage {
 
     private int code;
 
+    public boolean isError() {
+        return error != null;
+    }
+
     /**
      * Gets error.
      *

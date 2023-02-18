@@ -1,16 +1,21 @@
 package io.lhrpc.consumer.common.future;
 
+import io.lh.rpc.commom.threadpool.ClientThreadPool;
 import io.lh.rpc.protocol.RpcProtocol;
 import io.lh.rpc.protocol.request.RpcRequest;
 import io.lh.rpc.protocol.response.RpcResponse;
+import io.lhrpc.consumer.common.callback.AsyncRpcCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.AbstractQueuedSynchronizer;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 /**
@@ -19,7 +24,18 @@ import java.util.concurrent.locks.AbstractQueuedSynchronizer;
  * @author lh
  */
 public class RpcFuture extends CompletableFuture<Object> {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcFuture.class);
+
+    /**
+     * 用来方回调接口类的
+     */
+    private List<AsyncRpcCallback> pendingCallbacks = new ArrayList<>();
+
+    /**
+     * 回调的时候用来上锁、下锁
+     */
+    private ReentrantLock lock = new ReentrantLock();
 
     private Sync sync;
     private RpcProtocol<RpcRequest> requestRpcProtocol;
@@ -93,6 +109,8 @@ public class RpcFuture extends CompletableFuture<Object> {
         this.responseRpcProtocol = responseRpcProtocol;
         sync.release(1);
 
+        // 调用回调方法
+        invokeCallbacks();
         // 阈值
         long responseTime = System.currentTimeMillis() - startTime;
         if (responseTime > this.responseTimeThreshold) {
@@ -136,6 +154,49 @@ public class RpcFuture extends CompletableFuture<Object> {
         public boolean isDone() {
             getState();
             return getState() == done;
+        }
+    }
+
+    private void runCallback(final AsyncRpcCallback callback) {
+        final RpcResponse response = this.responseRpcProtocol.getBody();
+        ClientThreadPool.submit(()->{
+            if (! response.isError()) {
+                callback.onSuccess(response.getResult());
+            } else {
+                callback.onException(new RuntimeException("响应出错", new Throwable(response.getError())));
+            }
+        });
+    }
+
+    /**
+     * Add callback rpc future.
+     *
+     * @param callback the callback
+     * @return the rpc future
+     */
+    public RpcFuture addCallback(AsyncRpcCallback callback) {
+        lock.lock();
+        try {
+            if (isDone()) {
+                runCallback(callback);
+            } else {
+                this.pendingCallbacks.add(callback);
+            }
+        } finally {
+            // 记得释放锁！
+            lock.unlock();
+        }
+        return this;
+    }
+
+    private void invokeCallbacks() {
+        lock.lock();
+        try {
+            for (final AsyncRpcCallback callback : pendingCallbacks) {
+                runCallback(callback);
+            }
+        } finally {
+            lock.unlock();
         }
     }
 }

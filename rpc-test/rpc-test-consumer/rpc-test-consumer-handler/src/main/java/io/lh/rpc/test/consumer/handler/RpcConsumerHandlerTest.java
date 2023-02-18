@@ -4,6 +4,7 @@ import io.lh.rpc.protocol.RpcProtocol;
 import io.lh.rpc.protocol.header.RpcHeaderFactory;
 import io.lh.rpc.protocol.request.RpcRequest;
 import io.lhrpc.consumer.common.RpcConsumer;
+import io.lhrpc.consumer.common.callback.AsyncRpcCallback;
 import io.lhrpc.consumer.common.context.RpcContext;
 import io.lhrpc.consumer.common.future.RpcFuture;
 import io.lhrpc.consumer.common.handler.RpcConsumerHandler;
@@ -28,12 +29,29 @@ public class RpcConsumerHandlerTest {
      * @throws InterruptedException the interrupted exception
      * @throws ExecutionException   the execution exception
      */
-    public static void main(String[] args) throws InterruptedException, ExecutionException {
-        RpcConsumer consumer = RpcConsumer.getConsumerInstance();
-        consumer.sendRequestMsg(getRpcRequestProtocol());
-        RpcFuture rpcFuture = RpcContext.getContext().getRpcFuture();
+    public static void main(String[] args) throws Exception {
 
-        logger.info("返回到消费者的数据{}", rpcFuture.get());
+        RpcConsumer consumer = RpcConsumer.getConsumerInstance();
+        RpcFuture rpcFuture = consumer.sendRequestMsg(getRpcRequestProtocol());
+
+        try {
+            rpcFuture.addCallback(new AsyncRpcCallback() {
+                @Override
+                public void onSuccess(Object result) {
+                    logger.info("onSuccess服务消费者获取到的数据{}", result);
+                }
+
+                @Override
+                public void onException(Exception e) {
+                    logger.info("异常{}",e);
+                }
+            });
+        } catch (Exception e) {
+
+        }
+
+
+        Thread.sleep(200);
 
         consumer.close();
     }
