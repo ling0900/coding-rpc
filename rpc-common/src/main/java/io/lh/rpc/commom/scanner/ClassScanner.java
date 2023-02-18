@@ -1,5 +1,8 @@
 package io.lh.rpc.commom.scanner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
@@ -18,6 +21,11 @@ import java.util.jar.JarFile;
  * @date 2023 /02/11
  */
 public class ClassScanner {
+
+    /**
+     * 注意这里的是static
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClassScanner.class);
 
     /**
      * 文件
@@ -44,6 +52,8 @@ public class ClassScanner {
      */
     public static List<String> getClassNameList(String packageName) throws IOException {
 
+        LOGGER.info("根据包路径，扫描class");
+
         // 定义返回list
         List<String> classNameList = new ArrayList<>();
 
@@ -63,6 +73,8 @@ public class ClassScanner {
 
             // 协议的名称 todo
             String protocol = url.getProtocol();
+
+            LOGGER.info("当前目录是{}，物理路径是{}，协议名称是{}", url, filePath, protocol);
 
             // 这可能是目录，可能是文件。
             if (PROTOCOL_FILE.equals(protocol)) {
@@ -86,6 +98,8 @@ public class ClassScanner {
      * @param hasChildPath  the has child path
      */
     static void addClassesInPackageByFile(String filePath, String packageName, List<String> classNameList, boolean hasChildPath) {
+
+
 
         // 根据路径new一个file，有可能是一个目录或者一个文件。
         File file = new File(filePath);
@@ -130,6 +144,7 @@ public class ClassScanner {
      */
     static String findAndAddClassesInPackageByJar(String packageName, String packageDirName, URL url, List<String> classNameList) throws IOException {
 
+        LOGGER.info("通过jar加载class");
         // jar，其实是一个压缩包
         JarFile jarFile = ((JarURLConnection)url.openConnection()).getJarFile();
 

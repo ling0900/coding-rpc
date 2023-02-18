@@ -53,14 +53,17 @@ public class RpcServiceProviderScanner extends ClassScanner {
             // getFields()：获得某个类的所有的公共（public）的字段，包括父类中的字段。
             // getDeclaredFields()：获得某个类的所有声明的字段，即包括public、private和protected，但是不包括父类的申明字段。
 
+            int m = 1;
             // 判断服务提供者的注解
             for (String className : classNameList) {
 
-                // 判断类上用到了服务提供者的注解
+                LOGGER.info("第{}个className：{}", m++, className);
+
+                // 判断类上用到了服务提供者的注解，并放入到map缓存起来。
                 Class<?> clazz = Class.forName(className);
                 RpcServiceProvider serviceProvider = clazz.getAnnotation(RpcServiceProvider.class);
                 if (serviceProvider != null) {
-                    System.out.println("标注了@RpcReference注解的字段名称===>>>" + clazz.getName());
+                    LOGGER.info("标注了@RpcReference注解的字段名称:{}", clazz.getName());
                     // 这里需要是ServiceName！
                     String serviceName = getServiceName(serviceProvider);
                     String serviceKey = RpcServiceHelper.buildServiceKey(serviceName, serviceProvider.version(), serviceProvider.group());
@@ -71,9 +74,9 @@ public class RpcServiceProviderScanner extends ClassScanner {
                 Field[] declaredFields = clazz.getDeclaredFields();
                 for (Field declaedField : declaredFields) {
                     RpcServiceConsumer rpcServiceProvider = declaedField.getAnnotation(RpcServiceConsumer.class);
-                    // 用到了注解
+                    // 用到了@RpcServiceConsumer 注解
                     if (rpcServiceProvider != null) {
-                        System.out.println("标注了@RpcServiceConsumer注解的字段名称===>>>" + declaedField.getName());
+                        LOGGER.info("标注了 @RpcServiceConsumer 注解的字段名称:{}", declaedField.getName());
                     }
                 }
             }
@@ -86,14 +89,12 @@ public class RpcServiceProviderScanner extends ClassScanner {
                 } catch (ClassNotFoundException e) {
                     throw new RuntimeException(e);
                 }
-                // Field[] fields = aClass.getFields();
                 Field[] fields = aClass.getDeclaredFields();
                 Annotation[] annotations = aClass.getAnnotations();
                 Stream.of(fields).forEach((field) -> {
                     RpcServiceProvider rpcServiceProvider = field.getAnnotation(RpcServiceProvider.class);
                     if (rpcServiceProvider != null) {
-                        //用到了注解
-                        System.out.println("标注了@RpcReference注解的字段名称===>>>" + field.getName());
+                        LOGGER.info("标注了@RpcReference注解的字段名称{}", field.getName());
                     }
                 });
             });
