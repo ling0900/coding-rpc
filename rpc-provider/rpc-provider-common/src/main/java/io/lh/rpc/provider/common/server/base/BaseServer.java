@@ -77,6 +77,9 @@ public class BaseServer implements Server {
 
             // sync() 保证执行完成所有任务
             ChannelFuture channelFuture = bootstrap.bind(host, port).sync();
+
+            LOGGER.info("生产者启动ok{}：{}", host, port);
+
             // 等待关闭信号，让业务线程去服务业务了
             channelFuture.channel().closeFuture().sync();
 

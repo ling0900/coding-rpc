@@ -12,5 +12,6 @@
     <url>http://maven.apache.org</url>
     <modules>
         <module>rpc-test-consumer-codec</module>
+        <module>rpc-test-consumer-handler</module>
     </modules>
 </project>

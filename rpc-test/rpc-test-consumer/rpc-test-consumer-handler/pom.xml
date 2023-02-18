@@ -3,21 +3,18 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.lh.rpc</groupId>
-        <artifactId>coding-rpc</artifactId>
+        <artifactId>rpc-test-consumer</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <packaging>pom</packaging>
-    <modules>
-        <module>rpc-provider-native</module>
-        <module>rpc-provider-common</module>
-    </modules>
-
+    <artifactId>rpc-test-consumer-handler</artifactId>
+    <name>rpc-test-consumer-handler</name>
+    <url>http://maven.apache.org</url>
     <dependencies>
         <dependency>
             <groupId>io.lh.rpc</groupId>
-            <artifactId>rpc-common</artifactId>
+            <artifactId>rpc-consumer-common</artifactId>
             <version>1.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
-    <artifactId>rpc-provider</artifactId>
 </project>
