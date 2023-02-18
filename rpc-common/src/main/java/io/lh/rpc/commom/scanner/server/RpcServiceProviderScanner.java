@@ -2,9 +2,13 @@ package io.lh.rpc.commom.scanner.server;
 
 import io.lh.rpc.annotation.RpcServiceConsumer;
 import io.lh.rpc.annotation.RpcServiceProvider;
+import io.lh.rpc.commom.helper.RpcServiceHelper;
 import io.lh.rpc.commom.scanner.ClassScanner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
@@ -16,13 +20,17 @@ import java.util.stream.Stream;
  * 版本：1.0.0
  * 作者：lh
  * 创建时间：2023/02/11
+ *
  * @author lh
  */
 public class RpcServiceProviderScanner extends ClassScanner {
 
 
-    // todo LOGGER原理是什么？
-    // private static final Logger LOGGER = LoggerFactory.getLogger(RpcServiceProviderScanner.class);
+    /**
+     * todo LOGGER原理是什么？
+     * 可以看到，一个框架，大量运用到了反射！
+     */
+     private static final Logger LOGGER = LoggerFactory.getLogger(RpcServiceProviderScanner.class);
 
     /**
      * Do scanner with rpc reference annotation filter map.
@@ -49,19 +57,18 @@ public class RpcServiceProviderScanner extends ClassScanner {
             for (String className : classNameList) {
 
                 // 判断类上用到了服务提供者的注解
-                Class<?> aClass = Class.forName(className);
-                RpcServiceProvider annotation = aClass.getAnnotation(RpcServiceProvider.class);
-                if (annotation != null) {
-                    System.out.println("标注了@RpcReference注解的字段名称===>>>" + aClass.getName());
-                    String name;
+                Class<?> clazz = Class.forName(className);
+                RpcServiceProvider serviceProvider = clazz.getAnnotation(RpcServiceProvider.class);
+                if (serviceProvider != null) {
+                    System.out.println("标注了@RpcReference注解的字段名称===>>>" + clazz.getName());
                     // 这里需要是ServiceName！
-                    name = getServiceName(annotation);
-                    String key = name.concat(annotation.version()).concat(annotation.group());
-                    handlerMap.put(key, aClass.newInstance());
+                    String serviceName = getServiceName(serviceProvider);
+                    String serviceKey = RpcServiceHelper.buildServiceKey(serviceName, serviceProvider.version(), serviceProvider.group());
+                    handlerMap.put(serviceKey, clazz.newInstance());
                 }
 
                 // 用来检查类内部有没有使用某个注解的
-                Field[] declaredFields = aClass.getDeclaredFields();
+                Field[] declaredFields = clazz.getDeclaredFields();
                 for (Field declaedField : declaredFields) {
                     RpcServiceConsumer rpcServiceProvider = declaedField.getAnnotation(RpcServiceConsumer.class);
                     // 用到了注解
@@ -81,7 +88,7 @@ public class RpcServiceProviderScanner extends ClassScanner {
                 }
                 // Field[] fields = aClass.getFields();
                 Field[] fields = aClass.getDeclaredFields();
-                aClass.getAnnotations();
+                Annotation[] annotations = aClass.getAnnotations();
                 Stream.of(fields).forEach((field) -> {
                     RpcServiceProvider rpcServiceProvider = field.getAnnotation(RpcServiceProvider.class);
                     if (rpcServiceProvider != null) {
