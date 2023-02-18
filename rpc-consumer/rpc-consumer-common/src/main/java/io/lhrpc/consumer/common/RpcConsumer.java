@@ -70,6 +70,8 @@ public class RpcConsumer {
      * Send request msg.
      *
      * @param requestRpcProtocol the request rpc protocol
+     * @return the rpc future
+     * @throws InterruptedException the interrupted exception
      */
     public RpcFuture sendRequestMsg(RpcProtocol<RpcRequest> requestRpcProtocol) throws InterruptedException {
 
@@ -91,7 +93,8 @@ public class RpcConsumer {
             handlerMap.put(remoteServiceKey, rpcConsumerHandler);
         }
 
-        return rpcConsumerHandler.sendRequestMessage(requestRpcProtocol);
+        RpcRequest request = requestRpcProtocol.getBody();
+        return rpcConsumerHandler.sendRequestMessage(requestRpcProtocol, request.isAsync(), request.isOneWay());
     }
 
     private RpcConsumerHandler getRpcConsumerHandler(String serviceAddress, int port) throws InterruptedException{

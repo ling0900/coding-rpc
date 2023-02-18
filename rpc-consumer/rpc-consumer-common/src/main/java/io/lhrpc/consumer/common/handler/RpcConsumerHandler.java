@@ -5,6 +5,7 @@ import io.lh.rpc.protocol.RpcProtocol;
 import io.lh.rpc.protocol.header.RpcHeader;
 import io.lh.rpc.protocol.request.RpcRequest;
 import io.lh.rpc.protocol.response.RpcResponse;
+import io.lhrpc.consumer.common.context.RpcContext;
 import io.lhrpc.consumer.common.future.RpcFuture;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -103,17 +104,15 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
      * Send request message.
      *
      * @param protocolMsg the protocol msg
+     * @param async       the async
+     * @param oneway      the oneway
+     * @return the rpc future
      */
-    public RpcFuture sendRequestMessage(RpcProtocol<RpcRequest> protocolMsg) {
-        LOGGER.info("消费者发送的数据>>>>>>>>>>>>{}", JSONObject.toJSONString(protocolMsg));
-        channel.writeAndFlush(protocolMsg);
-        RpcHeader header = protocolMsg.getHeader();
-        long requestId = header.getRequestId();
+    public RpcFuture sendRequestMessage(RpcProtocol<RpcRequest> protocolMsg, boolean async, boolean oneway) {
 
-        // 异步转同步
-        RpcFuture rpcFuture = this.getRpcFuture(protocolMsg);
-        channel.writeAndFlush(protocolMsg);
-        return rpcFuture;
+        LOGGER.info("消费者发送的数据>>>>>>>>>>>>{}", JSONObject.toJSONString(protocolMsg));
+
+        return oneway ? this.sendRequestOneway(protocolMsg) : async ? sendRequestAsync(protocolMsg) : this.sendRequestSync(protocolMsg);
     }
 
     /**
@@ -130,5 +129,34 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
         long requestId = header.getRequestId();
         pendingRpc.put(requestId, rpcFuture);
         return rpcFuture;
+    }
+
+    /**
+     * 同步调用的方法
+     */
+    private RpcFuture sendRequestSync(RpcProtocol<RpcRequest> protocol) {
+        RpcFuture rpcFuture = this.getRpcFuture(protocol);
+        channel.writeAndFlush(protocol);
+        return rpcFuture;
+    }
+
+    /**
+     * 异步调用的方法
+     */
+    private RpcFuture sendRequestAsync(RpcProtocol<RpcRequest> protocol) {
+        RpcFuture rpcFuture = this.getRpcFuture(protocol);
+        // rpcFuture放到上下文中，实现异步。调用者，后期通过这个上线文可以获得到返回的数据！核心
+        RpcContext.getContext().setRpcFuture(rpcFuture);
+        channel.writeAndFlush(protocol);
+        // 异步调用的，所以返回null。
+        return null;
+    }
+
+    /**
+     * 单向调用的方法
+     */
+    private RpcFuture sendRequestOneway(RpcProtocol<RpcRequest> protocol) {
+        channel.writeAndFlush(protocol);
+        return null;
     }
 }

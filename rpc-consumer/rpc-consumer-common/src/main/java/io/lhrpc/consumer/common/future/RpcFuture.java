@@ -105,16 +105,16 @@ public class RpcFuture extends CompletableFuture<Object> {
     /**
      * The type Sync.
      * 根据AQS实现一个内部类。
+     * 核心！
      */
     static class Sync extends AbstractQueuedSynchronizer {
 
         // 版本号
         private static final long serialVersionUID = -4119868057075984392L;
 
-        // futrue的status
+        // futrue 的status
         private final int done = 1;
         private final int pending = 0;
-
         protected boolean tryAcquire(int acquires) {
             return getState() == done;
         }
