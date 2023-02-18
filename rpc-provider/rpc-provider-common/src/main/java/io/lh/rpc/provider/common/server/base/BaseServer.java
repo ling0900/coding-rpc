@@ -15,6 +15,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
@@ -28,13 +30,18 @@ import java.util.Map;
  */
 public class BaseServer implements Server {
 
+    private final Logger LOGGER = LoggerFactory.getLogger(BaseServer.class);
+
+    private String reflectType;
+
     protected String host = "127.0.0.1";
 
     protected int port = 8888;
 
     protected Map<String, Object> handlerMap = new HashMap<>();
 
-    public BaseServer(String serviceAddress) {
+    public BaseServer(String serviceAddress, String reflectType) {
+        this.reflectType = reflectType;
         if (! StringUtils.isEmpty(serviceAddress)) {
             String[] ipAndPort = serviceAddress.split(":");
             this.host = ipAndPort[0];
@@ -63,7 +70,7 @@ public class BaseServer implements Server {
                         ch.pipeline()
                                 .addLast(new RpcDecoder())
                                 .addLast(new RpcEncoder())
-                                .addLast(new RpcServiceProviderHandler(handlerMap));
+                                .addLast(new RpcServiceProviderHandler(handlerMap, reflectType));
                     }
                 })
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
@@ -74,7 +81,7 @@ public class BaseServer implements Server {
             channelFuture.channel().closeFuture().sync();
 
         } catch (InterruptedException e) {
-            System.out.println("启动异常");
+            LOGGER.info("baseServer：{}", e);
         } finally {
             // 收到关闭信号后，优雅关闭server的线程池
             bossGroup.shutdownGracefully();

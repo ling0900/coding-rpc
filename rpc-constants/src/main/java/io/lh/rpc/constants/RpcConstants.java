@@ -2,8 +2,8 @@ package io.lh.rpc.constants;
 
 /**
  * The type Rpc constants.
+ * @author lh
  */
-@SuppressWarnings("ALL")
 public class RpcConstants {
 
     /**

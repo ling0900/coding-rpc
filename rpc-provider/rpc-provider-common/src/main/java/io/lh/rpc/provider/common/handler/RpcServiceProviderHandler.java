@@ -3,6 +3,7 @@ package io.lh.rpc.provider.common.handler;
 import com.alibaba.fastjson.JSONObject;
 import io.lh.rpc.commom.helper.RpcServiceHelper;
 import io.lh.rpc.commom.threadpool.ServerThreadPool;
+import io.lh.rpc.constants.RpcConstants;
 import io.lh.rpc.protocol.RpcProtocol;
 import io.lh.rpc.protocol.enumeration.RpcStatus;
 import io.lh.rpc.protocol.enumeration.RpcType;
@@ -13,9 +14,12 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import net.sf.cglib.reflect.FastClass;
+import net.sf.cglib.reflect.FastMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.annotation.XmlType;
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -30,15 +34,19 @@ public class RpcServiceProviderHandler extends SimpleChannelInboundHandler<RpcPr
 
     private final Logger LOGGER = LoggerFactory.getLogger(RpcServiceProviderHandler.class);
 
+    private final String reflectType;
+
     private final Map<String, Object> hadlerMap;
 
     /**
      * Instantiates a new Rpc service provider handler.
      *
-     * @param hadlerMap the hadler map
+     * @param hadlerMap   the hadler map
+     * @param reflectType the reflect type
      */
-    public RpcServiceProviderHandler(Map<String, Object> hadlerMap) {
+    public RpcServiceProviderHandler(Map<String, Object> hadlerMap, String reflectType) {
         this.hadlerMap = hadlerMap;
+        this.reflectType = reflectType;
     }
 
     @Override
@@ -127,8 +135,34 @@ public class RpcServiceProviderHandler extends SimpleChannelInboundHandler<RpcPr
      */
     private Object invokeMethod(Object serviceBean, String methodName,
                                 Class<?>[] parameterTypes, Object[] parameters, Class<?> serviceClass) throws Throwable {
+
+        LOGGER.info("调用目标方法用到的反射类型是{}", this.reflectType);
+
+        switch (this.reflectType) {
+            case RpcConstants.REFLECT_TYPE_JDK:
+                return this.invokeJDKMethod(serviceBean, methodName, parameterTypes, parameters, serviceClass);
+            case RpcConstants.REFLECT_TYPE_CGLIB:
+                return this.invokeCGLibMethod(serviceBean, methodName, parameterTypes, parameters, serviceClass);
+            default:
+                throw new IllegalArgumentException(String.format("找不到匹配的反射类型%s", this.reflectType));
+        }
+
+    }
+
+    private Object invokeJDKMethod(Object serviceBean, String methodName,
+                                   Class<?>[] parameterTypes, Object[] parameters, Class<?> serviceClass) throws Throwable {
         Method method = serviceClass.getMethod(methodName, parameterTypes);
         method.setAccessible(true);
         return method.invoke(serviceBean, parameters);
+
+    }
+
+    private Object invokeCGLibMethod(Object serviceBean, String methodName,
+                                   Class<?>[] parameterTypes, Object[] parameters, Class<?> serviceClass) throws Throwable {
+
+        FastClass fastServiceClass = FastClass.create(serviceClass);
+        FastMethod fastServiceClassMethod = fastServiceClass.getMethod(methodName, parameterTypes);
+        return fastServiceClassMethod.invoke(serviceBean, parameters);
+
     }
 }

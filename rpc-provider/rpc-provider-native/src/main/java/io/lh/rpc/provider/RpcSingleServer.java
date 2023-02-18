@@ -2,13 +2,17 @@ package io.lh.rpc.provider;
 
 import io.lh.rpc.commom.scanner.server.RpcServiceProviderScanner;
 import io.lh.rpc.provider.common.server.base.BaseServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The type Rpc single server.
  * 单个服务RPC
+ * @author lh
  */
-@SuppressWarnings("ALL")
 public class RpcSingleServer extends BaseServer {
+
+    private final Logger LOGGER = LoggerFactory.getLogger(RpcSingleServer.class);
 
     /**
      * Instantiates a new Rpc single server.
@@ -16,14 +20,14 @@ public class RpcSingleServer extends BaseServer {
      * @param serviceAddress the service address
      * @param scanPackage    the scan package
      */
-    public RpcSingleServer(String serviceAddress, String scanPackage) {
+    public RpcSingleServer(String serviceAddress, String scanPackage, String reflectType) {
 
-        super(serviceAddress);
+        super(serviceAddress, reflectType);
 
         try {
             this.handlerMap = RpcServiceProviderScanner.doScannerWithRpcReferenceAnnotationFilter(scanPackage);
         } catch (Exception e) {
-            System.out.println("00000000000~~~~~~~~~~~~~");
+            LOGGER.info("RpcSingleServer异常{}", e);
         }
     }
 }
