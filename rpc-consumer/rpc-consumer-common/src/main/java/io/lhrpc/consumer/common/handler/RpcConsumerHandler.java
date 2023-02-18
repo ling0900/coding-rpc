@@ -1,8 +1,8 @@
 package io.lhrpc.consumer.common.handler;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import io.lh.rpc.protocol.RpcProtocol;
+import io.lh.rpc.protocol.header.RpcHeader;
 import io.lh.rpc.protocol.request.RpcRequest;
 import io.lh.rpc.protocol.response.RpcResponse;
 import io.netty.buffer.Unpooled;
@@ -13,8 +13,9 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
 import java.net.SocketAddress;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The type Rpc consumer handler.
@@ -24,6 +25,11 @@ import java.net.SocketAddress;
 public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<RpcResponse>> {
 
     private final Logger LOGGER = LoggerFactory.getLogger(RpcConsumerHandler.class);
+
+    /**
+     * key：请求ID， value：RpcResponse协议
+     */
+    private Map<Long, RpcProtocol<RpcResponse>> pendingResponse = new ConcurrentHashMap<>();
 
     private volatile Channel channel;
 
@@ -79,7 +85,14 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcProtocol<RpcResponse> msg) throws Exception {
+
         LOGGER.info("服务消费者收到的数据{}", JSONObject.toJSONString(msg));
+        if (msg == null) {
+            return;
+        }
+        RpcHeader header = msg.getHeader();
+        long requestId = header.getRequestId();
+        pendingResponse.put(requestId, msg);
     }
 
     /**
@@ -87,9 +100,19 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
      *
      * @param protocolMsg the protocol msg
      */
-    public void sendRequestMessage(RpcProtocol<RpcRequest> protocolMsg) {
+    public Object sendRequestMessage(RpcProtocol<RpcRequest> protocolMsg) {
         LOGGER.info("消费者发送的数据>>>>>>>>>>>>{}", JSONObject.toJSONString(protocolMsg));
         channel.writeAndFlush(protocolMsg);
+        RpcHeader header = protocolMsg.getHeader();
+        long requestId = header.getRequestId();
+
+        // 异步转同步 TODO:是否可以再进行优化？
+        while (true) {
+            RpcProtocol<RpcResponse> responseRpcProtocol = pendingResponse.remove(requestId);
+            if (responseRpcProtocol != null) {
+                return responseRpcProtocol.getBody().getResult();
+            }
+        }
     }
 
     /**

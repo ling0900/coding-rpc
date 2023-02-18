@@ -4,17 +4,24 @@ import io.lh.rpc.protocol.RpcProtocol;
 import io.lh.rpc.protocol.header.RpcHeaderFactory;
 import io.lh.rpc.protocol.request.RpcRequest;
 import io.lhrpc.consumer.common.RpcConsumer;
+import io.lhrpc.consumer.common.handler.RpcConsumerHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The type Rpc consumer handler test.
  * @author lh
  */
 public class RpcConsumerHandlerTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(RpcConsumerHandler.class);
+
     public static void main(String[] args) throws InterruptedException {
         RpcConsumer consumer = RpcConsumer.getConsumerInstance();
-        consumer.sendRequestMsg(getRpcRequestProtocol());
+        Object o = consumer.sendRequestMsg(getRpcRequestProtocol());
 
-        Thread.sleep(2000);
+        logger.info("返回到消费者的数据{}", o.toString());
+
         consumer.close();
     }
 

@@ -70,7 +70,7 @@ public class RpcConsumer {
      *
      * @param requestRpcProtocol the request rpc protocol
      */
-    public void sendRequestMsg(RpcProtocol<RpcRequest> requestRpcProtocol) throws InterruptedException {
+    public Object sendRequestMsg(RpcProtocol<RpcRequest> requestRpcProtocol) throws InterruptedException {
 
         // 地址
         String serviceAddress = "127.0.0.1";
@@ -90,7 +90,7 @@ public class RpcConsumer {
             handlerMap.put(remoteServiceKey, rpcConsumerHandler);
         }
 
-        rpcConsumerHandler.sendRequestMessage(requestRpcProtocol);
+        return rpcConsumerHandler.sendRequestMessage(requestRpcProtocol);
     }
 
     private RpcConsumerHandler getRpcConsumerHandler(String serviceAddress, int port) throws InterruptedException{
