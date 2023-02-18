@@ -5,7 +5,6 @@ import io.lh.rpc.protocol.header.RpcHeaderFactory;
 import io.lh.rpc.protocol.request.RpcRequest;
 import io.lhrpc.consumer.common.RpcConsumer;
 import io.lhrpc.consumer.common.callback.AsyncRpcCallback;
-import io.lhrpc.consumer.common.context.RpcContext;
 import io.lhrpc.consumer.common.future.RpcFuture;
 import io.lhrpc.consumer.common.handler.RpcConsumerHandler;
 import org.slf4j.Logger;

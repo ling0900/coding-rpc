@@ -1,7 +1,7 @@
 # 🐬coding-rpc
 
 ## 👉个人的公开文档
-🌐🌐 https://www.yuque.com/javalh
+🌐🌐 https://www.yuque.com/javalh/java
 
 ## 🎉👉本项目开发总结文档：
 🌐🌐 https://www.yuque.com/javalh/md7d57/yaifl8lpx86lrc3v?singleDoc# 《coding-rpc》
