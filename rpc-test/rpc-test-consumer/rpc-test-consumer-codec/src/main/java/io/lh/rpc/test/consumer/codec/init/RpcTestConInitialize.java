@@ -1,8 +1,8 @@
-package io.lh.rpc.testconsumer.codec.init;
+package io.lh.rpc.test.consumer.codec.init;
 
 import io.lh.rpc.codec.RpcDecoder;
 import io.lh.rpc.codec.RpcEncoder;
-import io.lh.rpc.testconsumer.codec.handler.RpcTestConsumerHandler;
+import io.lh.rpc.test.consumer.codec.handler.RpcConsumerHandlerTest;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -17,6 +17,6 @@ public class RpcTestConInitialize extends ChannelInitializer<SocketChannel> {
         ChannelPipeline channelPipeline = ch.pipeline();
         channelPipeline.addLast(new RpcEncoder());
         channelPipeline.addLast(new RpcDecoder());
-        channelPipeline.addLast(new RpcTestConsumerHandler());
+        channelPipeline.addLast(new RpcConsumerHandlerTest());
     }
 }
