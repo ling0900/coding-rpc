@@ -2,6 +2,7 @@ package io.lhrpc.consumer.common;
 
 import io.lh.rpc.protocol.RpcProtocol;
 import io.lh.rpc.protocol.request.RpcRequest;
+import io.lhrpc.consumer.common.future.RpcFuture;
 import io.lhrpc.consumer.common.handler.RpcConsumerHandler;
 import io.lhrpc.consumer.common.initializer.RpcConsumerInitializer;
 import io.netty.bootstrap.Bootstrap;
@@ -70,7 +71,7 @@ public class RpcConsumer {
      *
      * @param requestRpcProtocol the request rpc protocol
      */
-    public Object sendRequestMsg(RpcProtocol<RpcRequest> requestRpcProtocol) throws InterruptedException {
+    public RpcFuture sendRequestMsg(RpcProtocol<RpcRequest> requestRpcProtocol) throws InterruptedException {
 
         // 地址
         String serviceAddress = "127.0.0.1";

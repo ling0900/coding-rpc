@@ -4,9 +4,12 @@ import io.lh.rpc.protocol.RpcProtocol;
 import io.lh.rpc.protocol.header.RpcHeaderFactory;
 import io.lh.rpc.protocol.request.RpcRequest;
 import io.lhrpc.consumer.common.RpcConsumer;
+import io.lhrpc.consumer.common.future.RpcFuture;
 import io.lhrpc.consumer.common.handler.RpcConsumerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.ExecutionException;
 
 /**
  * The type Rpc consumer handler test.
@@ -16,11 +19,11 @@ public class RpcConsumerHandlerTest {
 
     private static final Logger logger = LoggerFactory.getLogger(RpcConsumerHandler.class);
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, ExecutionException {
         RpcConsumer consumer = RpcConsumer.getConsumerInstance();
-        Object o = consumer.sendRequestMsg(getRpcRequestProtocol());
+        RpcFuture future = consumer.sendRequestMsg(getRpcRequestProtocol());
 
-        logger.info("返回到消费者的数据{}", o.toString());
+        logger.info("返回到消费者的数据{}", future.get());
 
         consumer.close();
     }
