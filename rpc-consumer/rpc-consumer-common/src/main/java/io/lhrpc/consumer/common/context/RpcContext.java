@@ -1,6 +1,6 @@
 package io.lhrpc.consumer.common.context;
 
-import io.lhrpc.consumer.common.future.RpcFuture;
+import io.lh.rpc.proxy.api.future.RpcFuture;
 
 /**
  * The type Rpc context.

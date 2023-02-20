@@ -1,10 +1,10 @@
-package io.lhrpc.consumer.common.future;
+package io.lh.rpc.proxy.api.future;
 
 import io.lh.rpc.commom.threadpool.ClientThreadPool;
 import io.lh.rpc.protocol.RpcProtocol;
 import io.lh.rpc.protocol.request.RpcRequest;
 import io.lh.rpc.protocol.response.RpcResponse;
-import io.lhrpc.consumer.common.callback.AsyncRpcCallback;
+import io.lh.rpc.proxy.api.callback.AsyncRpcCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

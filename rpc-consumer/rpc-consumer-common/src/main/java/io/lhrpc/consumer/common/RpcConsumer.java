@@ -3,7 +3,8 @@ package io.lhrpc.consumer.common;
 import io.lh.rpc.commom.threadpool.ClientThreadPool;
 import io.lh.rpc.protocol.RpcProtocol;
 import io.lh.rpc.protocol.request.RpcRequest;
-import io.lhrpc.consumer.common.future.RpcFuture;
+import io.lh.rpc.proxy.api.consumer.Consumer;
+import io.lh.rpc.proxy.api.future.RpcFuture;
 import io.lhrpc.consumer.common.handler.RpcConsumerHandler;
 import io.lhrpc.consumer.common.initializer.RpcConsumerInitializer;
 import io.netty.bootstrap.Bootstrap;
@@ -25,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author lh
  */
-public class RpcConsumer {
+public class RpcConsumer implements Consumer {
     private final Logger LOGGER = LoggerFactory.getLogger(RpcConsumer.class);
 
     private final Bootstrap bootstrap;
@@ -112,5 +113,10 @@ public class RpcConsumer {
             }
         });
         return channelFuture.channel().pipeline().get(RpcConsumerHandler.class);
+    }
+
+    @Override
+    public RpcFuture sendRequest(RpcProtocol<RpcRequest> protocol) throws Exception {
+        return null;
     }
 }
