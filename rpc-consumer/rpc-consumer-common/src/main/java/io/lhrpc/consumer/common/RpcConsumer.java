@@ -117,6 +117,25 @@ public class RpcConsumer implements Consumer {
 
     @Override
     public RpcFuture sendRequest(RpcProtocol<RpcRequest> protocol) throws Exception {
-        return null;
+        // 地址
+        String serviceAddress = "127.0.0.1";
+        int port = 27780;
+
+        String remoteServiceKey = serviceAddress.concat("-").concat(String.valueOf(port));
+        RpcConsumerHandler rpcConsumerHandler = handlerMap.get(remoteServiceKey);
+
+        // 判断是否存在，map
+        if (rpcConsumerHandler == null) {
+            rpcConsumerHandler = getRpcConsumerHandler(serviceAddress, port);
+            handlerMap.put(remoteServiceKey, rpcConsumerHandler);
+        } else if (! rpcConsumerHandler.getChannel().isActive()) {
+            rpcConsumerHandler.close();
+            // 从新获取
+            rpcConsumerHandler = getRpcConsumerHandler(serviceAddress, port);
+            handlerMap.put(remoteServiceKey, rpcConsumerHandler);
+        }
+
+        RpcRequest request = protocol.getBody();
+        return rpcConsumerHandler.sendRequestMessage(protocol, request.isAsync(), request.isOneWay());
     }
 }

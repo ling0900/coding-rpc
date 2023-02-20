@@ -2,8 +2,6 @@ package io.lh.rpc.test.provider.serivice.impl;
 
 import io.lh.rpc.annotation.RpcServiceProvider;
 import io.lh.rpc.test.api.DemoService;
-import io.lh.rpc.test.api.TestService;
-import io.lh.rpc.test.provider.serivice.TestDemoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +20,7 @@ public class ProviderDemoServiceImpl implements DemoService {
 
     @Override
     public String hello(String serviceName) {
-        LOGGER.info("调用hello方法{}", serviceName);
+        LOGGER.info("调用hello方法, {}", serviceName);
         return "进入hello" + serviceName;
     }
 }

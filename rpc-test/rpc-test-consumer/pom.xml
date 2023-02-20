@@ -13,5 +13,6 @@
     <modules>
         <module>rpc-test-consumer-codec</module>
         <module>rpc-test-consumer-handler</module>
+        <module>rpc-test-consumer-native</module>
     </modules>
 </project>

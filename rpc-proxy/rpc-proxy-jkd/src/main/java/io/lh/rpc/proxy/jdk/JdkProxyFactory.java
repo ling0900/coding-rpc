@@ -57,7 +57,8 @@ public class JdkProxyFactory <T> {
      * @param async
      * @param oneway
      */
-    public JdkProxyFactory(String serviceVersion, String serviceGroup, long timeout, Consumer consumer, String serializationType, boolean async, boolean oneway) {
+    public JdkProxyFactory(String serviceVersion, String serviceGroup, long timeout, String serializationType, Consumer consumer,
+                           boolean async, boolean oneway) {
         this.serviceVersion = serviceVersion;
         this.serviceGroup = serviceGroup;
         this.timeout = timeout;
