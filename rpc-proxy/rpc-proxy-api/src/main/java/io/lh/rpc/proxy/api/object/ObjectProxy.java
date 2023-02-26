@@ -3,6 +3,7 @@ package io.lh.rpc.proxy.api.object;
 import io.lh.rpc.protocol.RpcProtocol;
 import io.lh.rpc.protocol.header.RpcHeaderFactory;
 import io.lh.rpc.protocol.request.RpcRequest;
+import io.lh.rpc.proxy.api.async.IAsyncObjectProxy;
 import io.lh.rpc.proxy.api.consumer.Consumer;
 import io.lh.rpc.proxy.api.future.RpcFuture;
 import org.slf4j.Logger;
@@ -19,7 +20,7 @@ import java.util.concurrent.TimeUnit;
  * <p>@author：lh</p>
  * <p>创建时间：2023/02/21</p>
  */
-public class ObjectProxy<T> implements InvocationHandler {
+public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 
     /**
      *
@@ -276,4 +277,92 @@ public class ObjectProxy<T> implements InvocationHandler {
 
         return rpcFuture == null ? null : timeout > 0 ? rpcFuture.get(timeout, TimeUnit.MILLISECONDS) : rpcFuture.get();
     }
+
+    @Override
+    public RpcFuture call(String funcName, Object... args) {
+        RpcProtocol<RpcRequest> request = createRequest(this.clazz.getName(), funcName, args);
+        RpcFuture rpcFuture = null;
+        try {
+            rpcFuture = this.consumer.sendRequest(request);
+        } catch (Exception e) {
+            LOGGER.error("async all throws exception:{}", e);
+        }
+        return rpcFuture;
+    }
+
+    /**
+     * 封装一个请求协议对象
+     * @param className
+     * @param methodName
+     * @param args
+     * @return
+     */
+    private RpcProtocol<RpcRequest> createRequest(String className, String methodName, Object[] args) {
+
+        RpcProtocol<RpcRequest> requestRpcProtocol = new RpcProtocol<RpcRequest>();
+        // 设置header
+        requestRpcProtocol.setHeader(RpcHeaderFactory.getRequestHeader(serializationType));
+
+        // 封装request，其实就是 body
+        RpcRequest request = new RpcRequest();
+        request.setClassName(className);
+        request.setMethodName(methodName);
+        request.setParameters(args);
+        request.setVersion(this.serviceVersion);
+        request.setGroup(this.serviceGroup);
+
+        Class[] parameterTypes = new Class[args.length];
+        // 遍历
+        for (int i = 0; i < args.length; i++) {
+            parameterTypes[i] = getClassType(args[i]);
+        }
+        request.setParameterTypes(parameterTypes);
+        requestRpcProtocol.setBody(request);
+
+        LOGGER.debug("className{}", className);
+        LOGGER.debug("methodName{}", methodName);
+
+        for (int i = 0; i < parameterTypes.length; ++i) {
+            LOGGER.debug(parameterTypes[i].getName());
+        }
+
+        for (int i = 0; i < args.length; ++i) {
+            LOGGER.debug("参数的长度是{}",args[i].toString());
+        }
+
+        return requestRpcProtocol;
+    }
+
+    /**
+     * 根据class所在的包，获取类型。
+     * @param obj
+     * @return
+     */
+    private Class<?> getClassType(Object obj){
+
+        Class<?> clazz = obj.getClass();
+        // 其实就是类型，包名
+        String clazzName = clazz.getName();
+
+        switch (clazzName){
+            case "java.lang.Float":
+                return Float.TYPE;
+            case "java.lang.Double":
+                return Double.TYPE;
+            case "java.lang.Long":
+                return Long.TYPE;
+            case "java.lang.Byte":
+                return Byte.TYPE;
+            case "java.lang.Character":
+                return Character.TYPE;
+            case "java.lang.Integer":
+                return Integer.TYPE;
+            case "java.lang.Short":
+                return Short.TYPE;
+            case "java.lang.Boolean":
+                return Boolean.TYPE;
+        }
+        return clazz;
+    }
+
 }
