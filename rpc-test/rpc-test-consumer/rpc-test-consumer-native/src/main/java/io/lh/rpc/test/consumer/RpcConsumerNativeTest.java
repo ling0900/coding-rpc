@@ -51,11 +51,14 @@ public class RpcConsumerNativeTest {
     }
 
     /**
-     * 异步测试
+     * 异步测试 通过动态代理实现异步调用的测试类。
+     * 这次commit为止，如果生产者那里用到的cglib，这里就会出现问题！测试时候。
      * @throws Exception
      */
     @Test
     public void testAsyncInterfaceRpc() throws Exception {
+        // 这里的参数需要设置正确，否则会爆不存在的！
+        rpcClient = new RpcClient("1.0.0", "lh", 3000, "cglib", false, false);
         IAsyncObjectProxy demoService = rpcClient.createAsync(DemoService.class);
         // 直接调用方法就行了
         RpcFuture future = demoService.call("hello", "qwe");

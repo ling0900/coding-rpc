@@ -319,15 +319,15 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
         request.setParameterTypes(parameterTypes);
         requestRpcProtocol.setBody(request);
 
-        LOGGER.debug("className{}", className);
-        LOGGER.debug("methodName{}", methodName);
+        LOGGER.debug("请求==》className{}", className);
+        LOGGER.debug("请求==》methodName{}", methodName);
 
         for (int i = 0; i < parameterTypes.length; ++i) {
             LOGGER.debug(parameterTypes[i].getName());
         }
 
         for (int i = 0; i < args.length; ++i) {
-            LOGGER.debug("参数的长度是{}",args[i].toString());
+            LOGGER.debug("参数的内容是{}",args[i].toString());
         }
 
         return requestRpcProtocol;
