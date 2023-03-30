@@ -24,6 +24,7 @@ import java.util.Map;
 
 /**
  * 描述：服务提供者的消息处理工具类
+ * SimpleChannelInboundHandler 是核心的类，基于netty封装。
  * 版本：1.0.0
  *
  * @author ：lh 创建时间：2023/02/12
@@ -125,7 +126,7 @@ public class RpcServiceProviderHandler extends SimpleChannelInboundHandler<RpcPr
             }
         }
 
-        // 调用方法
+        // 调用方法 这里根据反射获取的实现类。动态代理的体现！
         return invokeMethod(serviceBean, methodName, parameterTypes, parameters, serviceBeanClass);
     }
 
@@ -139,8 +140,10 @@ public class RpcServiceProviderHandler extends SimpleChannelInboundHandler<RpcPr
 
         switch (this.reflectType) {
             case RpcConstants.REFLECT_TYPE_JDK:
+                LOGGER.info("进入了 jdk 反射");
                 return this.invokeJdkMethod(serviceBean, methodName, parameterTypes, parameters, serviceClass);
             case RpcConstants.REFLECT_TYPE_CGLIB:
+                LOGGER.info("进入了 cglib 反射");
                 return this.invokeCglibMethod(serviceBean, methodName, parameterTypes, parameters, serviceClass);
             default:
                 throw new IllegalArgumentException(String.format("找不到匹配的反射类型%s", this.reflectType));
@@ -156,6 +159,16 @@ public class RpcServiceProviderHandler extends SimpleChannelInboundHandler<RpcPr
 
     }
 
+    /**
+     * 调用 cglib的方法
+     * @param serviceBean
+     * @param methodName
+     * @param parameterTypes
+     * @param parameters
+     * @param serviceClass
+     * @return
+     * @throws Throwable
+     */
     private Object invokeCglibMethod(Object serviceBean, String methodName,
                                      Class<?>[] parameterTypes, Object[] parameters, Class<?> serviceClass) throws Throwable {
 

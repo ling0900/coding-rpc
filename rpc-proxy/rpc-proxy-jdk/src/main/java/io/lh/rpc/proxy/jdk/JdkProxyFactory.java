@@ -2,13 +2,11 @@ package io.lh.rpc.proxy.jdk;
 
 import io.lh.rpc.proxy.api.BaseProxyFactory;
 import io.lh.rpc.proxy.api.ProxyFactory;
-import io.lh.rpc.proxy.api.consumer.Consumer;
-import io.lh.rpc.proxy.api.object.ObjectProxy;
 
 import java.lang.reflect.Proxy;
 
 /**
- * <p>描述：</p>
+ * <p>描述：JDK代理的工厂模式</p>
  * <p>版本：1.0.0</p>
  * <p>@author：lh</p>
  * <p>创建时间：2023/02/21</p>

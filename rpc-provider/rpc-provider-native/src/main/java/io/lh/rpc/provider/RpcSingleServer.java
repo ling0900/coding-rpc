@@ -1,5 +1,6 @@
 package io.lh.rpc.provider;
 
+import com.alibaba.fastjson.JSONObject;
 import io.lh.rpc.commom.scanner.server.RpcServiceProviderScanner;
 import io.lh.rpc.provider.common.server.base.BaseServer;
 import org.slf4j.Logger;
@@ -26,6 +27,10 @@ public class RpcSingleServer extends BaseServer {
 
         try {
             this.handlerMap = RpcServiceProviderScanner.doScannerWithRpcReferenceAnnotationFilter(scanPackage);
+            LOGGER.info("所有扫描到的服务有：\n");
+            for (String key : this.handlerMap.keySet()) {
+                LOGGER.info("{}:\t{}", key, this.handlerMap.get(key));
+            }
         } catch (Exception e) {
             LOGGER.info("RpcSingleServer异常{}", e);
         }

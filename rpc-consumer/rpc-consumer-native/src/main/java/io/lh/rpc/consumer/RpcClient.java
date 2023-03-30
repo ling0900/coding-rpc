@@ -50,11 +50,20 @@ public class RpcClient {
         this.oneway = oneway;
     }
 
+    /**
+     * 创建一个代理类！利用工厂+模版模式！
+     * @param interfaceClass
+     * @return
+     * @param <T>
+     */
     public <T> T create(Class<T> interfaceClass) {
         // 利用模版模式进行精简。
+        // 实例化
         ProxyFactory proxyFactory = new JdkProxyFactory<T>();
+        // 进行初始化
         proxyFactory.init(new ProxyConfig(interfaceClass, serviceVersion, serviceGroup,
                 timeout, RpcConsumer.getConsumerInstance(), serializationType, async, oneway));
+        // 工厂返回对应的实例
         return proxyFactory.getProxy(interfaceClass);
     }
 
@@ -63,7 +72,7 @@ public class RpcClient {
     }
 
     /**
-     *
+     * 创建一个异步的动态代理对象
      * @param interfaceClass
      * @return
      * @param <T>

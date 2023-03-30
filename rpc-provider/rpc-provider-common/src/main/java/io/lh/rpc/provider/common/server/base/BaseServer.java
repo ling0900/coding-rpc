@@ -70,6 +70,7 @@ public class BaseServer implements Server {
                         ch.pipeline()
                                 .addLast(new RpcDecoder())
                                 .addLast(new RpcEncoder())
+                                // 核心的地方
                                 .addLast(new RpcServiceProviderHandler(handlerMap, reflectType));
                     }
                 })

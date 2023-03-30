@@ -59,6 +59,7 @@ public class RpcConsumerNativeTest {
     public void testAsyncInterfaceRpc() throws Exception {
         // 这里的参数需要设置正确，否则会爆不存在的！
         rpcClient = new RpcClient("1.0.0", "lh", 3000, "cglib", false, false);
+        // 根据传入的接口，去服务提供者找对应的实现类（服务类）
         IAsyncObjectProxy demoService = rpcClient.createAsync(DemoService.class);
         // 直接调用方法就行了
         RpcFuture future = demoService.call("hello", "qwe");
