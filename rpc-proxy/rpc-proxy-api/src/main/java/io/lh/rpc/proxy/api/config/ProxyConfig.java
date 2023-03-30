@@ -114,4 +114,15 @@ public class ProxyConfig<T> implements Serializable {
     public void setOneway(boolean oneway) {
         this.oneway = oneway;
     }
+
+    public ProxyConfig(Class<T> clazz, String serviceVersion, String serviceGroup, long timeout, Consumer consumer, String serializationType, boolean async, boolean oneway) {
+        this.clazz = clazz;
+        this.serviceVersion = serviceVersion;
+        this.serviceGroup = serviceGroup;
+        this.timeout = timeout;
+        this.consumer = consumer;
+        this.serializationType = serializationType;
+        this.async = async;
+        this.oneway = oneway;
+    }
 }

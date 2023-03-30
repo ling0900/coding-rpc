@@ -1,5 +1,7 @@
 package io.lh.rpc.consumer;
 
+import io.lh.rpc.proxy.api.ProxyFactory;
+import io.lh.rpc.proxy.api.config.*;
 import io.lh.rpc.proxy.api.async.IAsyncObjectProxy;
 import io.lh.rpc.proxy.api.object.ObjectProxy;
 import io.lh.rpc.proxy.jdk.JdkProxyFactory;
@@ -49,10 +51,11 @@ public class RpcClient {
     }
 
     public <T> T create(Class<T> interfaceClass) {
-        // 开发中，这里的参数错一个，都会导致出现奇怪的问题的！
-        JdkProxyFactory<T> jdkProxyFactory = new JdkProxyFactory<>(serviceVersion, serviceGroup, timeout, serializationType,
-                RpcConsumer.getConsumerInstance(), async, oneway);
-        return jdkProxyFactory.getProxy(interfaceClass);
+        // 利用模版模式进行精简。
+        ProxyFactory proxyFactory = new JdkProxyFactory<T>();
+        proxyFactory.init(new ProxyConfig(interfaceClass, serviceVersion, serviceGroup,
+                timeout, RpcConsumer.getConsumerInstance(), serializationType, async, oneway));
+        return proxyFactory.getProxy(interfaceClass);
     }
 
     public void shutdown() {

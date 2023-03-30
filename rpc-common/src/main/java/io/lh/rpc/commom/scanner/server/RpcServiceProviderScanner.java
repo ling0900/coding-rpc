@@ -101,7 +101,6 @@ public class RpcServiceProviderScanner extends ClassScanner {
         } catch (IOException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
-        // todo 还没有完全 map放入数值。
         return handlerMap;
     }
 

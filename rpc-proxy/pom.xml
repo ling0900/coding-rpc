@@ -12,6 +12,6 @@
     <url>http://maven.apache.org</url>
     <modules>
         <module>rpc-proxy-api</module>
-        <module>rpc-proxy-jkd</module>
+        <module>rpc-proxy-jdk</module>
     </modules>
 </project>

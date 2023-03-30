@@ -15,7 +15,21 @@ public abstract class BaseProxyFactory<T> implements ProxyFactory {
      */
     protected ObjectProxy<T> objectProxy;
 
+    /**
+     * 这里 弄了多个构造器，要注意使用的时候！
+     * @param proxyConfig
+     * @param <T>
+     */
     @Override
     public <T> void init(ProxyConfig<T> proxyConfig) {
+        this.objectProxy = new ObjectProxy(
+                proxyConfig.getClazz(),
+                proxyConfig.getServiceVersion(),
+                proxyConfig.getServiceGroup(),
+                proxyConfig.getSerializationType(),
+                proxyConfig.getTimeout(),
+                proxyConfig.getConsumer(),
+                proxyConfig.isAsync(),
+                proxyConfig.isOneway());
     }
 }
