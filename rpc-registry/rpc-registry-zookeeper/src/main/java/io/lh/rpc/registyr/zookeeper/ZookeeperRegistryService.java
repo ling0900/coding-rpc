@@ -82,10 +82,12 @@ public class ZookeeperRegistryService implements RegistryService {
 
     @Override
     public void init(RegistryConfig registryConfig) throws Exception {
+        // 需要学习一下 CuratorFramework
         CuratorFramework curatorFrameworkClient = CuratorFrameworkFactory.newClient(registryConfig.getRegistryAddr(),
                 new ExponentialBackoffRetry(BASE_SLEEP_TIME_MS, MAX_RETRIES));
         curatorFrameworkClient.start();
         JsonInstanceSerializer<ServiceMeta> serializer = new JsonInstanceSerializer<>(ServiceMeta.class);
+        // 需要学习一下 ServiceDiscoveryBuilder
         this.serviceDiscovery = ServiceDiscoveryBuilder
                 .builder(ServiceMeta.class)
                 .client(curatorFrameworkClient)
