@@ -18,7 +18,7 @@ public class ServiceMeta implements Serializable {
 
     private String serviceAddr;
 
-    private String servicePort;
+    private int servicePort;
 
     private String serviceGroup;
 
@@ -27,7 +27,7 @@ public class ServiceMeta implements Serializable {
      */
     public ServiceMeta(){}
 
-    public ServiceMeta(String serviceName, String serviceVersion, String serviceAddr, String servicePort, String serviceGroup) {
+    public ServiceMeta(String serviceName, String serviceVersion, String serviceAddr, int servicePort, String serviceGroup) {
         this.serviceName = serviceName;
         this.serviceVersion = serviceVersion;
         this.serviceAddr = serviceAddr;
