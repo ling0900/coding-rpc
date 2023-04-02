@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 /**
  * 服务元数据类
+ * @author lh
  */
 @Data
 public class ServiceMeta implements Serializable {

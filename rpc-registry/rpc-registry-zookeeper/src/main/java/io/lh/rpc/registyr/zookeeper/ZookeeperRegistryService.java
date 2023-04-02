@@ -43,15 +43,24 @@ public class ZookeeperRegistryService implements RegistryService {
 
     @Override
     public void register(ServiceMeta serviceMeta) throws Exception {
+        // 创建一个 ServiceInstance 实例
         ServiceInstance<ServiceMeta> serviceMetaServiceInstance = ServiceInstance
                 .<ServiceMeta>builder()
-                .name(RpcServiceHelper.buildServiceKey(serviceMeta.getServiceName(), serviceMeta.getServiceVersion(), serviceMeta.getServiceGroup()))
-                .address(serviceMeta.getServiceAddr())
-                .port(serviceMeta.getServicePort())
-                .payload(serviceMeta)
+                .name(RpcServiceHelper.buildServiceKey(
+                        serviceMeta.getServiceName(),   // 服务名
+                        serviceMeta.getServiceVersion(),    // 服务版本号
+                        serviceMeta.getServiceGroup()   // 服务组名
+                ))
+                .address(serviceMeta.getServiceAddr())  // 服务地址
+                .port(serviceMeta.getServicePort())    // 服务端口号
+                .payload(serviceMeta)   // 服务元数据
                 .build();
+
+        // 注册服务实例
         serviceDiscovery.registerService(serviceMetaServiceInstance);
     }
+
+
 
     @Override
     public void unRegister(ServiceMeta serviceMeta) throws Exception {
