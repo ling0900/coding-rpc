@@ -16,7 +16,7 @@ public class ZookeeperRegistryTest {
     public void init() throws Exception {
 
         // zookeeper注册的地址
-        RegistryConfig registryConfig = new RegistryConfig("127.0.0.1:2188", "zookeeper");
+        RegistryConfig registryConfig = new RegistryConfig(":2181", "zookeeper");
         this.registryService = new ZookeeperRegistryService();
         this.registryService.init(registryConfig);
         // todo
