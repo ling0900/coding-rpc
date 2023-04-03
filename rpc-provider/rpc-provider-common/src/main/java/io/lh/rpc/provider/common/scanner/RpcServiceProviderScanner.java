@@ -1,4 +1,4 @@
-package io.lh.rpc.commom.scanner.server;
+package io.lh.rpc.provider.common.scanner;
 
 import io.lh.rpc.annotation.RpcServiceConsumer;
 import io.lh.rpc.annotation.RpcServiceProvider;

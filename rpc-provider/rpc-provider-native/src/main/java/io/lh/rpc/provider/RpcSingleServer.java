@@ -1,7 +1,6 @@
 package io.lh.rpc.provider;
 
-import com.alibaba.fastjson.JSONObject;
-import io.lh.rpc.commom.scanner.server.RpcServiceProviderScanner;
+import io.lh.rpc.provider.common.scanner.RpcServiceProviderScanner;
 import io.lh.rpc.provider.common.server.base.BaseServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

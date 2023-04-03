@@ -34,7 +34,7 @@ public class ZookeeperRegistryService implements RegistryService {
     /**
      * zookeeper的跟路径
      */
-    public static final String ZK_BASE_PATH = "/coding_rpcc";
+    public static final String ZK_BASE_PATH = "/coding_path";
 
     /**
      * 服务发现的方法！
