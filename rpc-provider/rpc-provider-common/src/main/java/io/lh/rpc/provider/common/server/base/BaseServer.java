@@ -6,6 +6,8 @@ import io.lh.rpc.codec.RpcEncoder;
 import io.lh.rpc.provider.common.handler.RpcServiceProviderHandler;
 import io.lh.rpc.provider.common.server.api.Server;
 import io.lh.rpc.registry.api.RegistryService;
+import io.lh.rpc.registry.api.config.RegistryConfig;
+import io.lh.rpc.registyr.zookeeper.ZookeeperRegistryService;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -60,6 +62,7 @@ public class BaseServer implements Server {
             this.host = serverArray[1];
         }
         this.reflectType = reflectType;
+        this.registryService = this.getRegistryService(registryAddress, registryType);
     }
 
 
@@ -106,4 +109,17 @@ public class BaseServer implements Server {
             workerGroup.shutdownGracefully();
         }
     }
+
+    private RegistryService getRegistryService(String registryAddress, String registryType) {
+        // SPI
+        RegistryService registryService = null;
+        registryService = new ZookeeperRegistryService();
+        try {
+            registryService.init(new RegistryConfig(registryAddress, registryType));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return registryService;
+    }
+
 }
