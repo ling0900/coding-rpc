@@ -79,7 +79,7 @@ public class RpcConsumer implements Consumer {
      */
     public RpcFuture sendRequestMsg(RpcProtocol<RpcRequest> requestRpcProtocol) throws InterruptedException {
 
-        // 地址
+        // 地址 这个是写死的，其实需要动态。
         String serviceAddress = "127.0.0.1";
         int port = 27780;
 
