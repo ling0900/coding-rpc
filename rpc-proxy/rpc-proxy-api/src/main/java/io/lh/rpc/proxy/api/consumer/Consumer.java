@@ -3,6 +3,7 @@ package io.lh.rpc.proxy.api.consumer;
 import io.lh.rpc.protocol.RpcProtocol;
 import io.lh.rpc.protocol.request.RpcRequest;
 import io.lh.rpc.proxy.api.future.RpcFuture;
+import io.lh.rpc.registry.api.RegistryService;
 
 /**
  * 描述：
@@ -18,5 +19,5 @@ public interface Consumer {
      * @return {@link RpcFuture}
      * @throws Exception
      */
-    RpcFuture sendRequest(RpcProtocol<RpcRequest> protocol) throws Exception;
+    RpcFuture sendRequest(RpcProtocol<RpcRequest> protocol, RegistryService registryService) throws Exception;
 }

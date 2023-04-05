@@ -1,11 +1,15 @@
 package io.lhrpc.consumer.common;
 
+import io.lh.rpc.commom.helper.RpcServiceHelper;
 import io.lh.rpc.commom.threadpool.ClientThreadPool;
 import io.lh.rpc.protocol.RpcProtocol;
+import io.lh.rpc.protocol.meta.ServiceMeta;
 import io.lh.rpc.protocol.request.RpcRequest;
 import io.lh.rpc.proxy.api.consumer.Consumer;
 import io.lh.rpc.proxy.api.future.RpcFuture;
+import io.lh.rpc.registry.api.RegistryService;
 import io.lhrpc.consumer.common.handler.RpcConsumerHandler;
+import io.lhrpc.consumer.common.helper.RpcConsumerHandlerHelper;
 import io.lhrpc.consumer.common.initializer.RpcConsumerInitializer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -116,7 +120,27 @@ public class RpcConsumer implements Consumer {
     }
 
     @Override
-    public RpcFuture sendRequest(RpcProtocol<RpcRequest> protocol) throws Exception {
+    public RpcFuture sendRequest(RpcProtocol<RpcRequest> protocol, RegistryService registryService) throws Exception {
+        RpcRequest request = protocol.getBody();
+        String serviceKey = RpcServiceHelper.buildServiceKey(request.getClassName(), request.getVersion(), request.getGroup());
+        Object[] parameters = request.getParameters();
+        int invokerHashCode = (parameters == null || parameters.length < 0) ? serviceKey.hashCode() : parameters[0].hashCode();
+        // 重要： 注册到 注册中心的元信息。
+        ServiceMeta discovery = registryService.discovery(serviceKey, invokerHashCode);
+        if (discovery != null) {
+            RpcConsumerHandler consumerHandler = RpcConsumerHandlerHelper.get(discovery);
+            // 先看缓存
+            if (consumerHandler == null) {
+                consumerHandler = getRpcConsumerHandler(discovery.getServiceAddr(), discovery.getServicePort());
+                RpcConsumerHandlerHelper.put(discovery, consumerHandler);
+            } else if (! consumerHandler.getChannel().isActive()) {
+                consumerHandler.close();
+                consumerHandler = getRpcConsumerHandler(discovery.getServiceAddr(), discovery.getServicePort());
+                RpcConsumerHandlerHelper.put(discovery, consumerHandler);
+            }
+        }
+
+
         // 地址
         String serviceAddress = "127.0.0.1";
         int port = 27780;
@@ -135,7 +159,6 @@ public class RpcConsumer implements Consumer {
             handlerMap.put(remoteServiceKey, rpcConsumerHandler);
         }
 
-        RpcRequest request = protocol.getBody();
         return rpcConsumerHandler.sendRequestMessage(protocol, request.isAsync(), request.isOneWay());
     }
 }
