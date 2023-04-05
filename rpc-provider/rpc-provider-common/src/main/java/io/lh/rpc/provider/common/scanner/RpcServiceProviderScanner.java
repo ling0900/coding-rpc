@@ -122,7 +122,7 @@ public class RpcServiceProviderScanner extends ClassScanner {
                 if (rpcService != null) {
                     ServiceMeta serviceMeta = new ServiceMeta(
                             getServiceName(rpcService), rpcService.version(),
-                            rpcService.ipAddress(), rpcService.port(),rpcService.group());
+                            host, port, rpcService.group());
 
                     registryService.register(serviceMeta);
                     handlerMap.put(RpcServiceHelper.buildServiceKey(

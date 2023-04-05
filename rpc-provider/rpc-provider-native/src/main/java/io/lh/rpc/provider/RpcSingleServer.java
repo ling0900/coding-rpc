@@ -23,7 +23,7 @@ public class RpcSingleServer extends BaseServer {
     public RpcSingleServer(String serviceAddress, String scanPackage, String reflectType,
                            String registryAddress, String registryType) {
 
-        super(serviceAddress, reflectType, registryType, reflectType);
+        super(serviceAddress, registryAddress, registryType, reflectType);
 
         try {
             this.handlerMap = RpcServiceProviderScanner.doScannerWithRpcServiceAnnotationFilterAndRegistryService(this.host, this.port, scanPackage, registryService);

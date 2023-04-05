@@ -58,8 +58,8 @@ public class BaseServer implements Server {
     public BaseServer(String serverAddress, String registryAddress, String registryType, String reflectType) {
         if (! StringUtils.isEmpty(serverAddress)) {
             String[] serverArray = serverAddress.split(":");
-            this.port = Integer.parseInt(serverArray[0]);
-            this.host = serverArray[1];
+            this.port = Integer.parseInt(serverArray[1]);
+            this.host = serverArray[0];
         }
         this.reflectType = reflectType;
         this.registryService = this.getRegistryService(registryAddress, registryType);
