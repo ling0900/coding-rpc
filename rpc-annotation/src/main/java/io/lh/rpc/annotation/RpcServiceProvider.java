@@ -1,5 +1,6 @@
 package io.lh.rpc.annotation;
 
+import lombok.Data;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.ElementType;
@@ -59,7 +60,7 @@ public @interface RpcServiceProvider {
      * @return the string
      */
 // 服务端口
-    String port() default "";
+    int port() default 0;
 
     /**
      * Group string.

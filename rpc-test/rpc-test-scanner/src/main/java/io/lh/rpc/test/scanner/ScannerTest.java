@@ -1,7 +1,7 @@
 package io.lh.rpc.test.scanner;
 
 import io.lh.rpc.commom.scanner.ClassScanner;
-import io.lh.rpc.commom.scanner.server.RpcServiceProviderScanner;
+import io.lh.rpc.provider.common.scanner.RpcServiceProviderScanner;
 import org.junit.Test;
 
 import java.io.IOException;

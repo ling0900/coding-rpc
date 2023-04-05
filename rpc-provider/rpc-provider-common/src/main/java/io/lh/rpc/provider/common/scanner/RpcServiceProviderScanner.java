@@ -4,6 +4,8 @@ import io.lh.rpc.annotation.RpcServiceConsumer;
 import io.lh.rpc.annotation.RpcServiceProvider;
 import io.lh.rpc.commom.helper.RpcServiceHelper;
 import io.lh.rpc.commom.scanner.ClassScanner;
+import io.lh.rpc.protocol.meta.ServiceMeta;
+import io.lh.rpc.registry.api.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,6 +103,37 @@ public class RpcServiceProviderScanner extends ClassScanner {
         } catch (IOException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+        return handlerMap;
+    }
+
+
+    public static Map<String, Object> doScannerWithRpcServiceAnnotationFilterAndRegistryService(
+            String host, int port, String scanPackage, RegistryService registryService)
+            throws Exception {
+        Map<String, Object> handlerMap = new HashMap<>();
+        List<String> classNameList = getClassNameList(scanPackage);
+        if (classNameList == null || classNameList.isEmpty()) {
+            return handlerMap;
+        }
+        classNameList.stream().forEach((className) -> {
+            try {
+                Class<?> clazz = Class.forName(className);
+                RpcServiceProvider rpcService = clazz.getAnnotation(RpcServiceProvider.class);
+                if (rpcService != null) {
+                    ServiceMeta serviceMeta = new ServiceMeta(
+                            getServiceName(rpcService), rpcService.version(),
+                            rpcService.ipAddress(), rpcService.port(),rpcService.group());
+
+                    registryService.register(serviceMeta);
+                    handlerMap.put(RpcServiceHelper.buildServiceKey(
+                            serviceMeta.getServiceName(),
+                            serviceMeta.getServiceVersion(),
+                            serviceMeta.getServiceGroup()), clazz.newInstance());
+                }
+            } catch (Exception e) {
+                LOGGER.error("扫描出问题了{}", e);
+            }
+        });
         return handlerMap;
     }
 
