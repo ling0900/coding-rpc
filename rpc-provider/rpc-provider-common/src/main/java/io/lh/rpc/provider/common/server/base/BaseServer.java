@@ -5,6 +5,7 @@ import io.lh.rpc.codec.RpcDecoder;
 import io.lh.rpc.codec.RpcEncoder;
 import io.lh.rpc.provider.common.handler.RpcServiceProviderHandler;
 import io.lh.rpc.provider.common.server.api.Server;
+import io.lh.rpc.registry.api.RegistryService;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -32,6 +33,8 @@ public class BaseServer implements Server {
 
     private final Logger LOGGER = LoggerFactory.getLogger(BaseServer.class);
 
+    protected RegistryService registryService;
+
     private String reflectType;
 
     protected String host = "127.0.0.1";
@@ -48,6 +51,17 @@ public class BaseServer implements Server {
             this.port = Integer.parseInt(ipAndPort[1]);
         }
     }
+
+
+    public BaseServer(String serverAddress, String registryAddress, String registryType, String reflectType) {
+        if (! StringUtils.isEmpty(serverAddress)) {
+            String[] serverArray = serverAddress.split(":");
+            this.port = Integer.parseInt(serverArray[0]);
+            this.host = serverArray[1];
+        }
+        this.reflectType = reflectType;
+    }
+
 
     @Override
     public void startNettyServer() {
