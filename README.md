@@ -3,6 +3,7 @@
 ## 👉个人的公开文档（pc端打开显示更佳）
 🌐🌐 https://www.yuque.com/javalh
 
+今天，终于用到了正版的idea！
 
 ## 模块目录
 

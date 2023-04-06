@@ -41,8 +41,4 @@ public interface RegistryService {
      */
     default void init(RegistryConfig registryConfig) throws Exception {
     }
-
-
-
-
 }
