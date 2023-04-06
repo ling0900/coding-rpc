@@ -16,7 +16,7 @@ public class SingleStarterProviderTest {
     @Test
     public void testStarter() {
         RpcSingleServer rpcSingleServer = new RpcSingleServer("127.0.0.1:27780",
-                "io.lh.rpc.test", RpcConstants.REFLECT_TYPE_CGLIB);
+                "io.lh.rpc.test", RpcConstants.REFLECT_TYPE_CGLIB, "8.130.65.0:2181", "zookeeper");
         rpcSingleServer.startNettyServer();
 
     }

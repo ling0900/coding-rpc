@@ -69,6 +69,7 @@ public class RpcConsumer implements Consumer {
      * Close.优雅关闭
      */
     public void close() {
+        RpcConsumerHandlerHelper.closeRpcClientHandler();
         eventLoopGroup.shutdownGracefully();
         // 关闭线程池，当netty服务关闭后
         ClientThreadPool.shutdown();
@@ -138,27 +139,8 @@ public class RpcConsumer implements Consumer {
                 consumerHandler = getRpcConsumerHandler(discovery.getServiceAddr(), discovery.getServicePort());
                 RpcConsumerHandlerHelper.put(discovery, consumerHandler);
             }
+            return consumerHandler.sendRequestMessage(protocol, request.isAsync(), request.isOneWay());
         }
-
-
-        // 地址
-        String serviceAddress = "127.0.0.1";
-        int port = 27780;
-
-        String remoteServiceKey = serviceAddress.concat("-").concat(String.valueOf(port));
-        RpcConsumerHandler rpcConsumerHandler = handlerMap.get(remoteServiceKey);
-
-        // 判断是否存在，map
-        if (rpcConsumerHandler == null) {
-            rpcConsumerHandler = getRpcConsumerHandler(serviceAddress, port);
-            handlerMap.put(remoteServiceKey, rpcConsumerHandler);
-        } else if (! rpcConsumerHandler.getChannel().isActive()) {
-            rpcConsumerHandler.close();
-            // 从新获取
-            rpcConsumerHandler = getRpcConsumerHandler(serviceAddress, port);
-            handlerMap.put(remoteServiceKey, rpcConsumerHandler);
-        }
-
-        return rpcConsumerHandler.sendRequestMessage(protocol, request.isAsync(), request.isOneWay());
+        return null;
     }
 }

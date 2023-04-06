@@ -1,6 +1,8 @@
 package io.lh.rpc.proxy.api.config;
 
 import io.lh.rpc.proxy.api.consumer.Consumer;
+import io.lh.rpc.registry.api.RegistryService;
+import lombok.Data;
 
 import java.io.Serializable;
 
@@ -10,6 +12,7 @@ import java.io.Serializable;
  *
  * @author lh
  */
+@Data
 public class ProxyConfig<T> implements Serializable {
 
     private static final long serialVersionUID = 5676742886687617529L;
@@ -51,71 +54,12 @@ public class ProxyConfig<T> implements Serializable {
 
     private boolean oneway;
 
-    public Class<T> getClazz() {
-        return clazz;
-    }
+    private RegistryService registryService;
 
-    public void setClazz(Class<T> clazz) {
-        this.clazz = clazz;
-    }
-
-    public String getServiceVersion() {
-        return serviceVersion;
-    }
-
-    public void setServiceVersion(String serviceVersion) {
-        this.serviceVersion = serviceVersion;
-    }
-
-    public String getServiceGroup() {
-        return serviceGroup;
-    }
-
-    public void setServiceGroup(String serviceGroup) {
-        this.serviceGroup = serviceGroup;
-    }
-
-    public long getTimeout() {
-        return timeout;
-    }
-
-    public void setTimeout(long timeout) {
-        this.timeout = timeout;
-    }
-
-    public Consumer getConsumer() {
-        return consumer;
-    }
-
-    public void setConsumer(Consumer consumer) {
-        this.consumer = consumer;
-    }
-
-    public String getSerializationType() {
-        return serializationType;
-    }
-
-    public void setSerializationType(String serializationType) {
-        this.serializationType = serializationType;
-    }
-
-    public boolean isAsync() {
-        return async;
-    }
-
-    public void setAsync(boolean async) {
-        this.async = async;
-    }
-
-    public boolean isOneway() {
-        return oneway;
-    }
-
-    public void setOneway(boolean oneway) {
-        this.oneway = oneway;
-    }
-
-    public ProxyConfig(Class<T> clazz, String serviceVersion, String serviceGroup, long timeout, Consumer consumer, String serializationType, boolean async, boolean oneway) {
+    public ProxyConfig(Class<T> clazz, String serviceVersion, String serviceGroup,
+                       long timeout, Consumer consumer, String serializationType,
+                       boolean async, boolean oneway,
+                       RegistryService registryService) {
         this.clazz = clazz;
         this.serviceVersion = serviceVersion;
         this.serviceGroup = serviceGroup;
@@ -124,5 +68,6 @@ public class ProxyConfig<T> implements Serializable {
         this.serializationType = serializationType;
         this.async = async;
         this.oneway = oneway;
+        this.registryService = registryService;
     }
 }

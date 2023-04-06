@@ -6,6 +6,8 @@ import io.lh.rpc.protocol.request.RpcRequest;
 import io.lh.rpc.proxy.api.async.IAsyncObjectProxy;
 import io.lh.rpc.proxy.api.consumer.Consumer;
 import io.lh.rpc.proxy.api.future.RpcFuture;
+import io.lh.rpc.registry.api.RegistryService;
+import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +22,7 @@ import java.util.concurrent.TimeUnit;
  * <p>@author：lh</p>
  * <p>创建时间：2023/02/21</p>
  */
+@Data
 public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 
     /**
@@ -67,26 +70,7 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
      */
     private boolean oneway;
 
-    /**
-     * @param clazz
-     * @param serviceVersion
-     * @param serviceGroup
-     * @param timeout
-     * @param consumer
-     * @param serializationType
-     * @param async
-     * @param oneway
-     */
-    public ObjectProxy(Class<T> clazz, String serviceVersion, String serviceGroup, long timeout, Consumer consumer, String serializationType, boolean async, boolean oneway) {
-        this.clazz = clazz;
-        this.serviceVersion = serviceVersion;
-        this.serviceGroup = serviceGroup;
-        this.timeout = timeout;
-        this.consumer = consumer;
-        this.serializationType = serializationType;
-        this.async = async;
-        this.oneway = oneway;
-    }
+    private RegistryService registryService;
 
     /**
      * @param clazz
@@ -98,7 +82,10 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
      * @param async
      * @param oneway
      */
-    public ObjectProxy(Class<T> clazz, String serviceVersion, String serviceGroup, String serializationType, long timeout, Consumer consumer, boolean async, boolean oneway) {
+    public ObjectProxy(Class<T> clazz, String serviceVersion,
+                       String serviceGroup, String serializationType,
+                       long timeout, Consumer consumer, boolean async,
+                       boolean oneway, RegistryService registryService) {
         this.clazz = clazz;
         this.serviceVersion = serviceVersion;
         this.serviceGroup = serviceGroup;
@@ -107,118 +94,7 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
         this.serializationType = serializationType;
         this.async = async;
         this.oneway = oneway;
-    }
-
-    /**
-     * @return {@link Class}<{@link T}>
-     */
-    public Class<T> getClazz() {
-        return clazz;
-    }
-
-    /**
-     * @param clazz
-     */
-    public void setClazz(Class<T> clazz) {
-        this.clazz = clazz;
-    }
-
-    /**
-     * @return {@link String}
-     */
-    public String getServiceVersion() {
-        return serviceVersion;
-    }
-
-    /**
-     * @param serviceVersion
-     */
-    public void setServiceVersion(String serviceVersion) {
-        this.serviceVersion = serviceVersion;
-    }
-
-    /**
-     * @return {@link String}
-     */
-    public String getServiceGroup() {
-        return serviceGroup;
-    }
-
-    /**
-     * @param serviceGroup
-     */
-    public void setServiceGroup(String serviceGroup) {
-        this.serviceGroup = serviceGroup;
-    }
-
-    /**
-     * @return long
-     */
-    public long getTimeout() {
-        return timeout;
-    }
-
-    /**
-     * @param timeout
-     */
-    public void setTimeout(long timeout) {
-        this.timeout = timeout;
-    }
-
-    /**
-     * @return {@link Consumer}
-     */
-    public Consumer getConsumer() {
-        return consumer;
-    }
-
-    /**
-     * @param consumer
-     */
-    public void setConsumer(Consumer consumer) {
-        this.consumer = consumer;
-    }
-
-    /**
-     * @return {@link String}
-     */
-    public String getSerializationType() {
-        return serializationType;
-    }
-
-    /**
-     * @param serializationType
-     */
-    public void setSerializationType(String serializationType) {
-        this.serializationType = serializationType;
-    }
-
-    /**
-     * @return boolean
-     */
-    public boolean isAsync() {
-        return async;
-    }
-
-    /**
-     * @param async
-     */
-    public void setAsync(boolean async) {
-        this.async = async;
-    }
-
-    /**
-     * @return boolean
-     */
-    public boolean isOneway() {
-        return oneway;
-    }
-
-    /**
-     * @param oneway
-     */
-    public void setOneway(boolean oneway) {
-        this.oneway = oneway;
+        this.registryService = registryService;
     }
 
     /**
@@ -273,7 +149,7 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
             }
         }
 
-        RpcFuture rpcFuture = this.consumer.sendRequest(rpcRequestRpcProtocol);
+        RpcFuture rpcFuture = this.consumer.sendRequest(rpcRequestRpcProtocol, registryService);
 
         return rpcFuture == null ? null : timeout > 0 ? rpcFuture.get(timeout, TimeUnit.MILLISECONDS) : rpcFuture.get();
     }
@@ -283,7 +159,7 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
         RpcProtocol<RpcRequest> request = createRequest(this.clazz.getName(), funcName, args);
         RpcFuture rpcFuture = null;
         try {
-            rpcFuture = this.consumer.sendRequest(request);
+            rpcFuture = this.consumer.sendRequest(request, registryService);
         } catch (Exception e) {
             LOGGER.error("async all throws exception:{}", e);
         }

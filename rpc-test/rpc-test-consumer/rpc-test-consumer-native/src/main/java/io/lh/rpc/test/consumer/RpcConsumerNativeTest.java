@@ -29,7 +29,7 @@ public class RpcConsumerNativeTest {
     public void initRpcClient(){
         rpcClient = new RpcClient("1.0.0",
                 "lh", 3000, "jdk"
-                ,false, false);
+                ,false, false, "8.130.65.0:2181", "zookeeper");
     }
 
     /**
@@ -40,10 +40,8 @@ public class RpcConsumerNativeTest {
     /**
      * @param args
      */
-    public static void main(String[] args) {
-        RpcClient rpcClient = new RpcClient("1.0.0",
-                "lh", 300, "jdk", false, false);
-
+    @Test
+    public void testInterfaceRpc() {
         DemoService demoService = rpcClient.create(DemoService.class);
         String result = demoService.hello("lh");
         LOGGER.info("封装后的返回数据" + result);
@@ -58,7 +56,7 @@ public class RpcConsumerNativeTest {
     @Test
     public void testAsyncInterfaceRpc() throws Exception {
         // 这里的参数需要设置正确，否则会爆不存在的！
-        rpcClient = new RpcClient("1.0.0", "lh", 3000, "cglib", false, false);
+//        rpcClient = new RpcClient("1.0.0", "lh", 3000, "cglib", false, false);
         // 根据传入的接口，去服务提供者找对应的实现类（服务类）
         IAsyncObjectProxy demoService = rpcClient.createAsync(DemoService.class);
         // 直接调用方法就行了
