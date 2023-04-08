@@ -1,6 +1,8 @@
 package io.lh.rpc.registyr.zookeeper;
 
 import io.lh.rpc.commom.helper.RpcServiceHelper;
+import io.lh.rpc.loadbalancer.api.ServiceLoadBalancer;
+import io.lh.rpc.loadbalancer.random.RandomServiceLoadBalancer;
 import io.lh.rpc.protocol.meta.ServiceMeta;
 import io.lh.rpc.registry.api.RegistryService;
 import io.lh.rpc.registry.api.config.RegistryConfig;
@@ -41,6 +43,8 @@ public class ZookeeperRegistryService implements RegistryService {
      */
     private ServiceDiscovery<ServiceMeta> serviceDiscovery;
 
+    private ServiceLoadBalancer<ServiceInstance<ServiceMeta>> serviceLoadBalancer;
+
     @Override
     public void register(ServiceMeta serviceMeta) throws Exception {
         // 创建一个 ServiceInstance 实例
@@ -77,7 +81,7 @@ public class ZookeeperRegistryService implements RegistryService {
     @Override
     public ServiceMeta discovery(String serviceName, int invokerHashCode) throws Exception {
         Collection<ServiceInstance<ServiceMeta>> serviceInstances = serviceDiscovery.queryForInstances(serviceName);
-        ServiceInstance<ServiceMeta> instance = this.selectOneServiceInstance((List<ServiceInstance<ServiceMeta>>) serviceInstances);
+        ServiceInstance<ServiceMeta> instance = serviceLoadBalancer.select((List<ServiceInstance<ServiceMeta>>) serviceInstances, invokerHashCode);
         if (instance != null) {
             return instance.getPayload();
         }
@@ -96,6 +100,7 @@ public class ZookeeperRegistryService implements RegistryService {
                 new ExponentialBackoffRetry(BASE_SLEEP_TIME_MS, MAX_RETRIES));
         curatorFrameworkClient.start();
         JsonInstanceSerializer<ServiceMeta> serializer = new JsonInstanceSerializer<>(ServiceMeta.class);
+        this.serviceLoadBalancer = new RandomServiceLoadBalancer<ServiceInstance<ServiceMeta>>();
         // 需要学习一下 ServiceDiscoveryBuilder
         this.serviceDiscovery = ServiceDiscoveryBuilder
                 .builder(ServiceMeta.class)
@@ -105,6 +110,7 @@ public class ZookeeperRegistryService implements RegistryService {
         this.serviceDiscovery.start();
     }
 
+    @Deprecated
     private ServiceInstance<ServiceMeta> selectOneServiceInstance(List<ServiceInstance<ServiceMeta>> serviceInstances) {
         if (serviceInstances == null || serviceInstances.isEmpty()) {
             return null;
