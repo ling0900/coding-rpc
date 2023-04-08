@@ -1,9 +1,14 @@
 package io.lh.rpc.serialization.api;
 
+import io.lh.rpc.constants.RpcConstants;
+import io.lh.rpc.spi.annotation.SPI;
+
 /**
  * The interface Serialization.
+ * 通过SPI注解，实现默认的序列化方式为  JDK
  * @author lh
  */
+@SPI(RpcConstants.SERIALIZATION_JDK)
 public interface Serialization {
 
     /**

@@ -1,9 +1,9 @@
-package loader;
+package io.lh.rpc.spi.loader;
 
 import com.alibaba.fastjson.JSON;
 import io.lh.rpc.spi.annotation.SPI;
 import io.lh.rpc.spi.annotation.SPIClass;
-import io.lh.rpc.spi.factry.IExtensionFactory;
+import io.lh.rpc.spi.factory.IExtensionFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,7 +94,9 @@ public class ExtensionLoader<T> {
         if (Objects.nonNull(extensionLoader)) {
             return extensionLoader;
         }
-        // 有待于思考
+        /* 有待于思
+        这里如果路径有问题的话，调试过程中发现会默认把所有的类都变成了factory这个接口
+         */
         LOADERS.putIfAbsent(clazz, new ExtensionLoader<>(clazz, cl));
         return (ExtensionLoader<T>) LOADERS.get(clazz);
     }
@@ -105,7 +107,7 @@ public class ExtensionLoader<T> {
      *
      * @param <T>   泛型类型
      * @param clazz 接口的Class实例
-     * @param name  SPI名称
+     * @param name  SPI名称 可以理解为配置文件中的 key，就是 = 号左边的东东。
      * @return 泛型实例 t
      */
     public static <T> T getExtension(final Class<T> clazz, String name){
@@ -113,7 +115,9 @@ public class ExtensionLoader<T> {
         if (StringUtils.isEmpty(name)) {
             return extensionLoader.getDefaultSpiClassInstance();
         }
-        return extensionLoader.getSpiClassInstance(name);
+        // 这个方法非常关键！
+        T spiClassInstance = extensionLoader.getSpiClassInstance(name);
+        return spiClassInstance;
     }
 
     /**
@@ -149,13 +153,16 @@ public class ExtensionLoader<T> {
      */
     public T getSpiClassInstance(final String name) {
         if (StringUtils.isBlank(name)) {
+            logger.error("底层代码有问题");
             throw new NullPointerException("get spi class name is null");
         }
+
         Holder<Object> objectHolder = cachedInstances.get(name);
         if (Objects.isNull(objectHolder)) {
             cachedInstances.putIfAbsent(name, new Holder<>());
             objectHolder = cachedInstances.get(name);
         }
+
         Object value = objectHolder.getValue();
         if (Objects.isNull(value)) {
             synchronized (cachedInstances) {
@@ -192,12 +199,15 @@ public class ExtensionLoader<T> {
         return instances;
     }
 
-    @SuppressWarnings("unchecked")
     private T createExtension(final String name) {
         Map<String, Class<?>> extensionClasses = getExtensionClasses();
+        if (extensionClasses == null || extensionClasses.size() < 1) {
+            logger.error("有问题了，后续无法获取到数值的");
+        }
         Class<?> innerClazz = extensionClasses.get(name);
         if (Objects.isNull(innerClazz)) {
-            throw new IllegalArgumentException("name is error");
+            logger.warn("name有问题了");
+//            throw new IllegalArgumentException("name is error");
         }
         Object o = spiClassInstances.get(innerClazz);
         if (Objects.isNull(o)) {
@@ -205,6 +215,7 @@ public class ExtensionLoader<T> {
                 spiClassInstances.putIfAbsent(innerClazz, innerClazz.newInstance());
                 o = spiClassInstances.get(innerClazz);
             } catch (InstantiationException | IllegalAccessException e) {
+                logger.error("底层方法有问题！");
                 throw new IllegalStateException("Extension instance(name: " + name + ", class: "
                         + innerClazz + ")  could not be instantiated: " + e.getMessage(), e);
 
@@ -225,9 +236,10 @@ public class ExtensionLoader<T> {
             synchronized (cachedClasses) {
                 classes = cachedClasses.getValue();
                 if (Objects.isNull(classes)) {
+                    logger.warn("去loadExtensionClass 尝试获取实例");
                     classes = loadExtensionClass();
                     if (Objects.isNull(classes) || classes.size() < 1) {
-//                        throw new RuntimeException("实在获取不到实例");
+                        logger.warn("getExtensionClasses() 获取不到实例");
                     }
                     cachedClasses.setValue(classes);
                 }
@@ -237,6 +249,7 @@ public class ExtensionLoader<T> {
     }
 
     private Map<String, Class<?>> loadExtensionClass() {
+        logger.warn("loadExtensionClass() ==>来到这了获取实例");
         SPI annotation = finalClazz.getAnnotation(SPI.class);
         if (Objects.nonNull(annotation)) {
             String value = annotation.value();
@@ -245,9 +258,10 @@ public class ExtensionLoader<T> {
             }
         }
         Map<String, Class<?>> clazzMap = new HashMap<>(16);
+        // 调用函数
         loadDirectory(clazzMap);
         if (clazzMap == null || clazzMap.size() < 1) {
-//            throw new RuntimeException("loadExtensionClass 失败了！");
+            logger.warn("loadExtensionClass() ==>获取不到实例");
         }
         return clazzMap;
     }
@@ -269,19 +283,22 @@ public class ExtensionLoader<T> {
                 }
                 if (Objects.nonNull(urls)) {
                     while (urls.hasMoreElements()) {
+                        logger.warn("填充数值==========");
                         URL url = urls.nextElement();
+                        // 往map填充属性
                         loadResources(classMap, url);
                     }
                 }
             } catch (IOException t) {
-                logger.error("load extension class error {}", fileName, t);
+                logger.error("load extension出现问题 {}", fileName, t);
             }
         }
 
         logger.info("最后，map的内容如下{}", JSON.toJSONString(classMap));
     }
 
-    private void loadResources(final Map<String, Class<?>> classes, final URL url) throws IOException {
+    private void loadResources(final Map<String, Class<?>> classMap, final URL url) throws IOException {
+        logger.warn("进入底层方法{}", "loadResources");
         try (InputStream inputStream = url.openStream()) {
             Properties properties = new Properties();
             properties.load(inputStream);
@@ -290,30 +307,48 @@ public class ExtensionLoader<T> {
                 String classPath = (String) v;
                 if (StringUtils.isNotBlank(name) && StringUtils.isNotBlank(classPath)) {
                     try {
-                        loadClass(classes, name, classPath);
+                        // 继续调用
+                        loadClass(classMap, name, classPath);
                     } catch (ClassNotFoundException e) {
+                        logger.error("底层方法有问题！");
                         throw new IllegalStateException("load extension resources error", e);
                     }
                 }
             });
         } catch (IOException e) {
+            logger.error("底层方法有问题！");
             throw new IllegalStateException("load extension resources error", e);
         }
     }
 
-    private void loadClass(final Map<String, Class<?>> classes,
+    private void loadClass(final Map<String, Class<?>> classMap,
                            final String name, final String classPath) throws ClassNotFoundException {
-        Class<?> subClass = Objects.nonNull(this.classLoader) ? Class.forName(classPath, true, this.classLoader) : Class.forName(classPath);
-        if (!finalClazz.isAssignableFrom(subClass)) {
+
+        logger.warn("进入底层方法 classMap{}", JSON.toJSONString(classMap));
+
+        Class<?> subClass;
+        if (Objects.nonNull(this.classLoader)) {
+            subClass = Class.forName(classPath, true, this.classLoader);
+        } else {
+            subClass = Class.forName(classPath);
+        }
+
+        if (! finalClazz.isAssignableFrom(subClass)) {
+            logger.error("底层方法有问题！");
             throw new IllegalStateException("load extension resources error," + subClass + " subtype is not of " + finalClazz);
         }
-        if (!subClass.isAnnotationPresent(SPIClass.class)) {
+
+        if (! subClass.isAnnotationPresent(SPIClass.class)) {
+            logger.error("底层方法有问题！");
             throw new IllegalStateException("load extension resources error," + subClass + " without @" + SPIClass.class + " annotation");
         }
-        Class<?> oldClass = classes.get(name);
+
+        Class<?> oldClass = classMap.get(name);
         if (Objects.isNull(oldClass)) {
-            classes.put(name, subClass);
+            classMap.put(name, subClass);
+            logger.warn("现在classMap{}", classMap);
         } else if (!Objects.equals(oldClass, subClass)) {
+            logger.error("底层方法有问题！");
             throw new IllegalStateException("load extension resources error,Duplicate class " + finalClazz.getName() + " name " + name + " on " + oldClass.getName() + " or " + subClass.getName());
         }
     }

@@ -48,7 +48,7 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
     /**
      *
      */
-    private long timeout = 15000;
+    private long timeout = 900000;
 
     /**
      *
@@ -151,7 +151,13 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 
         RpcFuture rpcFuture = this.consumer.sendRequest(rpcRequestRpcProtocol, registryService);
 
-        return rpcFuture == null ? null : timeout > 0 ? rpcFuture.get(timeout, TimeUnit.MILLISECONDS) : rpcFuture.get();
+
+        if (rpcFuture == null) {
+            return null;
+        } else {
+            if (timeout > 0) return rpcFuture.get(timeout, TimeUnit.MILLISECONDS);
+            return rpcFuture.get();
+        }
     }
 
     @Override

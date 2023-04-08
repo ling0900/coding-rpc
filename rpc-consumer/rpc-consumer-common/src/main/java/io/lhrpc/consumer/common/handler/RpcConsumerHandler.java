@@ -113,10 +113,13 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
         LOGGER.info("消费者发送的数据>>>>>>>>>>>>{}", JSONObject.toJSONString(protocolMsg));
 
         if (async) {
+            LOGGER.info("消费者异步发送消息");
             return this.sendRequestAsync(protocolMsg);
         } else if (oneway) {
+            LOGGER.info("消费者单向发送消息");
             return this.sendRequestOneway(protocolMsg);
         } else {
+            LOGGER.info("消费者同步发送消息");
             return this.sendRequestSync(protocolMsg);
         }
     }

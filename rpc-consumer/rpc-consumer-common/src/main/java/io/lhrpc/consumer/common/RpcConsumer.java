@@ -122,6 +122,7 @@ public class RpcConsumer implements Consumer {
 
     @Override
     public RpcFuture sendRequest(RpcProtocol<RpcRequest> protocol, RegistryService registryService) throws Exception {
+        LOGGER.info("消费者发送请求====>");
         RpcRequest request = protocol.getBody();
         String serviceKey = RpcServiceHelper.buildServiceKey(request.getClassName(), request.getVersion(), request.getGroup());
         Object[] parameters = request.getParameters();

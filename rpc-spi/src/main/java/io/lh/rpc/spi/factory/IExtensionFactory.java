@@ -1,4 +1,4 @@
-package io.lh.rpc.spi.factry;
+package io.lh.rpc.spi.factory;
 
 import io.lh.rpc.spi.annotation.SPI;
 

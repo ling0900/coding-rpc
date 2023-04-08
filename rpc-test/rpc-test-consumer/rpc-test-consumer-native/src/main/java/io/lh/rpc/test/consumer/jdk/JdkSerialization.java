@@ -1,4 +1,4 @@
-package io.lh.rpc.serialization.jdk;
+package io.lh.rpc.test.consumer.jdk;
 
 import io.lh.rpc.commom.exception.SerializerException;
 import io.lh.rpc.serialization.api.Serialization;

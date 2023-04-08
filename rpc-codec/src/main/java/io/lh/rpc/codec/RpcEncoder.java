@@ -24,10 +24,11 @@ public class RpcEncoder extends MessageToByteEncoder<RpcProtocol<Object>> implem
         String serializationType = header.getSerializationType();
 
         // todo
-        Serialization jdkSerialization = getJdkSerialization();
-        byteBuf.writeBytes(SerializationUtil.paddingString(serializationType)
+        Serialization serialization = getSerialization(serializationType);
+        byteBuf
+                .writeBytes(SerializationUtil.paddingString(serializationType)
                 .getBytes("UTF-8"));
-        byte[] data = jdkSerialization.serialize(msg.getBody());
+        byte[] data = serialization.serialize(msg.getBody());
         byteBuf.writeInt(data.length);
         byteBuf.writeBytes(data);
 

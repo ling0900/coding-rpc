@@ -1,5 +1,6 @@
 package io.lh.rpc.test.consumer;
 
+import io.lh.rpc.constants.RpcConstants;
 import io.lh.rpc.consumer.RpcClient;
 import io.lh.rpc.proxy.api.async.IAsyncObjectProxy;
 import io.lh.rpc.proxy.api.future.RpcFuture;
@@ -28,8 +29,10 @@ public class RpcConsumerNativeTest {
     @Before
     public void initRpcClient(){
         rpcClient = new RpcClient("1.0.0",
-                "lh", 3000, "jdk"
-                ,false, false, "8.130.65.0:2181", "zookeeper");
+                "lh", 30000
+                , RpcConstants.REFLECT_TYPE_JDK
+                ,false, false
+                , "8.130.65.0:2181", "zookeeper");
     }
 
     /**
@@ -66,5 +69,8 @@ public class RpcConsumerNativeTest {
         RpcFuture future = demoService.call("hello", "qwe");
         LOGGER.info("返回的数据===>>> " + future.get());
         rpcClient.shutdown();
+    }
+
+    public static void main(String[] args) {
     }
 }

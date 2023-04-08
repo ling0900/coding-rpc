@@ -67,12 +67,12 @@ public class RpcDecoder extends ByteToMessageDecoder implements RpcCodec {
 
         //todo
 
-        Serialization jdkSerialization = getJdkSerialization();
+        Serialization serialization = getSerialization(serialTypeByte);
         // switch经常配合枚举类使用，看起来美观。
         switch (rpcType) {
             default:
             case REQUEST:
-                RpcRequest deserializeRequest = jdkSerialization.deserialize(data, RpcRequest.class);
+                RpcRequest deserializeRequest = serialization.deserialize(data, RpcRequest.class);
                 if (deserializeRequest != null) {
                     RpcProtocol<RpcRequest> protocol = new RpcProtocol<>();
                     protocol.setHeader(rpcHeader);
@@ -81,7 +81,7 @@ public class RpcDecoder extends ByteToMessageDecoder implements RpcCodec {
                 }
                 break;
             case RESPONSE:
-                RpcResponse rpcResponse = jdkSerialization.deserialize(data, RpcResponse.class);
+                RpcResponse rpcResponse = serialization.deserialize(data, RpcResponse.class);
                 if (rpcResponse != null) {
                     RpcProtocol<RpcResponse> protocol = new RpcProtocol<>();
                     protocol.setHeader(rpcHeader);

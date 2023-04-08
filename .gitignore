@@ -24,3 +24,5 @@ target/
 *.log
 # /rpc-test/rpc-test-provider/d:/
 /*/*/d:/
+/*/*/*/d:/
+/*/d:/
