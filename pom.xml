@@ -22,6 +22,8 @@
         <module>rpc-test/rpc-test-registry</module>
         <module>rpc-learn</module>
         <module>rpc-loadbalancer</module>
+        <module>rpc-spi</module>
+        <module>rpc-test/rpc-test-spi</module>
     </modules>
     <version>1.0.0-SNAPSHOT</version>
 
