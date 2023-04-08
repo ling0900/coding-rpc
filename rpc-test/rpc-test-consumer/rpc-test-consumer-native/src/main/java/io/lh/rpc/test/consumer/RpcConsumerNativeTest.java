@@ -38,6 +38,8 @@ public class RpcConsumerNativeTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcConsumerNativeTest.class);
 
     /**
+     * Test interface rpc.
+     * 用于测试基于zookeeper为注册中心的
      * @param args
      */
     @Test
@@ -51,7 +53,8 @@ public class RpcConsumerNativeTest {
     /**
      * 异步测试 通过动态代理实现异步调用的测试类。
      * 这次commit为止，如果生产者那里用到的cglib，这里就会出现问题！测试时候。
-     * @throws Exception
+     *
+     * @throws Exception the exception
      */
     @Test
     public void testAsyncInterfaceRpc() throws Exception {
