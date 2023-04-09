@@ -65,8 +65,7 @@ public class RpcDecoder extends ByteToMessageDecoder implements RpcCodec {
         rpcHeader.setSerializationType(serialTypeByte);
         rpcHeader.setMsgLen(dataLength);
 
-        //todo
-
+        //这个调用很关键，这是SPI拓展中的一个比较核心的方法。
         Serialization serialization = getSerialization(serialTypeByte);
         // switch经常配合枚举类使用，看起来美观。
         switch (rpcType) {

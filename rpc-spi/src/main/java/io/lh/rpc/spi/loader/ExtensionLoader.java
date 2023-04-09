@@ -28,6 +28,7 @@ public class ExtensionLoader<T> {
 
     /**
      * 下面的这几个目录，其实可以再继续拓展的。
+     * 注意目录最后的符号：  “/”
      */
     private static final String SERVICES_DIRECTORY = "META-INF/services/";
     private static final String LH_DIRECTORY = "META-INF/lh/";

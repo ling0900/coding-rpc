@@ -23,6 +23,7 @@ bin-release/
 target/
 *.log
 # /rpc-test/rpc-test-provider/d:/
+# 忽略日志log文件的提交。
 /*/*/d:/
 /*/*/*/d:/
 /*/d:/
