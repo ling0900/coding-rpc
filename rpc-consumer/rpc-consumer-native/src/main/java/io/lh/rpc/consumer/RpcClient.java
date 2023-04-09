@@ -13,6 +13,9 @@ import lombok.Data;
 import org.springframework.util.StringUtils;
 
 
+/**
+ * The type Rpc client.
+ */
 @Data
 public class RpcClient {
     /**
@@ -46,6 +49,9 @@ public class RpcClient {
      */
     private boolean oneway;
 
+    /**
+     * 注册服务
+     */
     private RegistryService registryService;
 
     private String registryAddress;
@@ -53,7 +59,18 @@ public class RpcClient {
     private String registryType;
 
 
-
+    /**
+     * Instantiates a new Rpc client.
+     *
+     * @param serviceVersion    the service version
+     * @param serviceGroup      the service group
+     * @param timeout           the timeout
+     * @param serializationType the serialization type
+     * @param async             the async
+     * @param oneway            the oneway
+     * @param registryAddress   the registry address
+     * @param registryType      the registry type
+     */
     public RpcClient(String serviceVersion, String serviceGroup,
                      long timeout, String serializationType, boolean async,
                      boolean oneway, String registryAddress, String registryType) {
@@ -69,9 +86,10 @@ public class RpcClient {
 
     /**
      * 创建一个代理类！利用工厂+模版模式！
-     * @param interfaceClass
-     * @return
-     * @param <T>
+     *
+     * @param <T>            the type parameter
+     * @param interfaceClass the interface class
+     * @return t
      */
     public <T> T create(Class<T> interfaceClass) {
         // 利用模版模式进行精简。
@@ -84,15 +102,19 @@ public class RpcClient {
         return proxyFactory.getProxy(interfaceClass);
     }
 
+    /**
+     * Shutdown.
+     */
     public void shutdown() {
         RpcConsumer.getConsumerInstance().close();
     }
 
     /**
      * 创建一个异步的动态代理对象
-     * @param interfaceClass
-     * @return
-     * @param <T>
+     *
+     * @param <T>            the type parameter
+     * @param interfaceClass the interface class
+     * @return async object proxy
      */
     public <T> IAsyncObjectProxy createAsync(Class<T> interfaceClass) {
         return new ObjectProxy<T>(interfaceClass, serviceVersion, serviceGroup, serializationType,

@@ -42,5 +42,11 @@
             <artifactId>rpc-spi</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
+<!--        其实这里可以把整个包都引入进来，但是为了加深理解，一个个子包进行引入，这样来做。-->
+        <dependency>
+            <groupId>io.lh.rpc</groupId>
+            <artifactId>rpc-serialization-json</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>
