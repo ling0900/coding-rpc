@@ -2,6 +2,8 @@ package io.lh.rpc.constants;
 
 /**
  * The type Rpc constants.
+ * 这里面的各种序列化方式，结合SPI机制来使用的。
+ *
  * @author lh
  */
 public class RpcConstants {
