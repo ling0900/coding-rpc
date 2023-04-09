@@ -24,6 +24,7 @@
         <module>rpc-loadbalancer</module>
         <module>rpc-spi</module>
         <module>rpc-test/rpc-test-spi</module>
+        <module>rpc-serialization/rpc-serialization-kryo</module>
     </modules>
     <version>1.0.0-SNAPSHOT</version>
 
