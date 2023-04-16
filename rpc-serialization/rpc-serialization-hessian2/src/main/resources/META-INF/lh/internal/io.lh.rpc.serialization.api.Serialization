@@ -1,1 +1,2 @@
-json=io.lh.rpc.serialization.hessian2.Hessian2Serialization
+hessian2=io.lh.rpc.serialization.hessian2.Hessian2Serialization
+#上方的key一定要和服务消费者client的序列化，常量那里定义的一致。
