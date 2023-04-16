@@ -29,8 +29,8 @@ public class RpcConsumerNativeSpiHession2Test {
     @Before
     public void initRpcClient(){
         rpcClient = new RpcClient("1.0.0",
-                "lh", 30000
-                , RpcConstants.SERIALIZATION_KRYO
+                "lh", 50000
+                , RpcConstants.SERIALIZATION_PROTOSTUFF
                 ,false, false
                 , "8.130.65.0:2181", "zookeeper");
     }
