@@ -112,6 +112,7 @@ public class ExtensionLoader<T> {
      * @return 泛型实例 t
      */
     public static <T> T getExtension(final Class<T> clazz, String name){
+        // 这个loader是很关键的
         ExtensionLoader<T> extensionLoader = getExtensionLoader(clazz);
         if (StringUtils.isEmpty(name)) {
             return extensionLoader.getDefaultSpiClassInstance();
