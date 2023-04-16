@@ -34,7 +34,6 @@ public class FstSerialization implements Serialization {
             throw new SerializerException("data is null");
         }
 
-        T object = (T) FSTConfiguration.getDefaultConfiguration().asObject(data);
-        return object;
+        return (T) FSTConfiguration.getDefaultConfiguration().asObject(data);
     }
 }
