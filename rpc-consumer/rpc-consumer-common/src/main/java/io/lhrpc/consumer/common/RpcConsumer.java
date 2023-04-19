@@ -42,6 +42,7 @@ public class RpcConsumer implements Consumer {
 
     private RpcConsumer() {
         bootstrap = new Bootstrap();
+        // 这里只有一个
         eventLoopGroup = new NioEventLoopGroup();
         bootstrap.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
