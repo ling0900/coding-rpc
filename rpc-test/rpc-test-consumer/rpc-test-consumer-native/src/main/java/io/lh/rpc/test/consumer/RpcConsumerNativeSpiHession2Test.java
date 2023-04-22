@@ -32,7 +32,7 @@ public class RpcConsumerNativeSpiHession2Test {
                 "lh", 50000
                 , RpcConstants.SERIALIZATION_PROTOSTUFF
                 ,false, false
-                , "8.130.65.0:2181", "zookeeper");
+                , "8.130.65.0:2181", "zookeeper", "jdk");
     }
 
     /**

@@ -32,7 +32,7 @@ public class RpcConsumerNativeSpiJsonTest {
                 "lh", 30000
                 , RpcConstants.SERIALIZATION_JSON
                 ,false, false
-                , "8.130.65.0:2181", "zookeeper");
+                , "8.130.65.0:2181", "zookeeper", "jdk");
     }
 
     /**

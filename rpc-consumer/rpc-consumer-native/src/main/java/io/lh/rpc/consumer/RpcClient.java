@@ -8,6 +8,7 @@ import io.lh.rpc.proxy.jdk.JdkProxyFactory;
 import io.lh.rpc.registry.api.RegistryService;
 import io.lh.rpc.registry.api.config.RegistryConfig;
 import io.lh.rpc.registyr.zookeeper.ZookeeperRegistryService;
+import io.lh.rpc.spi.loader.ExtensionLoader;
 import io.lhrpc.consumer.common.RpcConsumer;
 import lombok.Data;
 import org.springframework.util.StringUtils;
@@ -58,6 +59,8 @@ public class RpcClient {
 
     private String registryType;
 
+    private String proxy;
+
 
     /**
      * Instantiates a new Rpc client.
@@ -73,7 +76,7 @@ public class RpcClient {
      */
     public RpcClient(String serviceVersion, String serviceGroup,
                      long timeout, String serializationType, boolean async,
-                     boolean oneway, String registryAddress, String registryType) {
+                     boolean oneway, String registryAddress, String registryType, String proxy) {
 
         this.serviceVersion = serviceVersion;
         this.serviceGroup = serviceGroup;
@@ -82,6 +85,7 @@ public class RpcClient {
         this.async = async;
         this.oneway = oneway;
         this.registryService = this.getRegistryService(registryAddress, registryType);
+        this.proxy = proxy;
     }
 
     /**
@@ -94,7 +98,8 @@ public class RpcClient {
     public <T> T create(Class<T> interfaceClass) {
         // 利用模版模式进行精简。
         // 实例化
-        ProxyFactory proxyFactory = new JdkProxyFactory<T>();
+        ProxyFactory proxyFactory = ExtensionLoader.getExtension(ProxyFactory.class, proxy);
+
         // 进行初始化
         proxyFactory.init(new ProxyConfig(interfaceClass, serviceVersion, serviceGroup,
                 timeout, RpcConsumer.getConsumerInstance(), serializationType, async, oneway, registryService));
