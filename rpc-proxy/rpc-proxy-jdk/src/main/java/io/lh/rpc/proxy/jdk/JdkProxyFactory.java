@@ -13,6 +13,7 @@ import java.lang.reflect.Proxy;
  * <p>版本：1.0.0</p>
  * <p>@author：lh</p>
  * <p>创建时间：2023/02/21</p>
+ * @param <T> the type parameter
  */
 @SPIClass
 public class JdkProxyFactory <T> extends BaseProxyFactory<T> implements ProxyFactory {
