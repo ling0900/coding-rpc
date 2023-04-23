@@ -10,6 +10,8 @@ import io.lh.rpc.protocol.enumeration.RpcType;
 import io.lh.rpc.protocol.header.RpcHeader;
 import io.lh.rpc.protocol.request.RpcRequest;
 import io.lh.rpc.protocol.response.RpcResponse;
+import io.lh.rpc.reflect.api.ReflectInvoker;
+import io.lh.rpc.spi.loader.ExtensionLoader;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -34,7 +36,7 @@ public class RpcServiceProviderHandler extends SimpleChannelInboundHandler<RpcPr
 
     private final Logger LOGGER = LoggerFactory.getLogger(RpcServiceProviderHandler.class);
 
-    private final String reflectType;
+    private final ReflectInvoker reflectInvoker;
 
     private final Map<String, Object> hadlerMap;
 
@@ -46,7 +48,7 @@ public class RpcServiceProviderHandler extends SimpleChannelInboundHandler<RpcPr
      */
     public RpcServiceProviderHandler(Map<String, Object> hadlerMap, String reflectType) {
         this.hadlerMap = hadlerMap;
-        this.reflectType = reflectType;
+        this.reflectInvoker = ExtensionLoader.getExtension(ReflectInvoker.class, reflectType);
     }
 
     @Override
@@ -97,7 +99,8 @@ public class RpcServiceProviderHandler extends SimpleChannelInboundHandler<RpcPr
      */
     private Object handle(RpcRequest request) throws Throwable {
 
-        String serviceKey = RpcServiceHelper.buildServiceKey(request.getClassName(), request.getVersion(), request.getGroup());
+        String serviceKey = RpcServiceHelper.buildServiceKey(request.getClassName(),
+                request.getVersion(), request.getGroup());
         String methodName = request.getMethodName();
 
         // 获取对象
@@ -127,32 +130,13 @@ public class RpcServiceProviderHandler extends SimpleChannelInboundHandler<RpcPr
         }
 
         // 调用方法 这里根据反射获取的实现类。动态代理的体现！
-        return invokeMethod(serviceBean, methodName, parameterTypes, parameters, serviceBeanClass);
-    }
-
-    /**
-     * 异常，向上throws，让调用者去处理。
-     */
-    private Object invokeMethod(Object serviceBean, String methodName,
-                                Class<?>[] parameterTypes, Object[] parameters, Class<?> serviceClass) throws Throwable {
-
-        LOGGER.info("调用目标方法用到的反射类型是{}", this.reflectType);
-
-        switch (this.reflectType) {
-            case RpcConstants.REFLECT_TYPE_JDK:
-                LOGGER.info("进入了 jdk 反射");
-                return this.invokeJdkMethod(serviceBean, methodName, parameterTypes, parameters, serviceClass);
-            case RpcConstants.REFLECT_TYPE_CGLIB:
-                LOGGER.info("进入了 cglib 反射");
-                return this.invokeCglibMethod(serviceBean, methodName, parameterTypes, parameters, serviceClass);
-            default:
-                throw new IllegalArgumentException(String.format("找不到匹配的反射类型%s", this.reflectType));
-        }
-
+        return this.reflectInvoker.invokeMethod(serviceBean, serviceBeanClass, methodName,
+                parameterTypes, parameters);
     }
 
     private Object invokeJdkMethod(Object serviceBean, String methodName,
-                                   Class<?>[] parameterTypes, Object[] parameters, Class<?> serviceClass) throws Throwable {
+                                   Class<?>[] parameterTypes, Object[] parameters,
+                                   Class<?> serviceClass) throws Throwable {
         Method method = serviceClass.getMethod(methodName, parameterTypes);
         method.setAccessible(true);
         return method.invoke(serviceBean, parameters);
@@ -170,7 +154,8 @@ public class RpcServiceProviderHandler extends SimpleChannelInboundHandler<RpcPr
      * @throws Throwable
      */
     private Object invokeCglibMethod(Object serviceBean, String methodName,
-                                     Class<?>[] parameterTypes, Object[] parameters, Class<?> serviceClass) throws Throwable {
+                                     Class<?>[] parameterTypes, Object[] parameters,
+                                     Class<?> serviceClass) throws Throwable {
 
         FastClass fastServiceClass = FastClass.create(serviceClass);
         FastMethod fastServiceClassMethod = fastServiceClass.getMethod(methodName, parameterTypes);

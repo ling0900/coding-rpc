@@ -14,11 +14,11 @@ public class SingleStarterProviderTest {
      * Test starter.
      */
     @Test
-    public void testStarter() {
+    public void testStarterJdk() {
         RpcSingleServer rpcSingleServer = new RpcSingleServer(
                 "127.0.0.1:27788",
                 "io.lh.rpc.test",
-                RpcConstants.REFLECT_TYPE_CGLIB,
+                RpcConstants.REFLECT_TYPE_JDK,
                 "8.130.65.0:2181",
                 "zookeeper");
         rpcSingleServer.startNettyServer();
