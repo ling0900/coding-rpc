@@ -1,12 +1,17 @@
 package io.lh.rpc.loadbalancer.api;
 
+import io.lh.rpc.constants.RpcConstants;
+import io.lh.rpc.spi.annotation.SPI;
+
 import java.util.List;
 
 /**
  * The interface Service load balancer.
  *
+ * @author lh
  * @param <T> the type parameter
  */
+@SPI(RpcConstants.SERVICE_LOAD_BALANCER_RANDOM)
 public interface ServiceLoadBalancer<T> {
 
     /**

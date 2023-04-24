@@ -102,6 +102,8 @@ public class RpcConstants {
      */
     public static final String SERVICE_LOAD_BALANCER_ZKCONSISTENTHASH = "zkconsistenthash";
 
+
+    public static final String SERVICE_LOAD_BALANCER_RANDOM = "random";
     /**
      * Main.测试用的
      *

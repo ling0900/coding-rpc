@@ -1,0 +1,1 @@
+random=io.lh.rpc.loadbalancer.random.RandomServiceLoadBalancer

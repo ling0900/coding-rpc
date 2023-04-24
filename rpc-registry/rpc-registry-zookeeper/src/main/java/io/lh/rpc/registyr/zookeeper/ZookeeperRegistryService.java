@@ -2,10 +2,10 @@ package io.lh.rpc.registyr.zookeeper;
 
 import io.lh.rpc.commom.helper.RpcServiceHelper;
 import io.lh.rpc.loadbalancer.api.ServiceLoadBalancer;
-import io.lh.rpc.loadbalancer.random.RandomServiceLoadBalancer;
 import io.lh.rpc.protocol.meta.ServiceMeta;
 import io.lh.rpc.registry.api.RegistryService;
 import io.lh.rpc.registry.api.config.RegistryConfig;
+import io.lh.rpc.spi.loader.ExtensionLoader;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -20,6 +20,7 @@ import java.util.Random;
 
 /**
  * 服务注册发现类  基于 zookeeper实现
+ * @author lh
  */
 public class ZookeeperRegistryService implements RegistryService {
 
@@ -100,13 +101,14 @@ public class ZookeeperRegistryService implements RegistryService {
                 new ExponentialBackoffRetry(BASE_SLEEP_TIME_MS, MAX_RETRIES));
         curatorFrameworkClient.start();
         JsonInstanceSerializer<ServiceMeta> serializer = new JsonInstanceSerializer<>(ServiceMeta.class);
-        this.serviceLoadBalancer = new RandomServiceLoadBalancer<ServiceInstance<ServiceMeta>>();
+        this.serviceLoadBalancer = ExtensionLoader.getExtension(ServiceLoadBalancer.class, registryConfig.getRegistryLoadBalanceType());
         // 需要学习一下 ServiceDiscoveryBuilder
         this.serviceDiscovery = ServiceDiscoveryBuilder
                 .builder(ServiceMeta.class)
                 .client(curatorFrameworkClient)
                 .serializer(serializer)
-                .basePath(ZK_BASE_PATH).build();
+                .basePath(ZK_BASE_PATH)
+                .build();
         this.serviceDiscovery.start();
     }
 

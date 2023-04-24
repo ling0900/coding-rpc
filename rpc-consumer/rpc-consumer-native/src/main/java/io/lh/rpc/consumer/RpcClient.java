@@ -76,7 +76,8 @@ public class RpcClient {
      */
     public RpcClient(String serviceVersion, String serviceGroup,
                      long timeout, String serializationType, boolean async,
-                     boolean oneway, String registryAddress, String registryType, String proxy) {
+                     boolean oneway, String registryAddress, String registryType, String proxy,
+                     String registryLoadBalanceType) {
 
         this.serviceVersion = serviceVersion;
         this.serviceGroup = serviceGroup;
@@ -84,8 +85,8 @@ public class RpcClient {
         this.serializationType = serializationType;
         this.async = async;
         this.oneway = oneway;
-        this.registryService = this.getRegistryService(registryAddress, registryType);
         this.proxy = proxy;
+        this.registryService = this.getRegistryService(registryAddress, registryType, registryLoadBalanceType);
     }
 
     /**
@@ -126,17 +127,18 @@ public class RpcClient {
                 timeout, RpcConsumer.getConsumerInstance(), async, oneway, registryService);
     }
 
-    private RegistryService getRegistryService(String registryAddress, String registryType) {
+    private RegistryService getRegistryService(String registryAddress, String registryType, String registryLoadBalanceType) {
         if (StringUtils.isEmpty(registryType)) {
             throw new IllegalArgumentException("注册类型为  null");
         }
-        ZookeeperRegistryService zookeeperRegistryService = new ZookeeperRegistryService();
+        // 不够完善的
+        RegistryService registryService = new ZookeeperRegistryService();
 
         try {
-            zookeeperRegistryService.init(new RegistryConfig(registryAddress, registryType));
+            registryService.init(new RegistryConfig(registryAddress, registryType, registryLoadBalanceType));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return zookeeperRegistryService;
+        return registryService;
     }
 }

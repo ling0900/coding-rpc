@@ -21,9 +21,10 @@ public class RpcSingleServer extends BaseServer {
      * @param scanPackage    the scan package
      */
     public RpcSingleServer(String serviceAddress, String scanPackage, String reflectType,
-                           String registryAddress, String registryType) {
+                           String registryAddress, String registryType,
+                           String registryLoadBalanceType) {
 
-        super(serviceAddress, registryAddress, registryType, reflectType);
+        super(serviceAddress, registryAddress, registryType, reflectType, registryLoadBalanceType);
 
         try {
             this.handlerMap = RpcServiceProviderScanner.doScannerWithRpcServiceAnnotationFilterAndRegistryService(this.host, this.port, scanPackage, registryService);

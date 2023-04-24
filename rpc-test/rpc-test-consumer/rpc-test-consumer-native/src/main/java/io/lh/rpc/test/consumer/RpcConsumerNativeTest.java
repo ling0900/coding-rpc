@@ -32,7 +32,8 @@ public class RpcConsumerNativeTest {
                 "lh", 30000
                 , RpcConstants.REFLECT_TYPE_JDK
                 ,false, false
-                , "8.130.65.0:2181", "zookeeper", "jdk");
+                , "8.130.65.0:2181", "zookeeper", "jdk",
+                "robin");
     }
 
     /**

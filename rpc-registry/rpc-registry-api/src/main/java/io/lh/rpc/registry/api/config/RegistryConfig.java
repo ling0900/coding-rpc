@@ -16,7 +16,10 @@ public class RegistryConfig implements Serializable {
 
     private String registryType;
 
-    public RegistryConfig(String registryAddr, String registryType) {
+    private String registryLoadBalanceType;
+
+    public RegistryConfig(String registryAddr, String registryType, String registryLoadBalanceType) {
+        this.registryLoadBalanceType = registryLoadBalanceType;
         this.registryAddr = registryAddr;
         this.registryType = registryType;
     }
