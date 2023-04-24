@@ -1,0 +1,1 @@
+zookeeper=io.lh.rpc.registyr.zookeeper.ZookeeperRegistryService

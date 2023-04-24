@@ -5,6 +5,7 @@ import io.lh.rpc.loadbalancer.api.ServiceLoadBalancer;
 import io.lh.rpc.protocol.meta.ServiceMeta;
 import io.lh.rpc.registry.api.RegistryService;
 import io.lh.rpc.registry.api.config.RegistryConfig;
+import io.lh.rpc.spi.annotation.SPIClass;
 import io.lh.rpc.spi.loader.ExtensionLoader;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -22,6 +23,7 @@ import java.util.Random;
  * 服务注册发现类  基于 zookeeper实现
  * @author lh
  */
+@SPIClass
 public class ZookeeperRegistryService implements RegistryService {
 
     /**

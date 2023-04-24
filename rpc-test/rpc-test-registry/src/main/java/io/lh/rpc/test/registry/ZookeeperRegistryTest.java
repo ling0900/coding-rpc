@@ -3,7 +3,7 @@ package io.lh.rpc.test.registry;
 import io.lh.rpc.protocol.meta.ServiceMeta;
 import io.lh.rpc.registry.api.RegistryService;
 import io.lh.rpc.registry.api.config.RegistryConfig;
-import io.lh.rpc.registyr.zookeeper.ZookeeperRegistryService;
+import io.lh.rpc.spi.loader.ExtensionLoader;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,8 +16,8 @@ public class ZookeeperRegistryTest {
     public void init() throws Exception {
 
         // zookeeper注册的地址
-        RegistryConfig registryConfig = new RegistryConfig(":2181", "zookeeper");
-        this.registryService = new ZookeeperRegistryService();
+        RegistryConfig registryConfig = new RegistryConfig(":2181", "zookeeper", "random");
+        this.registryService = ExtensionLoader.getExtension(RegistryService.class, "zookeeper");
         this.registryService.init(registryConfig);
         // todo
         this.serviceMeta = new ServiceMeta(ZookeeperRegistryTest.class.getName(), "1.0.0", "127.0.0.1", 8080, "lh");

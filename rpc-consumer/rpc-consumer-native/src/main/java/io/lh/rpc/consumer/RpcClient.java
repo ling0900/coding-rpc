@@ -132,7 +132,7 @@ public class RpcClient {
             throw new IllegalArgumentException("注册类型为  null");
         }
         // 不够完善的
-        RegistryService registryService = new ZookeeperRegistryService();
+        RegistryService registryService = ExtensionLoader.getExtension(RegistryService.class, registryType);
 
         try {
             registryService.init(new RegistryConfig(registryAddress, registryType, registryLoadBalanceType));

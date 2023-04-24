@@ -2,10 +2,12 @@ package io.lh.rpc.registry.api;
 
 import io.lh.rpc.protocol.meta.ServiceMeta;
 import io.lh.rpc.registry.api.config.RegistryConfig;
+import io.lh.rpc.spi.annotation.SPI;
 
 /**
  * 注册发现类
  */
+@SPI
 public interface RegistryService {
 
     /**

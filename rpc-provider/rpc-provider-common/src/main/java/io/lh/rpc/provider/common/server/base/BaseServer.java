@@ -8,6 +8,7 @@ import io.lh.rpc.provider.common.server.api.Server;
 import io.lh.rpc.registry.api.RegistryService;
 import io.lh.rpc.registry.api.config.RegistryConfig;
 import io.lh.rpc.registyr.zookeeper.ZookeeperRegistryService;
+import io.lh.rpc.spi.loader.ExtensionLoader;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -114,7 +115,7 @@ public class BaseServer implements Server {
     private RegistryService getRegistryService(String registryAddress, String registryType, String registryLoadBalanceType) {
         // SPI
         RegistryService registryService = null;
-        registryService = new ZookeeperRegistryService();
+        registryService = ExtensionLoader.getExtension(RegistryService.class, registryType);
         try {
             registryService.init(new RegistryConfig(registryAddress, registryType, registryLoadBalanceType));
         } catch (Exception e) {
