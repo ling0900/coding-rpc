@@ -1,13 +1,11 @@
 package io.lh.rpc.provider.common.server.base;
 
-import io.lh.rpc.codec.RpcCodec;
 import io.lh.rpc.codec.RpcDecoder;
 import io.lh.rpc.codec.RpcEncoder;
 import io.lh.rpc.provider.common.handler.RpcServiceProviderHandler;
 import io.lh.rpc.provider.common.server.api.Server;
 import io.lh.rpc.registry.api.RegistryService;
 import io.lh.rpc.registry.api.config.RegistryConfig;
-import io.lh.rpc.registyr.zookeeper.ZookeeperRegistryService;
 import io.lh.rpc.spi.loader.ExtensionLoader;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -17,8 +15,6 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -30,32 +26,44 @@ import java.util.Map;
  * 描述：
  * 版本：1.0.0
  * 创建时间：2023/02/12
+ *
  * @author lh
  */
 public class BaseServer implements Server {
 
     private final Logger LOGGER = LoggerFactory.getLogger(BaseServer.class);
 
+    /**
+     * The Registry service.
+     */
     protected RegistryService registryService;
 
     private String reflectType;
 
+    /**
+     * The Host.
+     */
     protected String host = "127.0.0.1";
 
+    /**
+     * The Port.
+     */
     protected int port = 8888;
 
+    /**
+     * The Handler map.
+     */
     protected Map<String, Object> handlerMap = new HashMap<>();
 
-    public BaseServer(String serviceAddress, String reflectType) {
-        this.reflectType = reflectType;
-        if (! StringUtils.isEmpty(serviceAddress)) {
-            String[] ipAndPort = serviceAddress.split(":");
-            this.host = ipAndPort[0];
-            this.port = Integer.parseInt(ipAndPort[1]);
-        }
-    }
-
-
+    /**
+     * Instantiates a new Base server.
+     *
+     * @param serverAddress           the server address
+     * @param registryAddress         the registry address
+     * @param registryType            the registry type
+     * @param reflectType             the reflect type
+     * @param registryLoadBalanceType the registry load balance type
+     */
     public BaseServer(String serverAddress, String registryAddress, String registryType, String reflectType,
                       String registryLoadBalanceType) {
         if (! StringUtils.isEmpty(serverAddress)) {
@@ -64,6 +72,7 @@ public class BaseServer implements Server {
             this.host = serverArray[0];
         }
         this.reflectType = reflectType;
+
         this.registryService = this.getRegistryService(registryAddress, registryType, registryLoadBalanceType);
     }
 
@@ -113,8 +122,8 @@ public class BaseServer implements Server {
     }
 
     private RegistryService getRegistryService(String registryAddress, String registryType, String registryLoadBalanceType) {
-        // SPI
         RegistryService registryService = null;
+        // SPI
         registryService = ExtensionLoader.getExtension(RegistryService.class, registryType);
         try {
             registryService.init(new RegistryConfig(registryAddress, registryType, registryLoadBalanceType));

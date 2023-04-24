@@ -86,6 +86,7 @@ public class RpcClient {
         this.async = async;
         this.oneway = oneway;
         this.proxy = proxy;
+
         this.registryService = this.getRegistryService(registryAddress, registryType, registryLoadBalanceType);
     }
 
@@ -131,7 +132,7 @@ public class RpcClient {
         if (StringUtils.isEmpty(registryType)) {
             throw new IllegalArgumentException("注册类型为  null");
         }
-        // 不够完善的
+
         RegistryService registryService = ExtensionLoader.getExtension(RegistryService.class, registryType);
 
         try {

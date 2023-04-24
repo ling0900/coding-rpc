@@ -6,6 +6,7 @@ import io.lh.rpc.spi.annotation.SPI;
 
 /**
  * 注册发现类
+ * @author menglinghao
  */
 @SPI
 public interface RegistryService {
