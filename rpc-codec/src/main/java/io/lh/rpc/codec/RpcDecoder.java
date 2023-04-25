@@ -88,9 +88,10 @@ public class RpcDecoder extends ByteToMessageDecoder implements RpcCodec {
                     outList.add(protocol);
                 }
                 break;
-            case HEARTBEAT:
-                // todo
-
+            case HEARTBEAT_FROM_CONSUMER:
+            case HEARTBEAT_FROM_PROVIDER:
+            case HEARTBEAT_TO_CONSUMER:
+            case HEARTBEAT_TO_PROVIDER:
                 break;
         }
 

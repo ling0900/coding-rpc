@@ -2,13 +2,29 @@ package io.lh.rpc.protocol.enumeration;
 
 /**
  * The enum Rpc type.
+ *
  * @author lh
  */
 public enum RpcType {
+
     /**
-     * Heartbeat rpc type.
+     * Heartbeat from consumer rpc type.
      */
-    HEARTBEAT(3),
+    HEARTBEAT_FROM_CONSUMER(3),
+    /**
+     * Heartbeat to consumer rpc type.
+     */
+    HEARTBEAT_TO_CONSUMER(4),
+    /**
+     * Heartbeat from provider rpc type.
+     */
+    HEARTBEAT_FROM_PROVIDER(5),
+    /**
+     * Heartbeat to provider rpc type.
+     */
+    HEARTBEAT_TO_PROVIDER(6),
+
+
     /**
      * Request rpc type.
      */
