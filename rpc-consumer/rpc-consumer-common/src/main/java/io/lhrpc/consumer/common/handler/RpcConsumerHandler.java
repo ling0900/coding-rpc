@@ -2,6 +2,7 @@ package io.lhrpc.consumer.common.handler;
 
 import com.alibaba.fastjson.JSONObject;
 import io.lh.rpc.protocol.RpcProtocol;
+import io.lh.rpc.protocol.enumeration.RpcType;
 import io.lh.rpc.protocol.header.RpcHeader;
 import io.lh.rpc.protocol.request.RpcRequest;
 import io.lh.rpc.protocol.response.RpcResponse;
@@ -86,20 +87,42 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, RpcProtocol<RpcResponse> msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, RpcProtocol<RpcResponse> protocol) throws Exception {
 
-        LOGGER.info("服务消费者收到的数据{}", JSONObject.toJSONString(msg));
-        if (msg == null) {
+        LOGGER.info("服务消费者收到的数据{}", JSONObject.toJSONString(protocol));
+
+        if (protocol == null) {
             return;
         }
-        RpcHeader header = msg.getHeader();
-        long requestId = header.getRequestId();
-        RpcFuture rpcFuture = pendingRpc.remove(requestId);
-        if (rpcFuture != null) {
-            rpcFuture.done(msg);
+
+        this.handlerMessage(protocol);
+    }
+
+    private void handlerMessage(RpcProtocol<RpcResponse> protocol) {
+        RpcHeader header = protocol.getHeader();
+        // 消费者心跳
+        if (header.getMsgType() == (byte) RpcType.HEARTBEAT.getType()) {
+            // 处理心跳
+            LOGGER.warn("consumer ❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤心跳❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤");
+            this.handlerHeartBeatMessage(protocol);
+        } else {
+            // 处理相应消息
+            this.handlerResponseMessage(protocol, header);
         }
     }
 
+    private void handlerHeartBeatMessage(RpcProtocol<RpcResponse> protocol) {
+        // 无任何处理
+        LOGGER.warn("消费者收到  服务者的心跳了{}", protocol.getBody().getResult());
+    }
+
+    private void handlerResponseMessage(RpcProtocol<RpcResponse> protocol, RpcHeader header) {
+        long requestId = header.getRequestId();
+        RpcFuture rpcFuture = pendingRpc.remove(requestId);
+        if (rpcFuture != null) {
+            rpcFuture.done(protocol);
+        }
+    }
     /**
      * Send request message.
      *

@@ -109,8 +109,6 @@ public class RpcConstants {
      *
      * @param args the args
      */
-    public static void main(String[] args){
-        String str = "898989890000fds";
-        System.out.println(str.replace("0", ""));
-    }
+
+    public static final String HEARTBEAT_PONG = "pong";
 }
