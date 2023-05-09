@@ -25,6 +25,7 @@ public class SingleStarterProviderTest {
 
     }
 
+    // 这个体现的是动态设置好注册中心，然后实现的注册的。
     @Test
     public void testStarter() {
         RpcSingleServer rpcSingleServer = new RpcSingleServer(

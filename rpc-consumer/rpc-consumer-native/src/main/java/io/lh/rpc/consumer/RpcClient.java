@@ -133,6 +133,7 @@ public class RpcClient {
             throw new IllegalArgumentException("注册类型为  null");
         }
 
+        // 这里整合了spi拓展机制。
         RegistryService registryService = ExtensionLoader.getExtension(RegistryService.class, registryType);
 
         try {

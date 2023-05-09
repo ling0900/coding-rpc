@@ -123,9 +123,10 @@ public class BaseServer implements Server {
 
     private RegistryService getRegistryService(String registryAddress, String registryType, String registryLoadBalanceType) {
         RegistryService registryService = null;
-        // SPI
+        // SPI 机制去获取到注册中心
         registryService = ExtensionLoader.getExtension(RegistryService.class, registryType);
         try {
+            // 初始化注册
             registryService.init(new RegistryConfig(registryAddress, registryType, registryLoadBalanceType));
         } catch (Exception e) {
             throw new RuntimeException(e);

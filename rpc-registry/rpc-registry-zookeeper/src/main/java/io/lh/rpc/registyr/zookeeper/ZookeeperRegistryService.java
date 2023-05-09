@@ -111,6 +111,7 @@ public class ZookeeperRegistryService implements RegistryService {
                 .serializer(serializer)
                 .basePath(ZK_BASE_PATH)
                 .build();
+        // 最终调用的zookeeper的注册中心，然后实现了注册的。
         this.serviceDiscovery.start();
     }
 
