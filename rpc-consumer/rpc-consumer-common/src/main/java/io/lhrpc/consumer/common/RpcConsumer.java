@@ -11,6 +11,7 @@ import io.lh.rpc.registry.api.RegistryService;
 import io.lhrpc.consumer.common.handler.RpcConsumerHandler;
 import io.lhrpc.consumer.common.helper.RpcConsumerHandlerHelper;
 import io.lhrpc.consumer.common.initializer.RpcConsumerInitializer;
+import io.lhrpc.consumer.common.manager.ConsumerConnectionManager;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -22,6 +23,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The type Rpc consumer.
@@ -31,6 +35,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author lh
  */
 public class RpcConsumer implements Consumer {
+
+    // 定时任务，来定时发送心跳的
+    private ScheduledExecutorService executorService;
+
     private final Logger LOGGER = LoggerFactory.getLogger(RpcConsumer.class);
 
     private final Bootstrap bootstrap;
@@ -47,6 +55,8 @@ public class RpcConsumer implements Consumer {
         bootstrap.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
                 .handler(new RpcConsumerInitializer());
+        // 启动心跳～～这里可以优化的，线程池那里！
+        this.startHeartBeat();
     }
 
     /**
@@ -144,5 +154,21 @@ public class RpcConsumer implements Consumer {
             return consumerHandler.sendRequestMessage(protocol, request.isAsync(), request.isOneWay());
         }
         return null;
+    }
+
+    private void startHeartBeat() {
+        executorService = Executors.newScheduledThreadPool(2);
+
+        executorService.scheduleAtFixedRate(() ->{
+            LOGGER.info("=====扫描不活跃的channel======");
+            ConsumerConnectionManager.scanNotActityChannel();
+        },
+                10, 60, TimeUnit.SECONDS);
+
+        executorService.scheduleAtFixedRate(() -> {
+            LOGGER.info("=======消费者发送心跳=======");
+            ConsumerConnectionManager.broadcastPingMessageFromConsumer();
+        },
+                3, 30, TimeUnit.SECONDS);
     }
 }
