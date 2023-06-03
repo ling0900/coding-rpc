@@ -111,4 +111,5 @@ public class RpcConstants {
      */
 
     public static final String HEARTBEAT_PONG = "pong";
+    public static final Object HEARTBEAT_PING = "ping";
 }

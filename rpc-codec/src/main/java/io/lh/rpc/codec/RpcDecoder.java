@@ -52,7 +52,7 @@ public class RpcDecoder extends ByteToMessageDecoder implements RpcCodec {
         byte[] data = new byte[dataLength];
         inByteBuf.readBytes(data);
 
-        RpcType rpcType = RpcType.findeByType(msgType);
+        RpcType rpcType = RpcType.findByType(msgType);
         if (rpcType == null) {
             return;
         }

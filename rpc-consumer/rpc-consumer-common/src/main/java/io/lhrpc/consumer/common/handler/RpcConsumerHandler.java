@@ -95,25 +95,28 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
             return;
         }
 
-        this.handlerMessage(protocol);
+        this.handlerMessage(protocol, ctx.channel());
     }
 
-    private void handlerMessage(RpcProtocol<RpcResponse> protocol) {
+    private void handlerMessage(RpcProtocol<RpcResponse> protocol,
+                                Channel channel) {
         RpcHeader header = protocol.getHeader();
         // 消费者心跳
         if (header.getMsgType() == (byte) RpcType.HEARTBEAT_TO_CONSUMER.getType()) {
             // 处理心跳
             LOGGER.warn("consumer ❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤心跳❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤");
-            this.handlerHeartBeatMessage(protocol);
+            this.handlerHeartBeatMessage(protocol, channel);
         } else {
             // 处理相应消息
             this.handlerResponseMessage(protocol, header);
         }
     }
 
-    private void handlerHeartBeatMessage(RpcProtocol<RpcResponse> protocol) {
-        // 无任何处理
-        LOGGER.warn("消费者收到  服务者的心跳了{}", protocol.getBody().getResult());
+    private void handlerHeartBeatMessage(RpcProtocol<RpcResponse> protocol
+    , Channel channel) {
+        // 无任何处理，打印日志为主
+        LOGGER.warn("消费者收到{}服务者的心跳了{}", channel.remoteAddress(),
+                protocol.getBody().getResult());
     }
 
     private void handlerResponseMessage(RpcProtocol<RpcResponse> protocol, RpcHeader header) {

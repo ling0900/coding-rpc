@@ -55,7 +55,7 @@ public enum RpcType {
      * @param type the type
      * @return the rpc type
      */
-    public static RpcType findeByType(int type) {
+    public static RpcType findByType(int type) {
         for (RpcType rpcType : RpcType.values()) {
             if (rpcType.getType() == type) {
                 return rpcType;

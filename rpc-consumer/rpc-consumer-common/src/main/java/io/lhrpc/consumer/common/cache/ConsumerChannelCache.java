@@ -7,7 +7,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * The type Consumer channel cache.
- *
+ * 用来缓存连接成功channel的 缓存类工具。它的主要的作用是在服务消费者端缓存连接服务提供者成功的 channel。
  * @author menglinghao
  */
 public class ConsumerChannelCache {

@@ -28,4 +28,20 @@ public class RpcHeaderFactory {
         rpcHeader.setSerializationType(serializationType);
         return rpcHeader;
     }
+
+    public static RpcHeader getRequestHeader(String serializationType, int messageType) {
+        RpcHeader rpcHeader = new RpcHeader();
+
+        //TODO
+        long requestId = 0L;
+        rpcHeader.setRequestId(requestId);
+        // 这里出了一个bug，之前没有写，因为依赖问题偷懒了。。
+        rpcHeader.setMagicNum(RpcConstants.MAGIC);
+        //todo 思考地方
+        rpcHeader.setMsgType((byte) messageType);
+        // 思考为何是 0x1 ？
+        rpcHeader.setStatus((byte) 0x1);
+        rpcHeader.setSerializationType(serializationType);
+        return rpcHeader;
+    }
 }
