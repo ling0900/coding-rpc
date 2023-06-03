@@ -126,6 +126,7 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
             rpcFuture.done(protocol);
         }
     }
+
     /**
      * Send request message.
      *
