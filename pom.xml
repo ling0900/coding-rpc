@@ -160,6 +160,21 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+
+<!--            解决问题：https://cloud.tencent.com/developer/article/1179723-->
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                    <compilerArgs>
+                        <arg>-XDignore.symbol.file</arg>
+                    </compilerArgs>
+                    <fork>true</fork>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
