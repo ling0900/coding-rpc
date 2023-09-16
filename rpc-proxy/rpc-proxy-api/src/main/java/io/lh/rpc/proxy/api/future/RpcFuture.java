@@ -20,6 +20,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * The type Rpc future.
+ * 实现了异步转同步的功能，内部维护了一个sync类，实现了自定义的aqs功能。
+ * 通过设置超时时间，从而确保了规定最长时间内没有成功获取异步调用的结果对外暴露的是超时。
  *
  * @author lh
  */
@@ -37,6 +39,9 @@ public class RpcFuture extends CompletableFuture<Object> {
      */
     private ReentrantLock lock = new ReentrantLock();
 
+    /**
+     * 内部类，同步
+     */
     private Sync sync;
     private RpcProtocol<RpcRequest> requestRpcProtocol;
 
@@ -44,6 +49,9 @@ public class RpcFuture extends CompletableFuture<Object> {
 
     private long startTime;
 
+    /**
+     * 默认的超时时间
+     */
     private long responseTimeThreshold = 500;
 
     /**
@@ -122,7 +130,8 @@ public class RpcFuture extends CompletableFuture<Object> {
 
     /**
      * The type Sync.
-     * 根据AQS实现一个内部类。
+     * 根据AQS实现一个内部类。通过继承实现了AbstractQueuedSynchronizer，里面有两个关键的方法
+     * tryAqcquire()和tryRelease()方法。
      * 核心！
      */
     static class Sync extends AbstractQueuedSynchronizer {

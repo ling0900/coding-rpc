@@ -6,7 +6,7 @@ import org.junit.Test;
 
 /**
  * The type Single starter provider test.
- *
+ * 不同的test代表不同的测试。
  * @author lh
  */
 public class SingleStarterProviderTest {
