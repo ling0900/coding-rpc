@@ -103,13 +103,46 @@ public class RpcConstants {
     public static final String SERVICE_LOAD_BALANCER_ZKCONSISTENTHASH = "zkconsistenthash";
 
 
+    /**
+     * The constant SERVICE_LOAD_BALANCER_RANDOM.
+     */
     public static final String SERVICE_LOAD_BALANCER_RANDOM = "random";
+
     /**
      * Main.测试用的
      *
      * @param args the args
      */
-
     public static final String HEARTBEAT_PONG = "pong";
+
+    /**
+     * The constant HEARTBEAT_PING.
+     */
     public static final Object HEARTBEAT_PING = "ping";
+
+    /**
+     * The constant CODEC_DECODER.
+     */
+    public static final String CODEC_DECODER = "decoder";
+
+    /**
+     * encoder
+     */
+    public static final String CODEC_ENCODER = "encoder";
+
+    /**
+     * handler
+     */
+    public static final String CODEC_HANDLER = "handler";
+
+    /**
+     * server-idle-handler
+     */
+    public static final String CODEC_SERVER_IDLE_HANDLER = "server-idle-handler";
+
+    /**
+     * client-idle-handler
+     */
+    public static final String CODEC_CLIENT_IDLE_HANDLER = "client-idle-handler";
+
 }

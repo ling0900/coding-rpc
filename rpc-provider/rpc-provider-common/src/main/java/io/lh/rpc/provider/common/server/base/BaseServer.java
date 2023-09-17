@@ -2,6 +2,7 @@ package io.lh.rpc.provider.common.server.base;
 
 import io.lh.rpc.codec.RpcDecoder;
 import io.lh.rpc.codec.RpcEncoder;
+import io.lh.rpc.constants.RpcConstants;
 import io.lh.rpc.provider.common.handler.RpcServiceProviderHandler;
 import io.lh.rpc.provider.common.manager.ProviderConnectionManager;
 import io.lh.rpc.provider.common.server.api.Server;
@@ -16,6 +17,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -130,13 +132,16 @@ public class BaseServer implements Server {
                     protected void initChannel(SocketChannel ch) throws Exception {
                         // 将各channelHandler绑定到netty的上下文中
                         ch.pipeline()
-                                .addLast(new RpcDecoder())
-                                .addLast(new RpcEncoder())
+                                .addLast(RpcConstants.CODEC_DECODER, new RpcDecoder())
+                                .addLast(RpcConstants.CODEC_ENCODER, new RpcEncoder())
                                 // 核心的地方
-                                .addLast(new RpcServiceProviderHandler(handlerMap, reflectType));
+                                .addLast(RpcConstants.CODEC_SERVER_IDLE_HANDLER,
+                                        // 多看这里的源码
+                                        new IdleStateHandler(0, 0, heartbeatInterval, TimeUnit.MILLISECONDS))
+                                .addLast(RpcConstants.CODEC_HANDLER, new
+                                        RpcServiceProviderHandler(handlerMap, reflectType));
                     }
-                })
-                .childOption(ChannelOption.SO_KEEPALIVE, true);
+                }).childOption(ChannelOption.SO_KEEPALIVE, true);
 
             // sync() 保证执行完成所有任务
             ChannelFuture channelFuture = bootstrap.bind(host, port).sync();

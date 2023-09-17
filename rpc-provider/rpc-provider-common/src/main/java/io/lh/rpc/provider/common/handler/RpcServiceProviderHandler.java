@@ -12,7 +12,9 @@ import io.lh.rpc.protocol.request.RpcRequest;
 import io.lh.rpc.protocol.response.RpcResponse;
 import io.lh.rpc.reflect.api.ReflectInvoker;
 import io.lh.rpc.spi.loader.ExtensionLoader;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
+import io.netty.handler.timeout.IdleStateEvent;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 import org.slf4j.Logger;
@@ -262,4 +264,28 @@ public class RpcServiceProviderHandler extends SimpleChannelInboundHandler<RpcPr
     }
 
 
+    /**
+     * User event triggered.
+     * 用来实现心跳检测的
+     * @param ctx the ctx
+     * @param evt the evt
+     * @throws Exception the exception
+     */
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt)
+            throws Exception {
+
+        if (evt instanceof IdleStateEvent){
+            LOGGER.info("是IdleStateEvent事件");
+            Channel channel = ctx.channel();
+            try{
+                LOGGER.info("IdleStateEvent triggered, close channel " +
+                        channel);
+                channel.close();
+            }finally {
+                channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+            }
+        }
+        super.userEventTriggered(ctx, evt);
+    }
 }
