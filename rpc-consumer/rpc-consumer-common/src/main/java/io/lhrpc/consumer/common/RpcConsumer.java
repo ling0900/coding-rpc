@@ -36,19 +36,52 @@ import java.util.concurrent.TimeUnit;
  */
 public class RpcConsumer implements Consumer {
 
-    // 定时任务，来定时发送心跳的
+    /**
+     * 定时任务，来定时发送心跳的
+     */
     private ScheduledExecutorService executorService;
 
+    /**
+     * The Logger.
+     */
     private final Logger LOGGER = LoggerFactory.getLogger(RpcConsumer.class);
 
+    /**
+     * The Bootstrap.
+     */
     private final Bootstrap bootstrap;
+    /**
+     * The Event loop group.
+     */
     private final EventLoopGroup eventLoopGroup;
 
+    /**
+     * The constant consumerInstance.
+     */
     private static volatile RpcConsumer consumerInstance;
 
+    /**
+     * The constant handlerMap.
+     */
     private static Map<String, RpcConsumerHandler> handlerMap = new ConcurrentHashMap<>();
 
-    private RpcConsumer() {
+    /**
+     * The Heartbeat interval.
+     */
+    private int heartbeatInterval = 30000;
+
+    /**
+     * The Scan not active channel interval.
+     * 扫描并移除空闲连接时间，默认60秒
+     */
+    private int scanNotActiveChannelInterval = 60000;
+
+    /**
+     * Instantiates a new Rpc consumer.
+     */
+    private RpcConsumer(int heartbeatInterval, int scanNotActiveChannelInterval) {
+        if (heartbeatInterval > 0) this.heartbeatInterval = heartbeatInterval;
+        if (scanNotActiveChannelInterval > 0) this.scanNotActiveChannelInterval = scanNotActiveChannelInterval;
         bootstrap = new Bootstrap();
         // 这里只有一个
         eventLoopGroup = new NioEventLoopGroup();
@@ -63,14 +96,15 @@ public class RpcConsumer implements Consumer {
     /**
      * Gets consumer instance.
      * 单例模式
-     *
+     * 双重检测的单例模式
      * @return the consumer instance
      */
-    public static RpcConsumer getConsumerInstance() {
+    public static RpcConsumer getConsumerInstance(int heartbeatInterval, int scanNotActiveChannelInterval) {
         if (consumerInstance == null) {
             synchronized (RpcConsumer.class) {
                 if (consumerInstance == null) {
-                    consumerInstance = new RpcConsumer();
+                    consumerInstance =  new RpcConsumer(heartbeatInterval,
+                            scanNotActiveChannelInterval);
                 }
             }
         }
@@ -119,6 +153,14 @@ public class RpcConsumer implements Consumer {
         return rpcConsumerHandler.sendRequestMessage(requestRpcProtocol, request.isAsync(), request.isOneWay());
     }
 
+    /**
+     * Gets rpc consumer handler.
+     *
+     * @param serviceAddress the service address
+     * @param port           the port
+     * @return the rpc consumer handler
+     * @throws InterruptedException the interrupted exception
+     */
     private RpcConsumerHandler getRpcConsumerHandler(String serviceAddress, int port) throws InterruptedException{
         ChannelFuture channelFuture = bootstrap.connect(serviceAddress, port).sync();
         channelFuture.addListener((ChannelFutureListener) listener -> {
@@ -133,6 +175,14 @@ public class RpcConsumer implements Consumer {
         return channelFuture.channel().pipeline().get(RpcConsumerHandler.class);
     }
 
+    /**
+     * Send request rpc future.
+     *
+     * @param protocol        the protocol
+     * @param registryService the registry service
+     * @return the rpc future
+     * @throws Exception the exception
+     */
     @Override
     public RpcFuture sendRequest(RpcProtocol<RpcRequest> protocol, RegistryService registryService) throws Exception {
         LOGGER.info("消费者发送请求====>");
@@ -158,6 +208,9 @@ public class RpcConsumer implements Consumer {
         return null;
     }
 
+    /**
+     * Start heart beat.
+     */
     private void startHeartBeat() {
         LOGGER.info("进入心跳的方法内部");
         executorService = Executors.newScheduledThreadPool(2);
@@ -166,12 +219,12 @@ public class RpcConsumer implements Consumer {
             LOGGER.info("=====扫描不活跃的channel======");
             ConsumerConnectionManager.scanNotActityChannel();
         },
-                10, 60, TimeUnit.SECONDS);
+                10, 6, TimeUnit.MILLISECONDS);
 
         executorService.scheduleAtFixedRate(() -> {
             LOGGER.info("=======消费者发送心跳=======");
             ConsumerConnectionManager.broadcastPingMessageFromConsumer();
         },
-                3, 30, TimeUnit.SECONDS);
+                3, 3, TimeUnit.MILLISECONDS);
     }
 }

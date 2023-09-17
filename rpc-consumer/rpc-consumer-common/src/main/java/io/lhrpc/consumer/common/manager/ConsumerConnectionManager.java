@@ -45,6 +45,8 @@ public class ConsumerConnectionManager {
      */
     public static void broadcastPingMessageFromConsumer(){
 
+        LOGGER.info("💗💗发送心跳广播信息💗💗");
+
         Set<Channel> channelCache = ConsumerChannelCache.getChannelCache();
 
         if (channelCache == null || channelCache.isEmpty()) return;
