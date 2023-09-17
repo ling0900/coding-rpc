@@ -82,10 +82,10 @@ public class RpcConsumer implements Consumer {
     private RpcConsumer(int heartbeatInterval, int scanNotActiveChannelInterval) {
         // 启动心跳～～这里可以优化的，线程池那里！
         LOGGER.info("开始调用heartBeat方法======");
-        this.startHeartBeat();
-
         if (heartbeatInterval > 0) this.heartbeatInterval = heartbeatInterval;
         if (scanNotActiveChannelInterval > 0) this.scanNotActiveChannelInterval = scanNotActiveChannelInterval;
+        this.startHeartBeat();
+
         bootstrap = new Bootstrap();
         // 这里只有一个
         eventLoopGroup = new NioEventLoopGroup();
@@ -220,12 +220,12 @@ public class RpcConsumer implements Consumer {
             LOGGER.info("=====扫描不活跃的channel======");
             ConsumerConnectionManager.scanNotActityChannel();
         },
-                10, 6, TimeUnit.MILLISECONDS);
+                10, scanNotActiveChannelInterval, TimeUnit.MILLISECONDS);
 
         executorService.scheduleAtFixedRate(() -> {
             LOGGER.info("=======消费者发送心跳=======");
             ConsumerConnectionManager.broadcastPingMessageFromConsumer();
         },
-                3, 3, TimeUnit.MILLISECONDS);
+                3, heartbeatInterval, TimeUnit.MILLISECONDS);
     }
 }

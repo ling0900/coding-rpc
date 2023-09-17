@@ -1,5 +1,6 @@
 package io.lh.rpc.provider;
 
+import com.alibaba.fastjson.JSON;
 import io.lh.rpc.provider.common.scanner.RpcServiceProviderScanner;
 import io.lh.rpc.provider.common.server.base.BaseServer;
 import org.slf4j.Logger;
@@ -22,18 +23,17 @@ public class RpcSingleServer extends BaseServer {
      */
     public RpcSingleServer(String serviceAddress, String scanPackage, String reflectType,
                            String registryAddress, String registryType,
-                           String registryLoadBalanceType) {
+                           String registryLoadBalanceType, int heartbeatInterval, int
+                                   scanNotActiveChannelInterval) {
 
-        super(serviceAddress, registryAddress, registryType, reflectType, registryLoadBalanceType);
+        super(serviceAddress, registryAddress, registryType, reflectType, registryLoadBalanceType,
+                heartbeatInterval, scanNotActiveChannelInterval);
 
         try {
-            this.handlerMap = RpcServiceProviderScanner.doScannerWithRpcServiceAnnotationFilterAndRegistryService(this.host, this.port, scanPackage, registryService);
+            this.handlerMap = RpcServiceProviderScanner.
+                    doScannerWithRpcServiceAnnotationFilterAndRegistryService(this.host, this.port, scanPackage, registryService);
 
-            LOGGER.info("所有扫描到的服务有：\n");
-
-            for (String key : this.handlerMap.keySet()) {
-                LOGGER.info("{}:\t{}", key, this.handlerMap.get(key));
-            }
+            LOGGER.info("所有扫描到的服务有：\n{}", JSON.toJSONString(handlerMap));
 
         } catch (Exception e) {
             LOGGER.info("RpcSingleServer异常{}", e);

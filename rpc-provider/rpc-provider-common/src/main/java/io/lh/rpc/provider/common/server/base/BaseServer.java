@@ -35,6 +35,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class BaseServer implements Server {
 
+    /**
+     * The Logger.
+     */
     private final Logger LOGGER = LoggerFactory.getLogger(BaseServer.class);
 
     /**
@@ -42,6 +45,9 @@ public class BaseServer implements Server {
      */
     protected RegistryService registryService;
 
+    /**
+     * The Reflect type.
+     */
     private String reflectType;
 
     /**
@@ -59,7 +65,20 @@ public class BaseServer implements Server {
      */
     protected Map<String, Object> handlerMap = new HashMap<>();
 
+    /**
+     * The Executor service.
+     */
     private ScheduledExecutorService executorService;
+
+    /**
+     * The Heartbeat interval.
+     */
+    private int heartbeatInterval = 30000;
+
+    /**
+     * The Scan not active channel interval.
+     */
+    private int scanNotActiveChannelInterval = 60000;
 
     /**
      * Instantiates a new Base server.
@@ -71,8 +90,11 @@ public class BaseServer implements Server {
      * @param registryLoadBalanceType the registry load balance type
      */
     public BaseServer(String serverAddress, String registryAddress, String registryType, String reflectType,
-                      String registryLoadBalanceType) {
+                      String registryLoadBalanceType, int heartbeatInterval, int scanNotActiveChannelInterval) {
+
         // 先开始心跳
+        if (heartbeatInterval > 0) this.heartbeatInterval = heartbeatInterval;
+        if (scanNotActiveChannelInterval > 0) this.scanNotActiveChannelInterval = scanNotActiveChannelInterval;
         this.startHeartbeat();
 
         if (! StringUtils.isEmpty(serverAddress)) {
@@ -86,6 +108,9 @@ public class BaseServer implements Server {
     }
 
 
+    /**
+     * Start netty server.
+     */
     @Override
     public void startNettyServer() {
 
@@ -130,6 +155,14 @@ public class BaseServer implements Server {
         }
     }
 
+    /**
+     * Gets registry service.
+     *
+     * @param registryAddress         the registry address
+     * @param registryType            the registry type
+     * @param registryLoadBalanceType the registry load balance type
+     * @return the registry service
+     */
     private RegistryService getRegistryService(String registryAddress, String registryType, String registryLoadBalanceType) {
         RegistryService registryService = null;
         // SPI 机制去获取到注册中心
@@ -143,17 +176,20 @@ public class BaseServer implements Server {
         return registryService;
     }
 
+    /**
+     * Start heartbeat.
+     */
     private void startHeartbeat() {
         executorService = Executors.newScheduledThreadPool(2);
         //扫描并处理所有不活跃的连接
         executorService.scheduleAtFixedRate(() -> {
             LOGGER.info("*************************scanNotActiveChannel*************************");
             ProviderConnectionManager.scanNotActiveChannel();
-        }, 10, 6000, TimeUnit.MILLISECONDS);
+        }, 10, scanNotActiveChannelInterval, TimeUnit.MILLISECONDS);
         executorService.scheduleAtFixedRate(()->{
             LOGGER.info("*************************broadcastPingMessageFromConsumer*************************");
                     ProviderConnectionManager.broadcastPingMessageFromProvider();
-        }, 3, 3000, TimeUnit.MILLISECONDS);
+        }, 3, heartbeatInterval, TimeUnit.MILLISECONDS);
     }
 
 }

@@ -22,7 +22,8 @@ public class SingleStarterProviderTest {
                 "io.lh.rpc.test",
                 RpcConstants.REFLECT_TYPE_JDK,
                 "8.130.123.59:2181",
-                "zookeeper", "random");
+                "zookeeper", "random",
+                3000, 6000);
         rpcSingleServer.startNettyServer();
 
     }
@@ -38,7 +39,8 @@ public class SingleStarterProviderTest {
                 "io.lh.rpc.test",
                 RpcConstants.REFLECT_TYPE_CGLIB,
                 "8.130.65.0:2181",
-                "zookeeper", "random");
+                "zookeeper", "random",
+                3000, 6000);
         rpcSingleServer.startNettyServer();
 
     }
