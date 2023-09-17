@@ -1,7 +1,9 @@
 package io.lhrpc.consumer.common.handler;
 
 import com.alibaba.fastjson.JSONObject;
+import io.lh.rpc.constants.RpcConstants;
 import io.lh.rpc.protocol.RpcProtocol;
+import io.lh.rpc.protocol.enumeration.RpcStatus;
 import io.lh.rpc.protocol.enumeration.RpcType;
 import io.lh.rpc.protocol.header.RpcHeader;
 import io.lh.rpc.protocol.request.RpcRequest;
@@ -27,6 +29,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<RpcResponse>> {
 
+    /**
+     * The Logger.
+     */
     private final Logger LOGGER = LoggerFactory.getLogger(RpcConsumerHandler.class);
 
     /**
@@ -34,8 +39,14 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
      */
     private Map<Long, RpcFuture> pendingRpc = new ConcurrentHashMap<>();
 
+    /**
+     * The Channel.
+     */
     private volatile Channel channel;
 
+    /**
+     * The Remote peer.
+     */
     private SocketAddress remotePeer;
 
     /**
@@ -74,18 +85,37 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
         this.remotePeer = remotePeer;
     }
 
+    /**
+     * Channel active.
+     *
+     * @param ctx the ctx
+     * @throws Exception the exception
+     */
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
         this.remotePeer = this.channel.remoteAddress();
     }
 
+    /**
+     * Channel registered.
+     *
+     * @param ctx the ctx
+     * @throws Exception the exception
+     */
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         super.channelRegistered(ctx);
         this.channel = ctx.channel();
     }
 
+    /**
+     * Channel read 0.
+     *
+     * @param ctx      the ctx
+     * @param protocol the protocol
+     * @throws Exception the exception
+     */
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcProtocol<RpcResponse> protocol) throws Exception {
 
@@ -98,6 +128,12 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
         this.handlerMessage(protocol, ctx.channel());
     }
 
+    /**
+     * Handler message.
+     *
+     * @param protocol the protocol
+     * @param channel  the channel
+     */
     private void handlerMessage(RpcProtocol<RpcResponse> protocol,
                                 Channel channel) {
         RpcHeader header = protocol.getHeader();
@@ -106,12 +142,20 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
             // 处理心跳
             LOGGER.warn("consumer ❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤心跳❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤❤");
             this.handlerHeartBeatMessage(protocol, channel);
+        } else if (header.getMsgType() == (byte) RpcType.HEARTBEAT_FROM_PROVIDER.getType()){
+            this.handlerHeartbeatMessageFromProvider(protocol, channel);
         } else {
             // 处理相应消息
             this.handlerResponseMessage(protocol, header);
         }
     }
 
+    /**
+     * Handler heart beat message.
+     *
+     * @param protocol the protocol
+     * @param channel  the channel
+     */
     private void handlerHeartBeatMessage(RpcProtocol<RpcResponse> protocol
     , Channel channel) {
         // 无任何处理，打印日志为主
@@ -119,6 +163,12 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
                 protocol.getBody().getResult());
     }
 
+    /**
+     * Handler response message.
+     *
+     * @param protocol the protocol
+     * @param header   the header
+     */
     private void handlerResponseMessage(RpcProtocol<RpcResponse> protocol, RpcHeader header) {
         long requestId = header.getRequestId();
         RpcFuture rpcFuture = pendingRpc.remove(requestId);
@@ -159,6 +209,12 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
                 .addListener(ChannelFutureListener.CLOSE);
     }
 
+    /**
+     * Gets rpc future.
+     *
+     * @param protocol the protocol
+     * @return the rpc future
+     */
     private RpcFuture getRpcFuture(RpcProtocol<RpcRequest> protocol) {
         RpcFuture rpcFuture = new RpcFuture(protocol);
         RpcHeader header = protocol.getHeader();
@@ -169,6 +225,9 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
 
     /**
      * 同步调用的方法
+     *
+     * @param protocol the protocol
+     * @return the rpc future
      */
     private RpcFuture sendRequestSync(RpcProtocol<RpcRequest> protocol) {
         RpcFuture rpcFuture = this.getRpcFuture(protocol);
@@ -178,6 +237,9 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
 
     /**
      * 异步调用的方法
+     *
+     * @param protocol the protocol
+     * @return the rpc future
      */
     private RpcFuture sendRequestAsync(RpcProtocol<RpcRequest> protocol) {
         RpcFuture rpcFuture = this.getRpcFuture(protocol);
@@ -190,9 +252,34 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
 
     /**
      * 单向调用的方法
+     *
+     * @param protocol the protocol
+     * @return the rpc future
      */
     private RpcFuture sendRequestOneway(RpcProtocol<RpcRequest> protocol) {
         channel.writeAndFlush(protocol);
         return null;
     }
+
+    /**
+     * Handler heartbeat message from provider.
+     *
+     * @param protocol the protocol
+     * @param channel  the channel
+     */
+    private void
+    handlerHeartbeatMessageFromProvider(RpcProtocol<RpcResponse> protocol, Channel channel) {
+        RpcHeader header = protocol.getHeader();
+        header.setMsgType((byte)
+                RpcType.HEARTBEAT_TO_PROVIDER.getType());
+        RpcProtocol<RpcRequest> requestRpcProtocol = new
+                RpcProtocol<RpcRequest>();
+        RpcRequest request = new RpcRequest();
+        request.setParameters(new Object[]{RpcConstants.HEARTBEAT_PONG});
+        header.setStatus((byte) RpcStatus.SUCCESS.getCode());
+        requestRpcProtocol.setHeader(header);
+        requestRpcProtocol.setBody(request);
+        channel.writeAndFlush(requestRpcProtocol);
+    }
+
 }

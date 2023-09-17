@@ -80,6 +80,10 @@ public class RpcConsumer implements Consumer {
      * Instantiates a new Rpc consumer.
      */
     private RpcConsumer(int heartbeatInterval, int scanNotActiveChannelInterval) {
+        // 启动心跳～～这里可以优化的，线程池那里！
+        LOGGER.info("开始调用heartBeat方法======");
+        this.startHeartBeat();
+
         if (heartbeatInterval > 0) this.heartbeatInterval = heartbeatInterval;
         if (scanNotActiveChannelInterval > 0) this.scanNotActiveChannelInterval = scanNotActiveChannelInterval;
         bootstrap = new Bootstrap();
@@ -88,9 +92,6 @@ public class RpcConsumer implements Consumer {
         bootstrap.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
                 .handler(new RpcConsumerInitializer());
-        // 启动心跳～～这里可以优化的，线程池那里！
-        LOGGER.info("开始调用heartBeat方法======");
-        this.startHeartBeat();
     }
 
     /**

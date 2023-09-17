@@ -12,10 +12,7 @@ import io.lh.rpc.protocol.request.RpcRequest;
 import io.lh.rpc.protocol.response.RpcResponse;
 import io.lh.rpc.reflect.api.ReflectInvoker;
 import io.lh.rpc.spi.loader.ExtensionLoader;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.*;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 import org.slf4j.Logger;
@@ -34,10 +31,19 @@ import java.util.Map;
 public class RpcServiceProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<RpcRequest>> {
 
 
+    /**
+     * The Logger.
+     */
     private final Logger LOGGER = LoggerFactory.getLogger(RpcServiceProviderHandler.class);
 
+    /**
+     * The Reflect invoker.
+     */
     private final ReflectInvoker reflectInvoker;
 
+    /**
+     * The Hadler map.
+     */
     private final Map<String, Object> hadlerMap;
 
     /**
@@ -51,6 +57,13 @@ public class RpcServiceProviderHandler extends SimpleChannelInboundHandler<RpcPr
         this.reflectInvoker = ExtensionLoader.getExtension(ReflectInvoker.class, reflectType);
     }
 
+    /**
+     * Channel read 0.
+     *
+     * @param ctx      the ctx
+     * @param protocol the protocol
+     * @throws Exception the exception
+     */
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcProtocol<RpcRequest> protocol) throws Exception {
 
@@ -62,7 +75,7 @@ public class RpcServiceProviderHandler extends SimpleChannelInboundHandler<RpcPr
         }
 
         ServerThreadPool.submit(()->{
-            RpcProtocol<RpcResponse> responseRpcProtocol = handlerMessage(protocol);
+            RpcProtocol<RpcResponse> responseRpcProtocol = handlerMessage(protocol, ctx.channel());
 
             ctx.writeAndFlush(responseRpcProtocol).addListener(new ChannelFutureListener() {
                 @Override
@@ -74,7 +87,13 @@ public class RpcServiceProviderHandler extends SimpleChannelInboundHandler<RpcPr
         });
     }
 
-    private RpcProtocol<RpcResponse> handlerMessage(RpcProtocol<RpcRequest> protocol) {
+    /**
+     * Handler message rpc protocol.
+     *
+     * @param protocol the protocol
+     * @return the rpc protocol
+     */
+    private RpcProtocol<RpcResponse> handlerMessage(RpcProtocol<RpcRequest> protocol, Channel channel) {
         RpcProtocol<RpcResponse> responseRpcProtocol = null;
         RpcHeader header = protocol.getHeader();
         // 心跳信息
@@ -84,10 +103,20 @@ public class RpcServiceProviderHandler extends SimpleChannelInboundHandler<RpcPr
             responseRpcProtocol = handlerHeartbeatMessage(protocol, header);
         } else if (header.getMsgType() == (byte) RpcType.REQUEST.getType()) {
             responseRpcProtocol = handlerRequestMessage(protocol, header);
+        } else if (header.getMsgType() == (byte)
+                RpcType.HEARTBEAT_TO_PROVIDER.getType()){
+            handlerHeartbeatMessageToProvider(protocol, channel);
         }
         return responseRpcProtocol;
     }
 
+    /**
+     * Handler heartbeat message rpc protocol.
+     *
+     * @param protocol the protocol
+     * @param header   the header
+     * @return the rpc protocol
+     */
     private RpcProtocol<RpcResponse> handlerHeartbeatMessage(RpcProtocol<RpcRequest> protocol, RpcHeader header) {
         header.setMsgType((byte) RpcType.HEARTBEAT_TO_CONSUMER.getType());
         RpcRequest request = protocol.getBody();
@@ -102,6 +131,13 @@ public class RpcServiceProviderHandler extends SimpleChannelInboundHandler<RpcPr
         return responseRpcProtocol;
     }
 
+    /**
+     * Handler request message rpc protocol.
+     *
+     * @param protocol the protocol
+     * @param header   the header
+     * @return the rpc protocol
+     */
     private RpcProtocol<RpcResponse> handlerRequestMessage(RpcProtocol<RpcRequest> protocol, RpcHeader header) {
         header.setMsgType((byte) RpcType.RESPONSE.getType());
         RpcRequest request = protocol.getBody();
@@ -172,6 +208,17 @@ public class RpcServiceProviderHandler extends SimpleChannelInboundHandler<RpcPr
                 parameterTypes, parameters);
     }
 
+    /**
+     * Invoke jdk method object.
+     *
+     * @param serviceBean    the service bean
+     * @param methodName     the method name
+     * @param parameterTypes the parameter types
+     * @param parameters     the parameters
+     * @param serviceClass   the service class
+     * @return the object
+     * @throws Throwable the throwable
+     */
     private Object invokeJdkMethod(Object serviceBean, String methodName,
                                    Class<?>[] parameterTypes, Object[] parameters,
                                    Class<?> serviceClass) throws Throwable {
@@ -183,13 +230,14 @@ public class RpcServiceProviderHandler extends SimpleChannelInboundHandler<RpcPr
 
     /**
      * 调用 cglib的方法
-     * @param serviceBean
-     * @param methodName
-     * @param parameterTypes
-     * @param parameters
-     * @param serviceClass
-     * @return
-     * @throws Throwable
+     *
+     * @param serviceBean    the service bean
+     * @param methodName     the method name
+     * @param parameterTypes the parameter types
+     * @param parameters     the parameters
+     * @param serviceClass   the service class
+     * @return object
+     * @throws Throwable the throwable
      */
     private Object invokeCglibMethod(Object serviceBean, String methodName,
                                      Class<?>[] parameterTypes, Object[] parameters,
@@ -199,6 +247,18 @@ public class RpcServiceProviderHandler extends SimpleChannelInboundHandler<RpcPr
         FastMethod fastServiceClassMethod = fastServiceClass.getMethod(methodName, parameterTypes);
         return fastServiceClassMethod.invoke(serviceBean, parameters);
 
+    }
+
+    /**
+     * Handler heartbeat message to provider.
+     *
+     * @param protocol the protocol
+     * @param channel  the channel
+     */
+    private void handlerHeartbeatMessageToProvider(RpcProtocol<RpcRequest> protocol, Channel channel) {
+
+        LOGGER.info("receive service consumer heartbeat message, the consumer is: {}, the heartbeat message is: {}",
+        channel.remoteAddress(), protocol.getBody().getParameters()[0]);
     }
 
 
