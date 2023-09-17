@@ -26,9 +26,11 @@ rpc-serialization:序列化模块
 https://learn.lianglianglee.com/%E4%B8%93%E6%A0%8F/ZooKeeper%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%E4%B8%8E%E5%AE%9E%E6%88%98-%E5%AE%8C/00%20%E5%BC%80%E7%AF%87%E8%AF%8D%EF%BC%9A%E9%80%89%E6%8B%A9%20ZooKeeper%EF%BC%8C%E4%B8%80%E6%AD%A5%E5%88%B0%E4%BD%8D%E6%8E%8C%E6%8F%A1%E5%88%86%E5%B8%83%E5%BC%8F%E5%BC%80%E5%8F%91.md
 
 ## 思考
-
-
 1、服务者、消费者，他们两个的序列化方式可以是不同的吗，比如一个是JDK一个CGLIB？
+2、netty的心跳机制
+3、zk实现注册中心的优缺点（需要集群吗）
+4、SPI机制怎么用到工作中呢？和starter有什么关系吗，从灵活性来说一下
+
 
 ## 遇到的问题：
 1、Unable to make protected final java.lang.Class java.lang.ClassLoader.defineClass

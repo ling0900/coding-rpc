@@ -26,6 +26,8 @@ import java.util.Map;
 /**
  * 描述：服务提供者的消息处理工具类
  * SimpleChannelInboundHandler 是核心的类，基于netty封装。
+ * 利用netty的tiger实现了定时心跳机制。
+ * @methoduserEventTriggered
  * 版本：1.0.0
  *
  * @author ：lh 创建时间：2023/02/12
