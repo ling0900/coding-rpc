@@ -41,6 +41,7 @@ public class ConsumerConnectionManager {
 
     /**
      * Broadcast ping message from consumer.
+     * 发送ping消息，消费者
      */
     public static void broadcastPingMessageFromConsumer(){
 

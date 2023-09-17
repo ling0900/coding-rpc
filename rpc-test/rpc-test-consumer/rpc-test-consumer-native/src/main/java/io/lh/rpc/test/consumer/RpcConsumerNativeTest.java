@@ -29,10 +29,10 @@ public class RpcConsumerNativeTest {
     @Before
     public void initRpcClient(){
         rpcClient = new RpcClient("1.0.0",
-                "lh", 30000
+                "lh", 3000
                 , RpcConstants.REFLECT_TYPE_JDK
                 ,false, false
-                , "8.130.65.0:2181", "zookeeper", "jdk",
+                , "8.130.123.59:2181", "zookeeper", "jdk",
                 "robin");
     }
 
@@ -44,6 +44,7 @@ public class RpcConsumerNativeTest {
     /**
      * Test interface rpc.
      * 用于测试基于zookeeper为注册中心的
+     *
      * @param args
      */
     @Test
@@ -51,7 +52,8 @@ public class RpcConsumerNativeTest {
         DemoService demoService = rpcClient.create(DemoService.class);
         String result = demoService.hello("lh");
         LOGGER.info("封装后的返回数据" + result);
-        rpcClient.shutdown();
+        while (true){}
+//        rpcClient.shutdown();
     }
 
     /**
@@ -72,6 +74,4 @@ public class RpcConsumerNativeTest {
         rpcClient.shutdown();
     }
 
-    public static void main(String[] args) {
-    }
 }

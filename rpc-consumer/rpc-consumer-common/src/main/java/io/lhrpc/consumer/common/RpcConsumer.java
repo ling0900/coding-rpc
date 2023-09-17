@@ -56,6 +56,7 @@ public class RpcConsumer implements Consumer {
                 .channel(NioSocketChannel.class)
                 .handler(new RpcConsumerInitializer());
         // 启动心跳～～这里可以优化的，线程池那里！
+        LOGGER.info("开始调用heartBeat方法======");
         this.startHeartBeat();
     }
 
@@ -84,6 +85,7 @@ public class RpcConsumer implements Consumer {
         eventLoopGroup.shutdownGracefully();
         // 关闭线程池，当netty服务关闭后
         ClientThreadPool.shutdown();
+        executorService.shutdown();
     }
 
     /**
@@ -157,6 +159,7 @@ public class RpcConsumer implements Consumer {
     }
 
     private void startHeartBeat() {
+        LOGGER.info("进入心跳的方法内部");
         executorService = Executors.newScheduledThreadPool(2);
 
         executorService.scheduleAtFixedRate(() ->{
