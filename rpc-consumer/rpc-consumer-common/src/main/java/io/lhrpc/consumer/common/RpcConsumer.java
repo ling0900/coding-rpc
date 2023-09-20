@@ -2,6 +2,7 @@ package io.lhrpc.consumer.common;
 
 import io.lh.rpc.commom.helper.RpcServiceHelper;
 import io.lh.rpc.commom.threadpool.ClientThreadPool;
+import io.lh.rpc.constants.RpcConstants;
 import io.lh.rpc.protocol.RpcProtocol;
 import io.lh.rpc.protocol.meta.ServiceMeta;
 import io.lh.rpc.protocol.request.RpcRequest;
@@ -37,7 +38,20 @@ import java.util.concurrent.TimeUnit;
 public class RpcConsumer implements Consumer {
 
     /**
+     * The Retry interval.
+     * 重试间隔时间
+     */
+    private int retryInterval = 1000;
+
+    /**
+     * The Retry times.
+     * 重试次数
+     */
+    private int retryTimes = 2;
+
+    /**
      * 定时任务，来定时发送心跳的
+     * 后来做了增强的心跳，取消了用这种定时任务实现的，采用了更好的方式。
      */
     private ScheduledExecutorService executorService;
 
@@ -78,12 +92,19 @@ public class RpcConsumer implements Consumer {
 
     /**
      * Instantiates a new Rpc consumer.
+     *
+     * @param heartbeatInterval            the heartbeat interval
+     * @param scanNotActiveChannelInterval the scan not active channel interval
      */
-    private RpcConsumer(int heartbeatInterval, int scanNotActiveChannelInterval) {
+    private RpcConsumer(int heartbeatInterval, int scanNotActiveChannelInterval, int retryInterval, int retryTimes) {
         // 启动心跳～～这里可以优化的，线程池那里！
         LOGGER.info("开始调用heartBeat方法======");
         if (heartbeatInterval > 0) this.heartbeatInterval = heartbeatInterval;
         if (scanNotActiveChannelInterval > 0) this.scanNotActiveChannelInterval = scanNotActiveChannelInterval;
+        this.retryInterval = retryInterval <= 0 ?
+                RpcConstants.DEFAULT_RETRY_INTERVAL : retryInterval;
+        this.retryTimes = retryTimes <= 0 ?
+                RpcConstants.DEFAULT_RETRY_TIMES : retryTimes;
         this.startHeartBeat();
 
         bootstrap = new Bootstrap();
@@ -95,17 +116,19 @@ public class RpcConsumer implements Consumer {
     }
 
     /**
-     * Gets consumer instance.
      * 单例模式
      * 双重检测的单例模式
+     *
+     * @param heartbeatInterval            the heartbeat interval
+     * @param scanNotActiveChannelInterval the scan not active channel interval
      * @return the consumer instance
      */
-    public static RpcConsumer getConsumerInstance(int heartbeatInterval, int scanNotActiveChannelInterval) {
+    public static RpcConsumer getConsumerInstance(int heartbeatInterval, int scanNotActiveChannelInterval, int retryInterval, int retryTimes) {
         if (consumerInstance == null) {
             synchronized (RpcConsumer.class) {
                 if (consumerInstance == null) {
-                    consumerInstance =  new RpcConsumer(heartbeatInterval,
-                            scanNotActiveChannelInterval);
+                    consumerInstance = new RpcConsumer(heartbeatInterval,
+                            scanNotActiveChannelInterval, retryInterval, retryTimes);
                 }
             }
         }
@@ -143,7 +166,7 @@ public class RpcConsumer implements Consumer {
         if (rpcConsumerHandler == null) {
             rpcConsumerHandler = getRpcConsumerHandler(serviceAddress, port);
             handlerMap.put(remoteServiceKey, rpcConsumerHandler);
-        } else if (! rpcConsumerHandler.getChannel().isActive()) {
+        } else if (!rpcConsumerHandler.getChannel().isActive()) {
             rpcConsumerHandler.close();
             // 从新获取
             rpcConsumerHandler = getRpcConsumerHandler(serviceAddress, port);
@@ -162,7 +185,7 @@ public class RpcConsumer implements Consumer {
      * @return the rpc consumer handler
      * @throws InterruptedException the interrupted exception
      */
-    private RpcConsumerHandler getRpcConsumerHandler(String serviceAddress, int port) throws InterruptedException{
+    private RpcConsumerHandler getRpcConsumerHandler(String serviceAddress, int port) throws InterruptedException {
         ChannelFuture channelFuture = bootstrap.connect(serviceAddress, port).sync();
         channelFuture.addListener((ChannelFutureListener) listener -> {
             if (channelFuture.isSuccess()) {
@@ -191,15 +214,17 @@ public class RpcConsumer implements Consumer {
         String serviceKey = RpcServiceHelper.buildServiceKey(request.getClassName(), request.getVersion(), request.getGroup());
         Object[] parameters = request.getParameters();
         int invokerHashCode = (parameters == null || parameters.length < 0) ? serviceKey.hashCode() : parameters[0].hashCode();
+
         // 重要： 注册到 注册中心的元信息。
-        ServiceMeta discovery = registryService.discovery(serviceKey, invokerHashCode);
+        ServiceMeta discovery = this.getServiceMeta(registryService, serviceKey, invokerHashCode);
+
         if (discovery != null) {
             RpcConsumerHandler consumerHandler = RpcConsumerHandlerHelper.get(discovery);
             // 先看缓存
             if (consumerHandler == null) {
                 consumerHandler = getRpcConsumerHandler(discovery.getServiceAddr(), discovery.getServicePort());
                 RpcConsumerHandlerHelper.put(discovery, consumerHandler);
-            } else if (! consumerHandler.getChannel().isActive()) {
+            } else if (!consumerHandler.getChannel().isActive()) {
                 consumerHandler.close();
                 consumerHandler = getRpcConsumerHandler(discovery.getServiceAddr(), discovery.getServicePort());
                 RpcConsumerHandlerHelper.put(discovery, consumerHandler);
@@ -216,16 +241,33 @@ public class RpcConsumer implements Consumer {
         LOGGER.info("进入心跳的方法内部");
         executorService = Executors.newScheduledThreadPool(2);
 
-        executorService.scheduleAtFixedRate(() ->{
-            LOGGER.info("=====扫描不活跃的channel======");
-            ConsumerConnectionManager.scanNotActityChannel();
-        },
+        executorService.scheduleAtFixedRate(() -> {
+                    LOGGER.info("=====扫描不活跃的channel======");
+                    ConsumerConnectionManager.scanNotActityChannel();
+                },
                 10, scanNotActiveChannelInterval, TimeUnit.MILLISECONDS);
 
         executorService.scheduleAtFixedRate(() -> {
-            LOGGER.info("=======消费者发送心跳=======");
-            ConsumerConnectionManager.broadcastPingMessageFromConsumer();
-        },
+                    LOGGER.info("=======消费者发送心跳=======");
+                    ConsumerConnectionManager.broadcastPingMessageFromConsumer();
+                },
                 3, heartbeatInterval, TimeUnit.MILLISECONDS);
+    }
+
+    private ServiceMeta getServiceMeta(RegistryService registryService, String serviceKey, int invokerHashCode) throws Exception {
+        // 首次获取元信息，获取不到就要进行重试
+        LOGGER.info("获取生产者的元数据信息");
+        ServiceMeta serviceMeta = registryService.discovery(serviceKey, invokerHashCode);
+
+        if (serviceMeta == null) {
+            for (int i = 1; i <= retryTimes; i++) {
+                LOGGER.info("第{}次重试", i);
+                serviceMeta = registryService.discovery(serviceKey, invokerHashCode);
+                if (serviceMeta != null) break;
+                Thread.sleep(retryInterval);
+            }
+        }
+
+        return serviceMeta;
     }
 }

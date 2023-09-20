@@ -19,18 +19,20 @@ import java.util.concurrent.ExecutionException;
  */
 public class RpcConsumerHandlerTest {
 
+    /**
+     * The constant logger.
+     */
     private static final Logger logger = LoggerFactory.getLogger(RpcConsumerHandler.class);
 
     /**
      * The entry point of application.
      *
      * @param args the input arguments
-     * @throws InterruptedException the interrupted exception
-     * @throws ExecutionException   the execution exception
+     * @throws Exception the exception
      */
     public static void main(String[] args) throws Exception {
 
-        RpcConsumer consumer = RpcConsumer.getConsumerInstance();
+        RpcConsumer consumer = RpcConsumer.getConsumerInstance(1,1,1,1);
         RpcFuture rpcFuture = consumer.sendRequestMsg(getRpcRequestProtocol());
 
         try {
@@ -55,6 +57,11 @@ public class RpcConsumerHandlerTest {
         consumer.close();
     }
 
+    /**
+     * Gets rpc request protocol.
+     *
+     * @return the rpc request protocol
+     */
     private static RpcProtocol<RpcRequest> getRpcRequestProtocol() {
         // 数据
         RpcProtocol<RpcRequest> protocol = new RpcProtocol<>();

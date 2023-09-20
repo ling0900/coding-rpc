@@ -80,25 +80,40 @@ public class RpcClient {
      */
     private int scanNotActiveChannelInterval;
 
+    /**
+     * The Retry interval.
+     */
+    private int retryInterval = 1000;
+
+    /**
+     * The Retry times.
+     */
+    private int retryTimes = 3;
+
 
     /**
      * Instantiates a new Rpc client.
      *
-     * @param serviceVersion          the service version
-     * @param serviceGroup            the service group
-     * @param timeout                 the timeout
-     * @param serializationType       the serialization type
-     * @param async                   the async
-     * @param oneway                  the oneway
-     * @param registryAddress         the registry address
-     * @param registryType            the registry type
-     * @param proxy                   the proxy
-     * @param registryLoadBalanceType the registry load balance type
+     * @param serviceVersion               the service version
+     * @param serviceGroup                 the service group
+     * @param timeout                      the timeout
+     * @param serializationType            the serialization type
+     * @param async                        the async
+     * @param oneway                       the oneway
+     * @param registryAddress              the registry address
+     * @param registryType                 the registry type
+     * @param proxy                        the proxy
+     * @param registryLoadBalanceType      the registry load balance type
+     * @param heartbeatInterval            the heartbeat interval
+     * @param scanNotActiveChannelInterval the scan not active channel interval
+     * @param retryInterval                the retry interval
+     * @param retryTimes                   the retry times
      */
     public RpcClient(String serviceVersion, String serviceGroup,
                      long timeout, String serializationType, boolean async,
                      boolean oneway, String registryAddress, String registryType, String proxy,
-                     String registryLoadBalanceType, int heartbeatInterval, int scanNotActiveChannelInterval) {
+                     String registryLoadBalanceType, int heartbeatInterval, int scanNotActiveChannelInterval,
+                     int retryInterval, int retryTimes) {
 
         this.serviceVersion = serviceVersion;
         this.serviceGroup = serviceGroup;
@@ -109,6 +124,8 @@ public class RpcClient {
         this.proxy = proxy;
         this.heartbeatInterval = heartbeatInterval;
         this.scanNotActiveChannelInterval = scanNotActiveChannelInterval;
+        this.retryInterval = retryInterval;
+        this.retryTimes = retryTimes;
 
         this.registryService = this.getRegistryService(registryAddress, registryType, registryLoadBalanceType);
     }
@@ -127,7 +144,8 @@ public class RpcClient {
 
         // 进行初始化
         proxyFactory.init(new ProxyConfig(interfaceClass, serviceVersion, serviceGroup,
-                timeout, RpcConsumer.getConsumerInstance(heartbeatInterval, scanNotActiveChannelInterval), serializationType, async, oneway, registryService));
+                timeout, RpcConsumer.getConsumerInstance(heartbeatInterval, scanNotActiveChannelInterval, retryInterval, retryTimes)
+                , serializationType, async, oneway, registryService));
         // 工厂返回对应的实例
         return proxyFactory.getProxy(interfaceClass);
     }
@@ -136,7 +154,8 @@ public class RpcClient {
      * Shutdown.
      */
     public void shutdown() {
-        RpcConsumer.getConsumerInstance(heartbeatInterval, scanNotActiveChannelInterval).close();
+        RpcConsumer.getConsumerInstance(heartbeatInterval, scanNotActiveChannelInterval, retryInterval, retryTimes)
+                .close();
     }
 
     /**
@@ -148,7 +167,8 @@ public class RpcClient {
      */
     public <T> IAsyncObjectProxy createAsync(Class<T> interfaceClass) {
         return new ObjectProxy<T>(interfaceClass, serviceVersion, serviceGroup, serializationType,
-                timeout, RpcConsumer.getConsumerInstance(heartbeatInterval, scanNotActiveChannelInterval), async, oneway, registryService);
+                timeout, RpcConsumer.getConsumerInstance(heartbeatInterval, scanNotActiveChannelInterval, retryInterval, retryTimes)
+                , async, oneway, registryService);
     }
 
     /**

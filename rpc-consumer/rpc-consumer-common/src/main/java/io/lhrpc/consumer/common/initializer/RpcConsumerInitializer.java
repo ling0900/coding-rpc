@@ -19,11 +19,26 @@ import java.util.concurrent.TimeUnit;
  */
 public class RpcConsumerInitializer extends ChannelInitializer<SocketChannel> {
 
+    /**
+     * The Heartbeat interval.
+     */
     private int heartbeatInterval;
 
+    /**
+     * Instantiates a new Rpc consumer initializer.
+     *
+     * @param heartbeatInterval the heartbeat interval
+     */
     public RpcConsumerInitializer(int heartbeatInterval) {
         this.heartbeatInterval = heartbeatInterval;
     }
+
+    /**
+     * Init channel.
+     *
+     * @param ch the ch
+     * @throws Exception the exception
+     */
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline channelPipeline = ch.pipeline();

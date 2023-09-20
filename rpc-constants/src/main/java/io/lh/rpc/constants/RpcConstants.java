@@ -145,4 +145,13 @@ public class RpcConstants {
      */
     public static final String CODEC_CLIENT_IDLE_HANDLER = "client-idle-handler";
 
+    /**
+     * The constant DEFAULT_RETRY_INTERVAL.
+     */
+    public static final int DEFAULT_RETRY_INTERVAL = 1000;
+
+    /**
+     * The constant DEFAULT_RETRY_TIMES.
+     */
+    public static final int DEFAULT_RETRY_TIMES = 3;
 }

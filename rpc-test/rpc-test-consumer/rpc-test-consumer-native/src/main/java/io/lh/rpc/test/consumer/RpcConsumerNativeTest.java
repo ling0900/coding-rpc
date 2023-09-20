@@ -33,7 +33,7 @@ public class RpcConsumerNativeTest {
                 , RpcConstants.REFLECT_TYPE_JDK
                 ,false, false
                 , "8.130.123.59:2181", "zookeeper", "jdk",
-                "robin", 30000, 60000);
+                "robin", 30000, 60000, 1000, 3);
     }
 
     /**
@@ -62,7 +62,7 @@ public class RpcConsumerNativeTest {
                 , RpcConstants.REFLECT_TYPE_JDK
                 ,false, false
                 , "8.130.123.59:2181", "zookeeper", "jdk",
-                "robin", 300, 600);
+                "robin", 300, 600, 1000, 3);
         DemoService demoService = rpcClient2.create(DemoService.class);
         String result = demoService.hello("lh");
         LOGGER.info("封装后的返回数据" + result);
