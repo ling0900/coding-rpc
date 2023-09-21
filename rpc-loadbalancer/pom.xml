@@ -17,7 +17,8 @@
         <module>rpc-loadbalancer-round-robin</module>
         <module>rpc-loadbalancer-random-weight</module>
         <module>rpc-loadbalancer-round-robin-weight</module>
-        <module>rpc-loaderbalancer-hash</module>
+        <module>rpc-loadbalancer-hash</module>
+        <module>rpc-loadbalancer-hash-weight</module>
     </modules>
 
 

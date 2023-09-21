@@ -1,4 +1,4 @@
-package io.lh.rpc.loaderbalancer.hash;
+package io.lh.rpc.loadbalancer.hash;
 
 import io.lh.rpc.loadbalancer.api.ServiceLoadBalancer;
 import io.lh.rpc.spi.annotation.SPIClass;
