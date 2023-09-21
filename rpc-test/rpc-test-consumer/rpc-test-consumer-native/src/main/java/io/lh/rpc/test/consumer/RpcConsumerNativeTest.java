@@ -37,7 +37,7 @@ public class RpcConsumerNativeTest {
     }
 
     /**
-     * 测试 randomweight 的初始化
+     * 测试 几种不同的轮询的初始化，例如 randomweight 的初始化
      */
     @Before
     public void initRpcClient2(){
@@ -46,7 +46,7 @@ public class RpcConsumerNativeTest {
                 , RpcConstants.REFLECT_TYPE_JDK
                 ,false, false
                 , "8.130.123.59:2181", "zookeeper", "jdk",
-                "randomweight", 30000, 60000, 1000, 3);
+                "robinweight", 30000, 60000, 1000, 3);
     }
 
     /**

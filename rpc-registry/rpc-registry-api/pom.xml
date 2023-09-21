@@ -28,6 +28,11 @@
             <artifactId>rpc-loadbalancer-random-weight</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.lh.rpc</groupId>
+            <artifactId>rpc-loadbalancer-round-robin-weight</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 </project>
