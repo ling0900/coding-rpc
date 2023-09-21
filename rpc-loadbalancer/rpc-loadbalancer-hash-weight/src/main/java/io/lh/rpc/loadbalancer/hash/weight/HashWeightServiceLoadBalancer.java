@@ -1,12 +1,13 @@
 package io.lh.rpc.loadbalancer.hash.weight;
 
-import lombok.extern.slf4j.Slf4j;
+import io.lh.rpc.spi.annotation.SPIClass;
+import jdk.nashorn.internal.runtime.logging.Logger;
 
 /**
  * @author Ling
  */
 
-
-@Slf4j
+@SPIClass
 public class HashWeightServiceLoadBalancer<T>  {
+
 }

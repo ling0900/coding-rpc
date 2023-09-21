@@ -2,7 +2,8 @@ package io.lh.rpc.loadbalancer.robin.weight;
 
 import io.lh.rpc.loadbalancer.api.ServiceLoadBalancer;
 import io.lh.rpc.spi.annotation.SPIClass;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
@@ -15,8 +16,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @param <T> the type parameter
  */
 @SPIClass
-@Slf4j
 public class RobinWeightServiceLoadBalancer<T> implements ServiceLoadBalancer<T> {
+
+    private static final Logger log = LoggerFactory.getLogger(RobinWeightServiceLoadBalancer.class);
 
     /**
      * The Atomic integer.
