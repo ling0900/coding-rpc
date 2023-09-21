@@ -15,13 +15,18 @@
         <dependency>
             <groupId>io.lh.rpc</groupId>
             <artifactId>rpc-protocol</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.lh.rpc</groupId>
             <artifactId>rpc-loadbalancer-round-robin</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.lh.rpc</groupId>
+            <artifactId>rpc-loadbalancer-random-weight</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

@@ -19,14 +19,14 @@ import org.slf4j.LoggerFactory;
 public class RpcConsumerNativeTest {
 
     /**
-     *
+     * The Rpc client.
      */
     private RpcClient rpcClient;
 
     /**
      * 代替main里面的
      */
-    @Before
+//    @Before
     public void initRpcClient(){
         rpcClient = new RpcClient("1.0.0",
                 "lh", 3000
@@ -37,7 +37,20 @@ public class RpcConsumerNativeTest {
     }
 
     /**
-     *
+     * 测试 randomweight 的初始化
+     */
+    @Before
+    public void initRpcClient2(){
+        rpcClient = new RpcClient("1.0.0",
+                "lh", 3000
+                , RpcConstants.REFLECT_TYPE_JDK
+                ,false, false
+                , "8.130.123.59:2181", "zookeeper", "jdk",
+                "randomweight", 30000, 60000, 1000, 3);
+    }
+
+    /**
+     * The constant LOGGER.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcConsumerNativeTest.class);
 
@@ -56,6 +69,11 @@ public class RpcConsumerNativeTest {
 //        rpcClient.shutdown();
     }
 
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     */
     public static void main(String[] args) {
         RpcClient rpcClient2 = new RpcClient("1.0.0",
                 "lh", 3000
