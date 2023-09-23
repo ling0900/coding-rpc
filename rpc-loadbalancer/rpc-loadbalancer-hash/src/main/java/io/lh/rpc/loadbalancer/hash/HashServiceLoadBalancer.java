@@ -22,7 +22,7 @@ public class HashServiceLoadBalancer<T> implements ServiceLoadBalancer<T> {
      * @return the t
      */
     @Override
-    public T select(List<T> servers, int hashCode) {
+    public T select(List<T> servers, int hashCode, String ip) {
         log.info("hash算法的负载均衡");
 
         if (CollectionUtils.isEmpty(servers)) return null;

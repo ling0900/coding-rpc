@@ -14,7 +14,7 @@ public class RobinServiceLoadBalancer<T> implements ServiceLoadBalancer {
     private final Logger logger = LoggerFactory.getLogger(RobinServiceLoadBalancer.class);
     private AtomicInteger atomicInteger = new AtomicInteger(0);
     @Override
-    public Object select(List servers, int hashCode) {
+    public Object select(List servers, int hashCode, String ip) {
         logger.warn("负载均衡算法 轮询");
         if (servers == null || servers.isEmpty()) {
             return null;

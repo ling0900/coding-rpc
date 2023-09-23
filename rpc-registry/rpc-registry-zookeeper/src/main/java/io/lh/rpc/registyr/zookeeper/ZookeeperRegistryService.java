@@ -21,6 +21,7 @@ import java.util.Random;
 
 /**
  * 服务注册发现类  基于 zookeeper实现
+ *
  * @author lh
  */
 @SPIClass
@@ -46,6 +47,9 @@ public class ZookeeperRegistryService implements RegistryService {
      */
     private ServiceDiscovery<ServiceMeta> serviceDiscovery;
 
+    /**
+     * The Service load balancer.
+     */
     private ServiceLoadBalancer<ServiceInstance<ServiceMeta>> serviceLoadBalancer;
 
     @Override
@@ -82,9 +86,11 @@ public class ZookeeperRegistryService implements RegistryService {
     }
 
     @Override
-    public ServiceMeta discovery(String serviceName, int invokerHashCode) throws Exception {
+    public ServiceMeta discovery(String serviceName, int invokerHashCode, String ip) throws Exception {
         Collection<ServiceInstance<ServiceMeta>> serviceInstances = serviceDiscovery.queryForInstances(serviceName);
-        ServiceInstance<ServiceMeta> instance = serviceLoadBalancer.select((List<ServiceInstance<ServiceMeta>>) serviceInstances, invokerHashCode);
+        // 这里调用的是这个方法
+        ServiceInstance<ServiceMeta> instance = serviceLoadBalancer
+                .select((List<ServiceInstance<ServiceMeta>>) serviceInstances, invokerHashCode, ip);
         if (instance != null) {
             return instance.getPayload();
         }
@@ -115,6 +121,12 @@ public class ZookeeperRegistryService implements RegistryService {
         this.serviceDiscovery.start();
     }
 
+    /**
+     * Select one service instance service instance.
+     * 随机找一个
+     * @param serviceInstances the service instances
+     * @return the service instance
+     */
     @Deprecated
     private ServiceInstance<ServiceMeta> selectOneServiceInstance(List<ServiceInstance<ServiceMeta>> serviceInstances) {
         if (serviceInstances == null || serviceInstances.isEmpty()) {

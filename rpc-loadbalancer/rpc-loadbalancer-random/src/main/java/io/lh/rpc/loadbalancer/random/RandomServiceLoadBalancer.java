@@ -19,7 +19,7 @@ public class RandomServiceLoadBalancer<T> implements ServiceLoadBalancer<T> {
 
     private final Logger logger = LoggerFactory.getLogger(RandomServiceLoadBalancer.class);
     @Override
-    public T select(List<T> servers, int hashCode) {
+    public T select(List<T> servers, int hashCode, String ip) {
         logger.info("本次服务调用采用的负载均衡策略是：负载均衡策略（随机算法）");
         if (servers == null || servers.isEmpty()) {
             return null;

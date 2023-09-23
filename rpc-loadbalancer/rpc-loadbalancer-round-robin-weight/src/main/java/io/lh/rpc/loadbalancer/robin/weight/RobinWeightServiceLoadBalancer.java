@@ -33,7 +33,7 @@ public class RobinWeightServiceLoadBalancer<T> implements ServiceLoadBalancer<T>
      * @return the t
      */
     @Override
-    public T select(List<T> servers, int hashCode) {
+    public T select(List<T> servers, int hashCode, String ip) {
         log.info("基于-加权轮询算法-的负载均衡策略");
 
         if (CollectionUtils.isEmpty(servers)) return null;

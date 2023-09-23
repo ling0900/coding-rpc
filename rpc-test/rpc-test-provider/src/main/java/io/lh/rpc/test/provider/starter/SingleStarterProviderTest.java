@@ -11,6 +11,10 @@ import org.junit.Test;
  * @author lh
  */
 public class SingleStarterProviderTest {
+
+    private final String zk_registryAddress = "8.130.123.59:2181";
+
+
     /**
      * Test starter.
      * 用来测试zk注册中心心跳💗💗💗💗💗💗💗💗
@@ -21,7 +25,7 @@ public class SingleStarterProviderTest {
                 "127.0.0.1:27788",
                 "io.lh.rpc.test",
                 RpcConstants.REFLECT_TYPE_JDK,
-                "8.130.123.59:2181",
+                zk_registryAddress,
                 "zookeeper", "random",
                 3000, 6000);
         rpcSingleServer.startNettyServer();
@@ -38,7 +42,7 @@ public class SingleStarterProviderTest {
                 "127.0.0.1:27788",
                 "io.lh.rpc.test",
                 RpcConstants.REFLECT_TYPE_CGLIB,
-                "8.130.65.0:2181",
+                zk_registryAddress,
                 "zookeeper", "random",
                 3000, 6000);
         rpcSingleServer.startNettyServer();

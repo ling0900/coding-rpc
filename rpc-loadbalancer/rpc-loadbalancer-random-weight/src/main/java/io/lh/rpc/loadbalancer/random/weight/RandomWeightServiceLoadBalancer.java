@@ -29,7 +29,7 @@ public class RandomWeightServiceLoadBalancer<T> implements ServiceLoadBalancer<T
      * @return the t
      */
     @Override
-    public T select(List<T> servers, int hashCode) {
+    public T select(List<T> servers, int hashCode, String ip) {
         log.info("基于加权随机算法的负载均衡策略～～～～");
         if (CollectionUtils.isEmpty(servers)) {
             return null;

@@ -1,1 +1,1 @@
-hash=
+hashweight=io.lh.rpc.loadbalancer.hash.weight.HashWeightServiceLoadBalancer

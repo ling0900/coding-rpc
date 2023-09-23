@@ -2,6 +2,7 @@ package io.lhrpc.consumer.common;
 
 import io.lh.rpc.commom.helper.RpcServiceHelper;
 import io.lh.rpc.commom.threadpool.ClientThreadPool;
+import io.lh.rpc.commom.utils.IpUtils;
 import io.lh.rpc.constants.RpcConstants;
 import io.lh.rpc.protocol.RpcProtocol;
 import io.lh.rpc.protocol.meta.ServiceMeta;
@@ -9,7 +10,6 @@ import io.lh.rpc.protocol.request.RpcRequest;
 import io.lh.rpc.proxy.api.consumer.Consumer;
 import io.lh.rpc.proxy.api.future.RpcFuture;
 import io.lh.rpc.registry.api.RegistryService;
-import io.lhrpc.consumer.common.cache.ConsumerChannelCache;
 import io.lhrpc.consumer.common.handler.RpcConsumerHandler;
 import io.lhrpc.consumer.common.helper.RpcConsumerHandlerHelper;
 import io.lhrpc.consumer.common.initializer.RpcConsumerInitializer;
@@ -97,6 +97,16 @@ public class RpcConsumer implements Consumer {
      * 扫描并移除空闲连接时间，默认60秒
      */
     private int scanNotActiveChannelInterval = 60000;
+
+    private String localIp = "";
+
+    private RpcConsumer() {
+        localIp = IpUtils.getLocalHostIp();
+        bootstrap = new Bootstrap();
+        eventLoopGroup = new NioEventLoopGroup(4);
+        bootstrap.group(eventLoopGroup).channel(NioSocketChannel.class)
+                .handler(new RpcConsumerInitializer(1000));
+    }
 
     /**
      * Instantiates a new Rpc consumer.
@@ -278,12 +288,12 @@ public class RpcConsumer implements Consumer {
     private ServiceMeta getServiceMeta(RegistryService registryService, String serviceKey, int invokerHashCode) throws Exception {
         // 首次获取元信息，获取不到就要进行重试
         LOGGER.info("获取生产者的元数据信息");
-        ServiceMeta serviceMeta = registryService.discovery(serviceKey, invokerHashCode);
+        ServiceMeta serviceMeta = registryService.discovery(serviceKey, invokerHashCode, localIp);
 
         if (serviceMeta == null) {
             for (int i = 1; i <= retryTimes; i++) {
                 LOGGER.info("第{}次重试", i);
-                serviceMeta = registryService.discovery(serviceKey, invokerHashCode);
+                serviceMeta = registryService.discovery(serviceKey, invokerHashCode, localIp);
                 if (serviceMeta != null) break;
                 Thread.sleep(retryInterval);
             }
@@ -292,6 +302,13 @@ public class RpcConsumer implements Consumer {
         return serviceMeta;
     }
 
+    /**
+     * Gets rpc consumer handler with retry.
+     *
+     * @param serviceMeta the service meta
+     * @return the rpc consumer handler with retry
+     * @throws InterruptedException the interrupted exception
+     */
     private RpcConsumerHandler getRpcConsumerHandlerWithRetry(ServiceMeta serviceMeta) throws InterruptedException{
         LOGGER.info("服务消费者连接服务提供者...");
         RpcConsumerHandler handler = null;
@@ -314,6 +331,13 @@ public class RpcConsumer implements Consumer {
         return handler;
     }
 
+    /**
+     * Gets rpc consumer handler with cache.
+     *
+     * @param serviceMeta the service meta
+     * @return the rpc consumer handler with cache
+     * @throws InterruptedException the interrupted exception
+     */
     private RpcConsumerHandler getRpcConsumerHandlerWithCache(ServiceMeta serviceMeta) throws InterruptedException{
         RpcConsumerHandler handler = RpcConsumerHandlerHelper.get(serviceMeta);
         //缓存中无RpcClientHandler
@@ -328,6 +352,13 @@ public class RpcConsumer implements Consumer {
         return handler;
     }
 
+    /**
+     * Gets rpc consumer handler.
+     * 优雅的重试机制
+     * @param serviceMeta the service meta
+     * @return the rpc consumer handler
+     * @throws InterruptedException the interrupted exception
+     */
     private RpcConsumerHandler getRpcConsumerHandler(ServiceMeta serviceMeta) throws InterruptedException {
         ChannelFuture channelFuture = bootstrap.connect(serviceMeta.getServiceAddr(), serviceMeta.getServicePort()).sync();
         channelFuture.addListener((ChannelFutureListener) listener -> {
