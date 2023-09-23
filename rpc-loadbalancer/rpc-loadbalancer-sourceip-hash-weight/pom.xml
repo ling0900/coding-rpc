@@ -5,23 +5,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.lh.rpc</groupId>
-        <artifactId>rpc-serialization</artifactId>
+        <artifactId>rpc-loadbalancer</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>rpc-serialization-kryo</artifactId>
+    <artifactId>rpc-loadbalancer-sourceip-hash-weight</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>io.lh.rpc</groupId>
-            <artifactId>rpc-serialization-api</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.esotericsoftware</groupId>
-            <artifactId>kryo</artifactId>
-            <version>5.2.0</version>
+            <artifactId>rpc-loadbalancer-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

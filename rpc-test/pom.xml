@@ -10,10 +10,13 @@
     <artifactId>rpc-test</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>rpc-test-scanner</module>
-        <module>rpc-test-provider</module>
         <module>rpc-test-api</module>
         <module>rpc-test-consumer</module>
+        <module>rpc-test-provider</module>
+        <module>rpc-test-registry</module>
+        <module>rpc-test-scanner</module>
+        <module>rpc-test-spi</module>
+
     </modules>
     <dependencies>
 
