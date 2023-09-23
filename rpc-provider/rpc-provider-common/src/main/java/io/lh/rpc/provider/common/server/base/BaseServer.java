@@ -84,7 +84,7 @@ public class BaseServer implements Server {
 
     /**
      * Instantiates a new Base server.
-     *
+     * 这个继承后，会被重写的。
      * @param serverAddress           the server address
      * @param registryAddress         the registry address
      * @param registryType            the registry type

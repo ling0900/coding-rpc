@@ -102,7 +102,6 @@ public class RpcConstants {
      */
     public static final String SERVICE_LOAD_BALANCER_ZKCONSISTENTHASH = "zkconsistenthash";
 
-
     /**
      * The constant SERVICE_LOAD_BALANCER_RANDOM.
      */
@@ -154,4 +153,14 @@ public class RpcConstants {
      * The constant DEFAULT_RETRY_TIMES.
      */
     public static final int DEFAULT_RETRY_TIMES = 3;
+
+    /**
+     * 最小权重
+     */
+    public static final int SERVICE_WEIGHT_MIN = 1;
+    /**
+     * 最大权重
+     */
+    public static final int SERVICE_WEIGHT_MAX = 100;
+
 }

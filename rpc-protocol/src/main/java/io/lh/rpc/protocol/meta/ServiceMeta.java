@@ -43,6 +43,12 @@ public class ServiceMeta implements Serializable {
     private String serviceGroup;
 
     /**
+     * 服务提供者实例的权重
+     */
+    private int weight;
+
+
+    /**
      * 思考一下这个可以不写吗？
      */
     public ServiceMeta(){}
@@ -62,5 +68,24 @@ public class ServiceMeta implements Serializable {
         this.serviceAddr = serviceAddr;
         this.servicePort = servicePort;
         this.serviceGroup = serviceGroup;
+    }
+
+    /**
+     * Instantiates a new Service meta.
+     *
+     * @param serviceName the service name
+     * @param version     the version
+     * @param group       the group
+     * @param host        the host
+     * @param port        the port
+     * @param weight      the weight
+     */
+    public ServiceMeta(String serviceName, String version, String group, String host, int port, int weight) {
+        this.serviceName = serviceName;
+        this.serviceVersion = serviceVersion;
+        this.serviceAddr = serviceAddr;
+        this.servicePort = servicePort;
+        this.serviceGroup = serviceGroup;
+        this.weight = weight;
     }
 }
