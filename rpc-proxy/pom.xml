@@ -8,8 +8,8 @@
     </parent>
     <artifactId>rpc-proxy</artifactId>
     <packaging>pom</packaging>
-    <name>rpc-proxy</name>
     <description>动态代理模块，大多是基于SPI机制实现</description>
+
     <modules>
         <module>rpc-proxy-api</module>
         <module>rpc-proxy-jdk</module>

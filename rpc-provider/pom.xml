@@ -6,18 +6,13 @@
         <artifactId>coding-rpc</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
+    <artifactId>rpc-provider</artifactId>
     <packaging>pom</packaging>
+
     <modules>
         <module>rpc-provider-native</module>
         <module>rpc-provider-common</module>
     </modules>
 
-    <dependencies>
-        <dependency>
-            <groupId>io.lh.rpc</groupId>
-            <artifactId>rpc-common</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
-    <artifactId>rpc-provider</artifactId>
+
 </project>
