@@ -23,6 +23,7 @@
         <module>rpc-serialization</module>
         <module>rpc-spi</module>
         <module>rpc-test</module>
+        <module>rpc-demo</module>
     </modules>
     <version>1.0.0-SNAPSHOT</version>
 

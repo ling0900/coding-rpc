@@ -45,7 +45,11 @@ public class RpcSpringServer extends BaseServer implements ApplicationContextAwa
         if (MapUtils.isNotEmpty(serviceBeanMap)) {
             for (Object serviceBean : serviceBeanMap.values()) {
                 RpcServiceProvider rpcService = serviceBean.getClass().getAnnotation(RpcServiceProvider.class);
-                ServiceMeta serviceMeta = new ServiceMeta(this.getServiceName(rpcService), rpcService.version(), rpcService.group(), host, port, getWeight(rpcService.weight()));
+
+                ServiceMeta serviceMeta = new ServiceMeta(
+                        this.getServiceName(rpcService),
+                        rpcService.version(), rpcService.group(),
+                        host, port, getWeight(rpcService.weight()));
                 handlerMap.put(RpcServiceHelper.buildServiceKey(serviceMeta.getServiceName(), serviceMeta.getServiceVersion(), serviceMeta.getServiceGroup()), serviceBean);
                 try {
                     registryService.register(serviceMeta);

@@ -82,10 +82,10 @@ public class ServiceMeta implements Serializable {
      */
     public ServiceMeta(String serviceName, String version, String group, String host, int port, int weight) {
         this.serviceName = serviceName;
-        this.serviceVersion = serviceVersion;
-        this.serviceAddr = serviceAddr;
-        this.servicePort = servicePort;
-        this.serviceGroup = serviceGroup;
+        this.serviceVersion = version;
+        this.serviceAddr = host;
+        this.servicePort = port;
+        this.serviceGroup = group;
         this.weight = weight;
     }
 }

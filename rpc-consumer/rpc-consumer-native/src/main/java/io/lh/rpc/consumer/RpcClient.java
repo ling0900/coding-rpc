@@ -1,13 +1,11 @@
 package io.lh.rpc.consumer;
 
 import io.lh.rpc.proxy.api.ProxyFactory;
-import io.lh.rpc.proxy.api.config.*;
 import io.lh.rpc.proxy.api.async.IAsyncObjectProxy;
+import io.lh.rpc.proxy.api.config.ProxyConfig;
 import io.lh.rpc.proxy.api.object.ObjectProxy;
-import io.lh.rpc.proxy.jdk.JdkProxyFactory;
 import io.lh.rpc.registry.api.RegistryService;
 import io.lh.rpc.registry.api.config.RegistryConfig;
-import io.lh.rpc.registyr.zookeeper.ZookeeperRegistryService;
 import io.lh.rpc.spi.loader.ExtensionLoader;
 import io.lhrpc.consumer.common.RpcConsumer;
 import lombok.Data;
@@ -126,7 +124,6 @@ public class RpcClient {
         this.scanNotActiveChannelInterval = scanNotActiveChannelInterval;
         this.retryInterval = retryInterval;
         this.retryTimes = retryTimes;
-
         this.registryService = this.getRegistryService(registryAddress, registryType, registryLoadBalanceType);
     }
 
