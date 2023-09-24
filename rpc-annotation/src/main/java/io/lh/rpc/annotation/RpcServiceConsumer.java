@@ -69,16 +69,12 @@ public @interface RpcServiceConsumer {
      */
     String proxy() default "jdk";
 
-    // 是否同步调用
-
     /**
      * 是否异步调用
      *
      * @return the boolean
      */
     boolean async() default false;
-
-    // 是否回调 调用
 
     /**
      * 是否单向调用
@@ -92,7 +88,6 @@ public @interface RpcServiceConsumer {
      *
      * @return the string
      */
-// 注册中心的类型
     // 服务名
     String interfaceClassName() default "";
 
@@ -101,7 +96,6 @@ public @interface RpcServiceConsumer {
      *
      * @return the string
      */
-// 服务版本号
     String version() default "1.0.0";
 
     /**
@@ -109,7 +103,6 @@ public @interface RpcServiceConsumer {
      *
      * @return the string
      */
-// 服务ip
     String ipAddress() default "";
 
     /**
@@ -117,7 +110,6 @@ public @interface RpcServiceConsumer {
      *
      * @return the string
      */
-// 服务端口
     String port() default "";
 
     /**
@@ -125,7 +117,35 @@ public @interface RpcServiceConsumer {
      *
      * @return the string
      */
-// 服务分组
     String group() default "";
     // todo 注解有tostring吗？
+
+    /**
+     * 心跳间隔时间，默认30秒
+     *
+     * @return the int
+     */
+    int heartbeatInterval() default 30000;
+
+    /**
+     * 扫描空闲连接间隔时间，默认60秒
+     *
+     * @return the int
+     */
+    int scanNotActiveChannelInterval() default 60000;
+
+    /**
+     * 重试间隔时间
+     *
+     * @return the int
+     */
+    int retryInterval() default 1000;
+
+    /**
+     * 重试间隔时间
+     *
+     * @return the int
+     */
+    int retryTimes() default 3;
+
 }

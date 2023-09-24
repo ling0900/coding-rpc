@@ -23,10 +23,9 @@ public @interface RpcServiceProvider {
 
     /**
      * Interface class class.
-     *
+     * 服务的class全路径
      * @return the class
      */
-// 服务的class全路径
     Class<?> interfaceClass() default void.class;
 
     /**
@@ -34,7 +33,6 @@ public @interface RpcServiceProvider {
      *
      * @return the string
      */
-// 服务名
     String interfaceClassName() default "";
 
     /**
@@ -42,7 +40,6 @@ public @interface RpcServiceProvider {
      *
      * @return the string
      */
-// 服务版本号
     String version() default "1.0.0";
 
     /**
@@ -50,7 +47,7 @@ public @interface RpcServiceProvider {
      *
      * @return the string
      */
-// 服务ip
+
     String ipAddress() default "";
 
     /**
@@ -58,7 +55,6 @@ public @interface RpcServiceProvider {
      *
      * @return the string
      */
-// 服务端口
     int port() default 0;
 
     /**
@@ -66,21 +62,26 @@ public @interface RpcServiceProvider {
      *
      * @return the string
      */
-// 服务分组
     String group() default "";
 
     /**
      * 权重
+     *
+     * @return the int
      */
     int weight() default 0;
 
     /**
      * 心跳间隔时间，默认30秒
+     *
+     * @return the int
      */
     int heartbeatInterval() default 30000;
 
     /**
      * 扫描空闲连接间隔时间，默认60秒
+     *
+     * @return the int
      */
     int scanNotActiveChannelInterval() default 60000;
 
