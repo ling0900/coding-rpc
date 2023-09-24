@@ -81,7 +81,7 @@ public class RpcConsumerPostProcessor implements ApplicationContextAware, BeanCl
                 throw new IllegalArgumentException("spring context already has a bean named " + beanName);
             }
             registry.registerBeanDefinition(beanName, rpcRefBeanDefinitions.get(beanName));
-            log.info("registered RpcReferenceBean {} success.", beanName);
+            log.info("注册bean信息 ： {} success.", beanName);
         });
 
     }
@@ -97,6 +97,7 @@ public class RpcConsumerPostProcessor implements ApplicationContextAware, BeanCl
             BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(RpcConsumerFactoryBean.class);
             builder.setInitMethodName(RpcConstants.INIT_METHOD_NAME);
             builder.addPropertyValue("interfaceClass", field.getType());
+            log.info("fieldType is {}", field.getType());
             builder.addPropertyValue("version", annotation.version());
             builder.addPropertyValue("registryType", annotation.registryType());
             builder.addPropertyValue("registryAddress", annotation.registryAddress());
@@ -113,6 +114,7 @@ public class RpcConsumerPostProcessor implements ApplicationContextAware, BeanCl
             builder.addPropertyValue("retryTimes", annotation.retryTimes());
 
             BeanDefinition beanDefinition = builder.getBeanDefinition();
+            log.info("name {}, and beanDefinition {}", field.getName(), beanDefinition);
             rpcRefBeanDefinitions.put(field.getName(), beanDefinition);
         }
     }

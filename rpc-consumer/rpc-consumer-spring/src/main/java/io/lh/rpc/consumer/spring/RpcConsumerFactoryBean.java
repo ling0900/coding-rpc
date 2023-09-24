@@ -110,6 +110,8 @@ public class RpcConsumerFactoryBean implements FactoryBean<Object> {
      */
     public void init() throws Exception {
         log.info("执行RpcConsumerFactoryBean的init()方法");
+        log.info("interfaceClass={}", interfaceClass);
+        // DemoService demoService = rpcClient.create(DemoService.class);
         RpcClient rpcClient = new RpcClient(
                 version, group, timeout, serializationType, async, oneway, registryAddress, registryType, proxy, loadBalanceType, heartbeatInterval,
                 scanNotActiveChannelInterval, retryInterval, retryTimes);
