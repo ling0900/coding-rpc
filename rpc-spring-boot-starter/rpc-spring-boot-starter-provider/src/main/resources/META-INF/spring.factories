@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+io.lh.rpc.spring.boot.provider.starter.SpringBootProviderAutoConfiguration

@@ -208,8 +208,8 @@ public class ExtensionLoader<T> {
         }
         Class<?> innerClazz = extensionClasses.get(name);
         if (Objects.isNull(innerClazz)) {
-            logger.warn("name有问题了");
-//            throw new IllegalArgumentException("name is error");
+            logger.warn("name有问题了{}, innerClazz{}", name, innerClazz);
+            throw new IllegalArgumentException("name有问题了 is error");
         }
         Object o = spiClassInstances.get(innerClazz);
         if (Objects.isNull(o)) {
