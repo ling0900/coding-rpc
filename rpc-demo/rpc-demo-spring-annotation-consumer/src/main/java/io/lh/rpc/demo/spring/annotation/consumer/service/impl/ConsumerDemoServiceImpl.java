@@ -3,6 +3,7 @@ package io.lh.rpc.demo.spring.annotation.consumer.service.impl;
 import io.lh.rpc.annotation.RpcServiceConsumer;
 import io.lh.rpc.demo.api.DemoService;
 import io.lh.rpc.demo.spring.annotation.consumer.service.ConsumerDemoService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
@@ -14,6 +15,7 @@ public class ConsumerDemoServiceImpl implements ConsumerDemoService {
             loadBalanceType = "random", group = "lh",
             proxy = "cglib", timeout = 30000
     )
+    @Autowired
     private DemoService demoService;
 
     @Override
