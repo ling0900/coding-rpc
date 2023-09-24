@@ -12,6 +12,7 @@
     <modules>
         <module>rpc-consumer-common</module>
         <module>rpc-consumer-native</module>
+        <module>rpc-consumer-spring</module>
     </modules>
     <dependencies>
         <dependency>

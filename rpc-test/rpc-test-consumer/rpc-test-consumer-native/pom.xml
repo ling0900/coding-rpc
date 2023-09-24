@@ -7,8 +7,6 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>rpc-test-consumer-native</artifactId>
-    <name>Archetype - rpc-test-consumer-native</name>
-    <url>http://maven.apache.org</url>
     <dependencies>
         <dependency>
             <groupId>io.lh.rpc</groupId>
