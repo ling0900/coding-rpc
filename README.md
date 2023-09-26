@@ -34,6 +34,7 @@ https://learn.lianglianglee.com/%E4%B8%93%E6%A0%8F/ZooKeeper%E6%BA%90%E7%A0%81%E
 
 4、SPI机制怎么用到工作中呢？和starter有什么关系吗，从灵活性来说一下
 
+5、spring-boot-starter的集成方案，其实就是对spring集成方案的一个封装。
 
 ## 遇到的问题：
 1、Unable to make protected final java.lang.Class java.lang.ClassLoader.defineClass
