@@ -14,7 +14,7 @@ public class ProviderDemoServiceImpl implements DemoService {
     public String helloDemo(String name) {
 
         log.info("stater方式{}", name);
-        return name;
+        return "stater方式" + name;
     }
 }
 
