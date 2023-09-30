@@ -1,5 +1,6 @@
 package io.lh.rpc.annotation;
 
+import io.lh.rpc.constants.RpcConstants;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.ElementType;
@@ -40,7 +41,7 @@ public @interface RpcServiceProvider {
      *
      * @return the string
      */
-    String version() default "1.0.0";
+    String version() default RpcConstants.RPC_COMMON_DEFAULT_VERSION;
 
     /**
      * Ip address string.
@@ -62,7 +63,7 @@ public @interface RpcServiceProvider {
      *
      * @return the string
      */
-    String group() default "";
+    String group() default RpcConstants.RPC_COMMON_DEFAULT_GROUP;
 
     /**
      * 权重
@@ -76,13 +77,13 @@ public @interface RpcServiceProvider {
      *
      * @return the int
      */
-    int heartbeatInterval() default 30000;
+    int heartbeatInterval() default RpcConstants.RPC_COMMON_DEFAULT_HEARTBEATINTERVAL;
 
     /**
      * 扫描空闲连接间隔时间，默认60秒
      *
      * @return the int
      */
-    int scanNotActiveChannelInterval() default 60000;
+    int scanNotActiveChannelInterval() default RpcConstants.RPC_COMMON_DEFAULT_SCANNOTACTIVECHANNELINTERVAL;
 
 }
