@@ -23,6 +23,7 @@
         <module>rpc-demo-spring-boot-provider</module>
         <module>rpc-demo-spring-boot-consumer</module>
         <module>rpc-demo-docker-provider</module>
+        <module>rpc-demo-docker-consumer</module>
 
     </modules>
 
