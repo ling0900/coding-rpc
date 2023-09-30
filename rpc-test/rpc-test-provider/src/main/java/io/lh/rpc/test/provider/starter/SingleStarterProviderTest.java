@@ -22,7 +22,9 @@ public class SingleStarterProviderTest {
     @Test
     public void testStarterJdk() {
         RpcSingleServer rpcSingleServer = new RpcSingleServer(
-                "127.0.0.1:27788",
+                "127.0.0.1:27880",
+                "127.0.0.1:27880",
+
                 "io.lh.rpc.test",
                 RpcConstants.REFLECT_TYPE_JDK,
                 zk_registryAddress,
@@ -39,7 +41,8 @@ public class SingleStarterProviderTest {
     @Test
     public void testStarter() {
         RpcSingleServer rpcSingleServer = new RpcSingleServer(
-                "127.0.0.1:27788",
+                "127.0.0.1:27880",
+                "127.0.0.1:27880",
                 "io.lh.rpc.test",
                 RpcConstants.REFLECT_TYPE_CGLIB,
                 zk_registryAddress,

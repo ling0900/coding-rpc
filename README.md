@@ -42,3 +42,10 @@ https://learn.lianglianglee.com/%E4%B8%93%E6%A0%8F/ZooKeeper%E6%BA%90%E7%A0%81%E
 https://blog.csdn.net/m0_52155263/article/details/120867149
 
 https://leetcode.cn/u/lh0900/
+
+# 一些操作说明
+在整合docker的时候，修改了服务提供者的类，增加了字段：serverRegistryAddress。
+
+serverAddress：
+该参数为服务提供者启动时监听的IP和端⼝，如果用了容器，这个是容器内部的IP（比如是 0.0.0.0:20880）；
+serverRegistryAddress为服务提供者启动时注册到注册中⼼的IP和端⼝，这个是宿主机的。

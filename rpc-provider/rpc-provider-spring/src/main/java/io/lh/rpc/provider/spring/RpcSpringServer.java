@@ -24,6 +24,7 @@ public class RpcSpringServer extends BaseServer implements ApplicationContextAwa
      * Instantiates a new Base server.
      *
      * @param serverAddress                the server address
+     * @param serverRegistryAddress        the server registry address
      * @param registryAddress              the registry address
      * @param registryType                 the registry type
      * @param reflectType                  the reflect type
@@ -31,10 +32,11 @@ public class RpcSpringServer extends BaseServer implements ApplicationContextAwa
      * @param heartbeatInterval            the heartbeat interval
      * @param scanNotActiveChannelInterval the scan not active channel interval
      */
-    public RpcSpringServer(String serverAddress, String registryAddress,
+    public RpcSpringServer(String serverAddress, String serverRegistryAddress, String registryAddress,
                            String registryType, String reflectType,
                            String registryLoadBalanceType, int heartbeatInterval, int scanNotActiveChannelInterval) {
-        super(serverAddress, registryAddress, registryType, reflectType, registryLoadBalanceType, heartbeatInterval, scanNotActiveChannelInterval);
+        super(serverAddress, serverRegistryAddress, registryAddress, registryType, reflectType, registryLoadBalanceType,
+                heartbeatInterval, scanNotActiveChannelInterval);
     }
 
     @Override
@@ -49,7 +51,7 @@ public class RpcSpringServer extends BaseServer implements ApplicationContextAwa
                 ServiceMeta serviceMeta = new ServiceMeta(
                         this.getServiceName(rpcService),
                         rpcService.version(), rpcService.group(),
-                        host, port, getWeight(rpcService.weight()));
+                        serverRegistryHost, serverRegistryPort, getWeight(rpcService.weight()));
                 handlerMap.put(RpcServiceHelper.buildServiceKey(serviceMeta.getServiceName(), serviceMeta.getServiceVersion(), serviceMeta.getServiceGroup()), serviceBean);
                 try {
                     registryService.register(serviceMeta);

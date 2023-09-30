@@ -34,6 +34,7 @@ public class SpringBootProviderAutoConfiguration {
         // 参数的顺序要注意！
         return new RpcSpringServer(
                 springBootProviderConfig.getServerAddress(),
+                springBootProviderConfig.getServerRegistryAddress(),
                 springBootProviderConfig.getRegistryAddress(),
                 springBootProviderConfig.getRegistryType(),
                 springBootProviderConfig.getReflectType(),

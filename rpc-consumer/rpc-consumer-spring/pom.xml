@@ -28,7 +28,7 @@
 
         <dependency>
             <groupId>io.lh.rpc</groupId>
-            <artifactId>rpc-consumer</artifactId>
+            <artifactId>rpc-annotation</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

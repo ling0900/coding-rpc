@@ -53,14 +53,24 @@ public class BaseServer implements Server {
     private String reflectType;
 
     /**
-     * The Host.
+     * The Host.主机域名/ip地址
      */
     protected String host = "127.0.0.1";
 
     /**
      * The Port.
      */
-    protected int port = 8888;
+    protected int port = 27110;
+
+    /**
+     * The Server registry host.
+     */
+    protected String serverRegistryHost;
+
+    /**
+     * The Server registry port.
+     */
+    protected int serverRegistryPort;
 
     /**
      * The Handler map.
@@ -85,13 +95,17 @@ public class BaseServer implements Server {
     /**
      * Instantiates a new Base server.
      * 这个继承后，会被重写的。
-     * @param serverAddress           the server address
-     * @param registryAddress         the registry address
-     * @param registryType            the registry type
-     * @param reflectType             the reflect type
-     * @param registryLoadBalanceType the registry load balance type
+     *
+     * @param serverAddress                the server address
+     * @param serverRegistryAddress        the server registry address
+     * @param registryAddress              the registry address
+     * @param registryType                 the registry type
+     * @param reflectType                  the reflect type
+     * @param registryLoadBalanceType      the registry load balance type
+     * @param heartbeatInterval            the heartbeat interval
+     * @param scanNotActiveChannelInterval the scan not active channel interval
      */
-    public BaseServer(String serverAddress, String registryAddress, String registryType, String reflectType,
+    public BaseServer(String serverAddress, String serverRegistryAddress, String registryAddress, String registryType, String reflectType,
                       String registryLoadBalanceType, int heartbeatInterval, int scanNotActiveChannelInterval) {
 
         // 先开始心跳
@@ -104,6 +118,16 @@ public class BaseServer implements Server {
             this.port = Integer.parseInt(serverArray[1]);
             this.host = serverArray[0];
         }
+
+        if (! StringUtils.isEmpty(serverRegistryAddress)){
+            String[] serverRegistryAddressArray = serverRegistryAddress.split(":");
+            this.serverRegistryHost = serverRegistryAddressArray[0];
+            this.serverRegistryPort = Integer.parseInt(serverRegistryAddressArray[1]);
+        }else{
+            this.serverRegistryHost = this.host;
+            this.serverRegistryPort = this.port;
+        }
+
         this.reflectType = reflectType;
 
         this.registryService = this.getRegistryService(registryAddress, registryType, registryLoadBalanceType);

@@ -17,7 +17,8 @@ public class ProviderNativeDemo {
     @Test
     public void startRpcSingleServer() {
         RpcSingleServer rpcSingleServer = new RpcSingleServer(
-                "127.0.0.1:27788",
+                "127.0.0.1:27880",
+                "127.0.0.1:27880",
                 "io.lh.rpc.demo",
                 RpcConstants.REFLECT_TYPE_JDK,
                 "8.130.123.59:2181",

@@ -21,17 +21,20 @@ public class RpcSingleServer extends BaseServer {
      * @param serviceAddress the service address
      * @param scanPackage    the scan package
      */
-    public RpcSingleServer(String serviceAddress, String scanPackage, String reflectType,
+    public RpcSingleServer(String serviceAddress, String serverRegistryAddress,
+                           String scanPackage, String reflectType,
                            String registryAddress, String registryType,
-                           String registryLoadBalanceType, int heartbeatInterval, int
-                                   scanNotActiveChannelInterval) {
+                           String registryLoadBalanceType, int heartbeatInterval,
+                           int scanNotActiveChannelInterval) {
 
-        super(serviceAddress, registryAddress, registryType, reflectType, registryLoadBalanceType,
+        super(serviceAddress, serverRegistryAddress,
+                registryAddress, registryType,
+                reflectType, registryLoadBalanceType,
                 heartbeatInterval, scanNotActiveChannelInterval);
 
         try {
             this.handlerMap = RpcServiceProviderScanner.
-                    doScannerWithRpcServiceAnnotationFilterAndRegistryService(this.host, this.port, scanPackage, registryService);
+                    doScannerWithRpcServiceAnnotationFilterAndRegistryService(this.serverRegistryHost, this.serverRegistryPort, scanPackage, registryService);
 
             LOGGER.info("所有扫描到的服务有：\n{}", JSON.toJSONString(handlerMap));
 
