@@ -11,6 +11,7 @@
         <module>rpc-annotation</module>
         <module>rpc-codec</module>
         <module>rpc-common</module>
+        <module>rpc-cache</module>
         <module>rpc-constants</module>
         <module>rpc-consumer</module>
         <module>rpc-learn</module>
