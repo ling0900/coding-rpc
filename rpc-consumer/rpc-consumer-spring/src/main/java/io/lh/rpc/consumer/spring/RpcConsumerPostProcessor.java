@@ -2,6 +2,7 @@ package io.lh.rpc.consumer.spring;
 
 import io.lh.rpc.annotation.RpcServiceConsumer;
 import io.lh.rpc.constants.RpcConstants;
+import io.lh.rpc.consumer.spring.context.RpcConsumerSpringContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanClassLoaderAware;
@@ -60,6 +61,7 @@ public class RpcConsumerPostProcessor implements ApplicationContextAware, BeanCl
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = applicationContext;
+        RpcConsumerSpringContext.getInstance().setContext(applicationContext);
     }
 
     @Override

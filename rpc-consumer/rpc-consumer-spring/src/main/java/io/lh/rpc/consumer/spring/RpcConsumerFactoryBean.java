@@ -93,6 +93,8 @@ public class RpcConsumerFactoryBean implements FactoryBean<Object> {
      */
     private int retryTimes = 3;
 
+    private RpcClient rpcClient;
+
     @Override
     public Object getObject() throws Exception {
         return object;
@@ -106,13 +108,13 @@ public class RpcConsumerFactoryBean implements FactoryBean<Object> {
     /**
      * Init.
      *
-     * @throws Exception the exception
      */
-    public void init() throws Exception {
+    @SuppressWarnings("unchecked")
+    public void init() {
         log.info("执行RpcConsumerFactoryBean的init()方法");
         log.info("interfaceClass={}", interfaceClass);
         // DemoService demoService = rpcClient.create(DemoService.class);
-        RpcClient rpcClient = new RpcClient(
+        rpcClient = new RpcClient(
                 version, group, timeout, serializationType, async, oneway, registryAddress, registryType, proxy, loadBalanceType, heartbeatInterval,
                 scanNotActiveChannelInterval, retryInterval, retryTimes);
         this.object = rpcClient.create(interfaceClass);
@@ -395,5 +397,13 @@ public class RpcConsumerFactoryBean implements FactoryBean<Object> {
      */
     public void setRetryTimes(int retryTimes) {
         this.retryTimes = retryTimes;
+    }
+
+    public RpcClient getRpcClient() {
+        return rpcClient;
+    }
+
+    public void setRpcClient(RpcClient rpcClient) {
+        this.rpcClient = rpcClient;
     }
 }
