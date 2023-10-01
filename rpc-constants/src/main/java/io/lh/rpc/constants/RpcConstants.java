@@ -223,4 +223,15 @@ public class RpcConstants {
      */
     public static final int RPC_REFERENCE_DEFAULT_RETRYTIMES = 3;
 
+    /**
+     * 默认直连服务地址
+     */
+    public static final String RPC_COMMON_DEFAULT_DIRECT_SERVER = "";
+
+    /**
+     * IP、端口分隔符
+     */
+    public static final String IP_PORT_SPLIT = ":";
+
+
 }
