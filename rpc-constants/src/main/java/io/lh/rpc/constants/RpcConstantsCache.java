@@ -4,7 +4,7 @@ package io.lh.rpc.constants;
  * The type Rpc constants cache.
  * 和缓存相关的常量放在这个类里面，方便后续的管理。
  */
-public class RpcConstantsCache {
+public class RpcConstantsCache extends RpcConstants{
 
     /**
      * 扫描结果缓存的时间间隔，单位毫秒

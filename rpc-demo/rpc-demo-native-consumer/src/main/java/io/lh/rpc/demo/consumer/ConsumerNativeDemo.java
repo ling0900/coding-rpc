@@ -21,7 +21,7 @@ public class ConsumerNativeDemo {
                 ,false, false
                 , "8.130.123.59:2181", "zookeeper", "jdk",
                 "hash", 30000, 60000, 1000, 3,
-                false, 10000);
+                false, 10000, true, "127.0.0.1:27880");
     }
 
 

@@ -84,6 +84,7 @@ public class RpcConsumer implements Consumer {
      * The constant consumerInstance.
      */
     private static volatile RpcConsumer consumerInstance;
+    private static volatile RpcConsumer instance;
 
     /**
      * The constant handlerMap.
@@ -109,7 +110,6 @@ public class RpcConsumer implements Consumer {
     // 直连服务的地址
     private String directServerUrl;
 
-    private static volatile RpcConsumer instance;
 
     private RpcConsumer() {
         localIp = IpUtils.getLocalHostIp();
@@ -328,32 +328,6 @@ public class RpcConsumer implements Consumer {
 
 
     /**
-     * Gets service meta.
-     *
-     * @param registryService the registry service
-     * @param serviceKey      the service key
-     * @param invokerHashCode the invoker hash code
-     * @return the service meta
-     * @throws Exception the exception
-     */
-    private ServiceMeta getServiceMeta(RegistryService registryService, String serviceKey, int invokerHashCode) throws Exception {
-        // 首次获取元信息，获取不到就要进行重试
-        LOGGER.info("获取生产者的元数据信息");
-        ServiceMeta serviceMeta = registryService.discovery(serviceKey, invokerHashCode, localIp);
-
-        if (serviceMeta == null) {
-            for (int i = 1; i <= retryTimes; i++) {
-                LOGGER.info("第{}次重试", i);
-                serviceMeta = registryService.discovery(serviceKey, invokerHashCode, localIp);
-                if (serviceMeta != null) break;
-                Thread.sleep(retryInterval);
-            }
-        }
-
-        return serviceMeta;
-    }
-
-    /**
      * Gets rpc consumer handler with retry.
      *
      * @param serviceMeta the service meta
@@ -446,23 +420,28 @@ public class RpcConsumer implements Consumer {
     }
 
     /**
+     * Gets service meta.
      * 重试获取服务提供者元数据
+     * @param registryService the registry service
+     * @param serviceKey      the service key
+     * @param invokerHashCode the invoker hash code
+     * @return the service meta
+     * @throws Exception the exception
      */
     private ServiceMeta getServiceMetaWithRetry(RegistryService registryService, String serviceKey, int invokerHashCode) throws Exception {
-        //首次获取服务元数据信息，如果获取到，则直接返回，否则进行重试
-        LOGGER.info("获取服务提供者元数据...");
+        // 首次获取元信息，获取不到就要进行重试
+        LOGGER.info("获取生产者的元数据信息");
         ServiceMeta serviceMeta = registryService.discovery(serviceKey, invokerHashCode, localIp);
-        //启动重试机制
-        if (serviceMeta == null){
-            for (int i = 1; i <= retryTimes; i++){
-                LOGGER.info("获取服务提供者元数据第【{}】次重试...", i);
+
+        if (serviceMeta == null) {
+            for (int i = 0; i <= retryTimes; i++) {
+                LOGGER.info("第{}次重试获取服务提供者", i + 1);
                 serviceMeta = registryService.discovery(serviceKey, invokerHashCode, localIp);
-                if (serviceMeta != null){
-                    break;
-                }
+                if (serviceMeta != null) break;
                 Thread.sleep(retryInterval);
             }
         }
+
         return serviceMeta;
     }
 
@@ -473,7 +452,7 @@ public class RpcConsumer implements Consumer {
         if (enableDirectServer){
             serviceMeta = this.getDirectServiceMeta();
         }else {
-            serviceMeta = this.getDirectServiceMetaOrWithRetry(registryService, serviceKey, invokerHashCode);
+            serviceMeta = this.getServiceMetaWithRetry(registryService, serviceKey, invokerHashCode);
         }
         return serviceMeta;
     }

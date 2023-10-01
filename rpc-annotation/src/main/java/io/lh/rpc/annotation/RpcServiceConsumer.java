@@ -1,5 +1,6 @@
 package io.lh.rpc.annotation;
 
+import io.lh.rpc.constants.RpcConstants;
 import io.lh.rpc.constants.RpcConstantsCache;
 import org.springframework.stereotype.Component;
 
@@ -153,5 +154,15 @@ public @interface RpcServiceConsumer {
     boolean enableResultCache() default false;
 
     int resultCacheExpire() default RpcConstantsCache.RPC_SCAN_RESULT_CACHE_EXPIRE;
+
+    /**
+     * 是否开启直连服务
+     */
+    boolean enableDirectServer() default false;
+
+    /**
+     * 直连服务的地址
+     */
+    String directServerUrl() default RpcConstants.RPC_COMMON_DEFAULT_DIRECT_SERVER;
 
 }
