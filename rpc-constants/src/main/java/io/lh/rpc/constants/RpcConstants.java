@@ -234,4 +234,5 @@ public class RpcConstants {
     public static final String IP_PORT_SPLIT = ":";
 
 
+    public static final String RPC_MULTI_DIRECT_SERVERS_SEPARATOR = ",";
 }
