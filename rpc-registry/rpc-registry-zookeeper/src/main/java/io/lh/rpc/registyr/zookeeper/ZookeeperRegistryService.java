@@ -2,6 +2,7 @@ package io.lh.rpc.registyr.zookeeper;
 
 import io.lh.rpc.commom.helper.RpcServiceHelper;
 import io.lh.rpc.loadbalancer.api.ServiceLoadBalancer;
+import io.lh.rpc.loadbalancer.helpler.ServiceLoadBalancerHelper;
 import io.lh.rpc.protocol.meta.ServiceMeta;
 import io.lh.rpc.registry.api.RegistryService;
 import io.lh.rpc.registry.api.config.RegistryConfig;
@@ -50,7 +51,7 @@ public class ZookeeperRegistryService implements RegistryService {
     /**
      * The Service load balancer.
      */
-    private ServiceLoadBalancer<ServiceInstance<ServiceMeta>> serviceLoadBalancer;
+    private ServiceLoadBalancer<ServiceMeta> serviceLoadBalancer;
 
     @Override
     public void register(ServiceMeta serviceMeta) throws Exception {
@@ -66,12 +67,9 @@ public class ZookeeperRegistryService implements RegistryService {
                 .port(serviceMeta.getServicePort())    // 服务端口号
                 .payload(serviceMeta)   // 服务元数据
                 .build();
-
         // 注册服务实例
         serviceDiscovery.registerService(serviceMetaServiceInstance);
     }
-
-
 
     @Override
     public void unRegister(ServiceMeta serviceMeta) throws Exception {
@@ -86,15 +84,11 @@ public class ZookeeperRegistryService implements RegistryService {
     }
 
     @Override
-    public ServiceMeta discovery(String serviceName, int invokerHashCode, String ip) throws Exception {
+    public ServiceMeta discovery(String serviceName, int invokerHashCode, String sourceIp) throws Exception {
         Collection<ServiceInstance<ServiceMeta>> serviceInstances = serviceDiscovery.queryForInstances(serviceName);
-        // 这里调用的是这个方法
-        ServiceInstance<ServiceMeta> instance = serviceLoadBalancer
-                .select((List<ServiceInstance<ServiceMeta>>) serviceInstances, invokerHashCode, ip);
-        if (instance != null) {
-            return instance.getPayload();
-        }
-        return null;
+        return this.serviceLoadBalancer.select(
+                ServiceLoadBalancerHelper.getServiceMetaList((List<ServiceInstance<ServiceMeta>>) serviceInstances),
+                invokerHashCode, sourceIp);
     }
 
     @Override
@@ -121,19 +115,9 @@ public class ZookeeperRegistryService implements RegistryService {
         this.serviceDiscovery.start();
     }
 
-    /**
-     * Select one service instance service instance.
-     * 随机找一个
-     * @param serviceInstances the service instances
-     * @return the service instance
-     */
-    @Deprecated
-    private ServiceInstance<ServiceMeta> selectOneServiceInstance(List<ServiceInstance<ServiceMeta>> serviceInstances) {
-        if (serviceInstances == null || serviceInstances.isEmpty()) {
-            return null;
-        }
-        Random random = new Random();
-        int index = random.nextInt(serviceInstances.size());
-        return serviceInstances.get(index);
+    @Override
+    public ServiceMeta select(List<ServiceMeta> serviceMetaList, int invokerHashCode, String sourceIp) {
+        return this.serviceLoadBalancer.select(serviceMetaList, invokerHashCode, sourceIp);
     }
+
 }
