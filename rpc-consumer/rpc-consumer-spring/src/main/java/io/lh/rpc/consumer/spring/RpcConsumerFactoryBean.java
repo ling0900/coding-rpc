@@ -1,6 +1,7 @@
 package io.lh.rpc.consumer.spring;
 
 import io.lh.rpc.consumer.RpcClient;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.FactoryBean;
 
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.FactoryBean;
  * </p>
  */
 @Slf4j
+@Data
 public class RpcConsumerFactoryBean implements FactoryBean<Object> {
 
     /**
@@ -95,6 +97,10 @@ public class RpcConsumerFactoryBean implements FactoryBean<Object> {
 
     private RpcClient rpcClient;
 
+    private boolean enableResultCache;
+
+    private int resultCacheExpire;
+
     @Override
     public Object getObject() throws Exception {
         return object;
@@ -116,294 +122,8 @@ public class RpcConsumerFactoryBean implements FactoryBean<Object> {
         // DemoService demoService = rpcClient.create(DemoService.class);
         rpcClient = new RpcClient(
                 version, group, timeout, serializationType, async, oneway, registryAddress, registryType, proxy, loadBalanceType, heartbeatInterval,
-                scanNotActiveChannelInterval, retryInterval, retryTimes);
+                scanNotActiveChannelInterval, retryInterval, retryTimes, enableResultCache, resultCacheExpire);
         this.object = rpcClient.create(interfaceClass);
     }
 
-    /**
-     * Gets interface class.
-     *
-     * @return the interface class
-     */
-    public Class<?> getInterfaceClass() {
-        return interfaceClass;
-    }
-
-    /**
-     * Sets interface class.
-     *
-     * @param interfaceClass the interface class
-     */
-    public void setInterfaceClass(Class<?> interfaceClass) {
-        this.interfaceClass = interfaceClass;
-    }
-
-    /**
-     * Gets version.
-     *
-     * @return the version
-     */
-    public String getVersion() {
-        return version;
-    }
-
-    /**
-     * Sets version.
-     *
-     * @param version the version
-     */
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    /**
-     * Gets registry type.
-     *
-     * @return the registry type
-     */
-    public String getRegistryType() {
-        return registryType;
-    }
-
-    /**
-     * Sets registry type.
-     *
-     * @param registryType the registry type
-     */
-    public void setRegistryType(String registryType) {
-        this.registryType = registryType;
-    }
-
-    /**
-     * Gets load balance type.
-     *
-     * @return the load balance type
-     */
-    public String getLoadBalanceType() {
-        return loadBalanceType;
-    }
-
-    /**
-     * Sets load balance type.
-     *
-     * @param loadBalanceType the load balance type
-     */
-    public void setLoadBalanceType(String loadBalanceType) {
-        this.loadBalanceType = loadBalanceType;
-    }
-
-    /**
-     * Gets serialization type.
-     *
-     * @return the serialization type
-     */
-    public String getSerializationType() {
-        return serializationType;
-    }
-
-    /**
-     * Sets serialization type.
-     *
-     * @param serializationType the serialization type
-     */
-    public void setSerializationType(String serializationType) {
-        this.serializationType = serializationType;
-    }
-
-    /**
-     * Gets registry address.
-     *
-     * @return the registry address
-     */
-    public String getRegistryAddress() {
-        return registryAddress;
-    }
-
-    /**
-     * Sets registry address.
-     *
-     * @param registryAddress the registry address
-     */
-    public void setRegistryAddress(String registryAddress) {
-        this.registryAddress = registryAddress;
-    }
-
-    /**
-     * Gets timeout.
-     *
-     * @return the timeout
-     */
-    public long getTimeout() {
-        return timeout;
-    }
-
-    /**
-     * Sets timeout.
-     *
-     * @param timeout the timeout
-     */
-    public void setTimeout(long timeout) {
-        this.timeout = timeout;
-    }
-
-    /**
-     * Gets group.
-     *
-     * @return the group
-     */
-    public String getGroup() {
-        return group;
-    }
-
-    /**
-     * Sets group.
-     *
-     * @param group the group
-     */
-    public void setGroup(String group) {
-        this.group = group;
-    }
-
-    /**
-     * Is async boolean.
-     *
-     * @return the boolean
-     */
-    public boolean isAsync() {
-        return async;
-    }
-
-    /**
-     * Sets async.
-     *
-     * @param async the async
-     */
-    public void setAsync(boolean async) {
-        this.async = async;
-    }
-
-    /**
-     * Is oneway boolean.
-     *
-     * @return the boolean
-     */
-    public boolean isOneway() {
-        return oneway;
-    }
-
-    /**
-     * Sets oneway.
-     *
-     * @param oneway the oneway
-     */
-    public void setOneway(boolean oneway) {
-        this.oneway = oneway;
-    }
-
-    /**
-     * Gets proxy.
-     *
-     * @return the proxy
-     */
-    public String getProxy() {
-        return proxy;
-    }
-
-    /**
-     * Sets proxy.
-     *
-     * @param proxy the proxy
-     */
-    public void setProxy(String proxy) {
-        this.proxy = proxy;
-    }
-
-    /**
-     * Sets object.
-     *
-     * @param object the object
-     */
-    public void setObject(Object object) {
-        this.object = object;
-    }
-
-    /**
-     * Gets scan not active channel interval.
-     *
-     * @return the scan not active channel interval
-     */
-    public int getScanNotActiveChannelInterval() {
-        return scanNotActiveChannelInterval;
-    }
-
-    /**
-     * Sets scan not active channel interval.
-     *
-     * @param scanNotActiveChannelInterval the scan not active channel interval
-     */
-    public void setScanNotActiveChannelInterval(int scanNotActiveChannelInterval) {
-        this.scanNotActiveChannelInterval = scanNotActiveChannelInterval;
-    }
-
-    /**
-     * Gets heartbeat interval.
-     *
-     * @return the heartbeat interval
-     */
-    public int getHeartbeatInterval() {
-        return heartbeatInterval;
-    }
-
-    /**
-     * Sets heartbeat interval.
-     *
-     * @param heartbeatInterval the heartbeat interval
-     */
-    public void setHeartbeatInterval(int heartbeatInterval) {
-        this.heartbeatInterval = heartbeatInterval;
-    }
-
-    /**
-     * Gets retry interval.
-     *
-     * @return the retry interval
-     */
-    public int getRetryInterval() {
-        return retryInterval;
-    }
-
-    /**
-     * Sets retry interval.
-     *
-     * @param retryInterval the retry interval
-     */
-    public void setRetryInterval(int retryInterval) {
-        this.retryInterval = retryInterval;
-    }
-
-    /**
-     * Gets retry times.
-     *
-     * @return the retry times
-     */
-    public int getRetryTimes() {
-        return retryTimes;
-    }
-
-    /**
-     * Sets retry times.
-     *
-     * @param retryTimes the retry times
-     */
-    public void setRetryTimes(int retryTimes) {
-        this.retryTimes = retryTimes;
-    }
-
-    public RpcClient getRpcClient() {
-        return rpcClient;
-    }
-
-    public void setRpcClient(RpcClient rpcClient) {
-        this.rpcClient = rpcClient;
-    }
 }

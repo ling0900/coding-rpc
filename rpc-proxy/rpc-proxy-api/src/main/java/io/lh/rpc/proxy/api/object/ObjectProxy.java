@@ -1,6 +1,10 @@
 package io.lh.rpc.proxy.api.object;
 
+import io.lh.rpc.cache.res.CacheResKey;
+import io.lh.rpc.cache.res.CacheResManager;
+import io.lh.rpc.constants.RpcConstantsCache;
 import io.lh.rpc.protocol.RpcProtocol;
+import io.lh.rpc.protocol.enumeration.RpcType;
 import io.lh.rpc.protocol.header.RpcHeaderFactory;
 import io.lh.rpc.protocol.request.RpcRequest;
 import io.lh.rpc.proxy.api.async.IAsyncObjectProxy;
@@ -72,6 +76,13 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 
     private RegistryService registryService;
 
+    private boolean enableResultCache;
+
+    /**
+     * 内部会启动一个定时任务扫描过期的缓存数据。
+     */
+    private CacheResManager<Object> cacheResManager;
+
     /**
      * @param clazz
      * @param serviceVersion
@@ -85,7 +96,8 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
     public ObjectProxy(Class<T> clazz, String serviceVersion,
                        String serviceGroup, String serializationType,
                        long timeout, Consumer consumer, boolean async,
-                       boolean oneway, RegistryService registryService) {
+                       boolean oneway, RegistryService registryService,
+                       boolean enableResultCache, int resCacheExpire) {
         this.clazz = clazz;
         this.serviceVersion = serviceVersion;
         this.serviceGroup = serviceGroup;
@@ -95,6 +107,9 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
         this.async = async;
         this.oneway = oneway;
         this.registryService = registryService;
+        this.enableResultCache = enableResultCache;
+        if (resCacheExpire <= 0) resCacheExpire = RpcConstantsCache.RPC_SCAN_RESULT_CACHE_EXPIRE;
+        this.cacheResManager = CacheResManager.getInstance(resCacheExpire, enableResultCache);
     }
 
     /**
@@ -122,42 +137,9 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
             }
         }
 
-        RpcProtocol<RpcRequest> rpcRequestRpcProtocol = new RpcProtocol<>();
-        rpcRequestRpcProtocol.setHeader(RpcHeaderFactory.getRequestHeader(serializationType));
-        RpcRequest rpcRequest = new RpcRequest();
-        rpcRequest.setVersion(this.serviceVersion);
-        rpcRequest.setClassName(method.getDeclaringClass().getName());
-        rpcRequest.setMethodName(method.getName());
-        rpcRequest.setParameterTypes(method.getParameterTypes());
-        rpcRequest.setGroup(this.serviceGroup);
-        rpcRequest.setParameters(args);
-        rpcRequest.setAsync(async);
-        rpcRequest.setOneWay(oneway);
-        rpcRequestRpcProtocol.setBody(rpcRequest);
-
-        LOGGER.debug(method.getName() + "vs" + method.getDeclaringClass().getName());
-
-        if (method.getParameterTypes() != null && method.getParameterTypes().length > 0) {
-            for (int i = 0; i < method.getParameterTypes().length; i++) {
-                LOGGER.debug(method.getParameterTypes()[i].getName());
-            }
-        }
-
-        if (args != null && args.length > 0) {
-            for (int i = 0; i < args.length; i++) {
-                LOGGER.debug(args[i].toString());
-            }
-        }
-
-        RpcFuture rpcFuture = this.consumer.sendRequest(rpcRequestRpcProtocol, registryService);
-
-
-        if (rpcFuture == null) {
-            return null;
-        } else {
-            if (timeout > 0) return rpcFuture.get(timeout, TimeUnit.MILLISECONDS);
-            return rpcFuture.get();
-        }
+        // 开启缓存则直接取缓存
+        if (enableResultCache) return invokeSendRequestMethodCache(method, args);
+        return invokeSendRequestMethod(method, args);
     }
 
     @Override
@@ -247,4 +229,65 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
         return clazz;
     }
 
+    // 调用生产者的远程方法。
+    private Object invokeSendRequestMethod(Method method, Object[] args) throws
+            Exception {
+
+        RpcProtocol<RpcRequest> requestRpcProtocol = new RpcProtocol<RpcRequest>();
+        requestRpcProtocol.setHeader(RpcHeaderFactory.getRequestHeader(serializationType,
+                RpcType.REQUEST.getType()));
+        RpcRequest request = new RpcRequest();
+        request.setVersion(this.serviceVersion);
+        request.setClassName(method.getDeclaringClass().getName());
+        request.setMethodName(method.getName());
+        request.setParameterTypes(method.getParameterTypes());
+        request.setGroup(this.serviceGroup);
+        request.setParameters(args);
+        request.setAsync(async);
+        request.setOneWay(oneway);
+        requestRpcProtocol.setBody(request);
+
+        LOGGER.debug(method.getDeclaringClass().getName());
+        LOGGER.debug(method.getName());
+
+        if (method.getParameterTypes() != null && method.getParameterTypes().length >
+                0) {
+            for (int i = 0; i < method.getParameterTypes().length; ++i) {
+                LOGGER.debug(method.getParameterTypes()[i].getName());
+            }
+        }
+
+        if (args != null && args.length > 0) {
+            for (int i = 0; i < args.length; ++i) {
+                LOGGER.debug(args[i].toString());
+            }
+        }
+
+        RpcFuture rpcFuture = this.consumer.sendRequest(requestRpcProtocol,
+                registryService);
+
+        return rpcFuture == null
+                ? null
+                : timeout > 0
+                    ? rpcFuture.get(timeout, TimeUnit.MILLISECONDS)
+                    : rpcFuture.get();
+    }
+
+    private Object invokeSendRequestMethodCache(Method method, Object[] args) throws
+            Exception {
+
+        // 开启缓存，则处理缓存
+        CacheResKey cacheResultKey = new
+                CacheResKey(method.getDeclaringClass().getName(), method.getName(),
+                method.getParameterTypes(), args, serviceVersion, serviceGroup);
+        Object obj = this.cacheResManager.get(cacheResultKey);
+        if (obj == null) {
+            obj = invokeSendRequestMethod(method, args);
+            if (obj != null) {
+                cacheResultKey.setCacheTimeStamp(System.currentTimeMillis());
+                this.cacheResManager.put(cacheResultKey, obj);
+            }
+        }
+        return obj;
+    }
 }

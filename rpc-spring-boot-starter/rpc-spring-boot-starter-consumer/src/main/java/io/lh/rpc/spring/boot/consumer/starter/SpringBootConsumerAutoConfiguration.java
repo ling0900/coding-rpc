@@ -1,6 +1,7 @@
 package io.lh.rpc.spring.boot.consumer.starter;
 
 import io.lh.rpc.constants.RpcConstants;
+import io.lh.rpc.constants.RpcConstantsCache;
 import io.lh.rpc.consumer.RpcClient;
 import io.lh.rpc.consumer.spring.RpcConsumerFactoryBean;
 import io.lh.rpc.consumer.spring.context.RpcConsumerSpringContext;
@@ -111,6 +112,20 @@ public class SpringBootConsumerAutoConfiguration {
         if (referenceBean.getScanNotActiveChannelInterval() <= 0
                 || (RpcConstants.RPC_COMMON_DEFAULT_SCANNOTACTIVECHANNELINTERVAL == referenceBean.getScanNotActiveChannelInterval() && springBootConsumerConfig.getScanNotActiveChannelInterval() > 0)){
             referenceBean.setScanNotActiveChannelInterval(springBootConsumerConfig().getScanNotActiveChannelInterval());
+        }
+
+        if (!referenceBean.getRpcClient().isEnableResultCache()) {
+            referenceBean.setEnableResultCache(springBootConsumerConfig.isEnableResultCache(
+            ));
+        }
+
+        if (
+                referenceBean.getResultCacheExpire() <= 0
+                || (RpcConstantsCache.RPC_SCAN_RESULT_CACHE_EXPIRE == referenceBean.getResultCacheExpire()
+                && springBootConsumerConfig.getResultCacheExpire() > 0))
+        {
+            referenceBean.setResultCacheExpire(springBootConsumerConfig.getResultCacheExpire(
+            ));
         }
 
         return referenceBean;

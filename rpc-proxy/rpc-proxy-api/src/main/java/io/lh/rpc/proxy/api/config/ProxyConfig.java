@@ -56,10 +56,14 @@ public class ProxyConfig<T> implements Serializable {
 
     private RegistryService registryService;
 
+    private boolean enableResultCache;
+
+    private int resultCacheExpire;
+
     public ProxyConfig(Class<T> clazz, String serviceVersion, String serviceGroup,
                        long timeout, Consumer consumer, String serializationType,
                        boolean async, boolean oneway,
-                       RegistryService registryService) {
+                       RegistryService registryService, boolean enableResultCache, int resCacheExpire) {
         this.clazz = clazz;
         this.serviceVersion = serviceVersion;
         this.serviceGroup = serviceGroup;
@@ -69,5 +73,7 @@ public class ProxyConfig<T> implements Serializable {
         this.async = async;
         this.oneway = oneway;
         this.registryService = registryService;
+        this.enableResultCache = enableResultCache;
+        this.resultCacheExpire = resCacheExpire;
     }
 }

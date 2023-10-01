@@ -88,6 +88,10 @@ public class RpcClient {
      */
     private int retryTimes = 3;
 
+    private boolean enableResultCache;
+
+    private int resultCacheExpire;
+
 
     /**
      * Instantiates a new Rpc client.
@@ -111,7 +115,7 @@ public class RpcClient {
                      long timeout, String serializationType, boolean async,
                      boolean oneway, String registryAddress, String registryType, String proxy,
                      String registryLoadBalanceType, int heartbeatInterval, int scanNotActiveChannelInterval,
-                     int retryInterval, int retryTimes) {
+                     int retryInterval, int retryTimes, boolean enableResultCache, int resultCacheExpire) {
 
         this.serviceVersion = serviceVersion;
         this.serviceGroup = serviceGroup;
@@ -125,6 +129,8 @@ public class RpcClient {
         this.retryInterval = retryInterval;
         this.retryTimes = retryTimes;
         this.registryService = this.getRegistryService(registryAddress, registryType, registryLoadBalanceType);
+        this.enableResultCache = enableResultCache;
+        this.resultCacheExpire = resultCacheExpire;
     }
 
     /**
@@ -142,7 +148,7 @@ public class RpcClient {
         // 进行初始化
         proxyFactory.init(new ProxyConfig(interfaceClass, serviceVersion, serviceGroup,
                 timeout, RpcConsumer.getConsumerInstance(heartbeatInterval, scanNotActiveChannelInterval, retryInterval, retryTimes)
-                , serializationType, async, oneway, registryService));
+                , serializationType, async, oneway, registryService, enableResultCache, resultCacheExpire));
         // 工厂返回对应的实例
         return proxyFactory.getProxy(interfaceClass);
     }
@@ -165,7 +171,7 @@ public class RpcClient {
     public <T> IAsyncObjectProxy createAsync(Class<T> interfaceClass) {
         return new ObjectProxy<T>(interfaceClass, serviceVersion, serviceGroup, serializationType,
                 timeout, RpcConsumer.getConsumerInstance(heartbeatInterval, scanNotActiveChannelInterval, retryInterval, retryTimes)
-                , async, oneway, registryService);
+                , async, oneway, registryService, enableResultCache, resultCacheExpire);
     }
 
     /**

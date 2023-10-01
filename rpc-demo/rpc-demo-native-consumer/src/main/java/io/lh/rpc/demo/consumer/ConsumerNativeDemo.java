@@ -20,7 +20,8 @@ public class ConsumerNativeDemo {
                 , RpcConstants.REFLECT_TYPE_JDK
                 ,false, false
                 , "8.130.123.59:2181", "zookeeper", "jdk",
-                "hash", 30000, 60000, 1000, 3);
+                "hash", 30000, 60000, 1000, 3,
+                false, 10000);
     }
 
 

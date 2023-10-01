@@ -1,5 +1,6 @@
 package io.lh.rpc.annotation;
 
+import io.lh.rpc.constants.RpcConstantsCache;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.ElementType;
@@ -148,5 +149,9 @@ public @interface RpcServiceConsumer {
      * @return the int
      */
     int retryTimes() default 3;
+
+    boolean enableResultCache() default false;
+
+    int resultCacheExpire() default RpcConstantsCache.RPC_SCAN_RESULT_CACHE_EXPIRE;
 
 }
