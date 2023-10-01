@@ -93,6 +93,13 @@ public class BaseServer implements Server {
     private int scanNotActiveChannelInterval = 60000;
 
     /**
+     * 结果缓存的过期时间：5秒
+     */
+    private int resultCacheExpire = 500;
+
+    private boolean enableResultCache;
+
+    /**
      * Instantiates a new Base server.
      * 这个继承后，会被重写的。
      *
@@ -106,11 +113,15 @@ public class BaseServer implements Server {
      * @param scanNotActiveChannelInterval the scan not active channel interval
      */
     public BaseServer(String serverAddress, String serverRegistryAddress, String registryAddress, String registryType, String reflectType,
-                      String registryLoadBalanceType, int heartbeatInterval, int scanNotActiveChannelInterval) {
+                      String registryLoadBalanceType, int heartbeatInterval, int scanNotActiveChannelInterval,
+                      boolean enableResCache, int resultCacheExpire) {
 
         // 先开始心跳
         if (heartbeatInterval > 0) this.heartbeatInterval = heartbeatInterval;
         if (scanNotActiveChannelInterval > 0) this.scanNotActiveChannelInterval = scanNotActiveChannelInterval;
+        if (resultCacheExpire > 0) this.resultCacheExpire = resultCacheExpire;
+        this.enableResultCache = enableResCache;
+
         this.startHeartbeat();
 
         if (! StringUtils.isEmpty(serverAddress)) {
@@ -162,8 +173,9 @@ public class BaseServer implements Server {
                                 .addLast(RpcConstants.CODEC_SERVER_IDLE_HANDLER,
                                         // 多看这里的源码
                                         new IdleStateHandler(0, 0, heartbeatInterval, TimeUnit.MILLISECONDS))
-                                .addLast(RpcConstants.CODEC_HANDLER, new
-                                        RpcServiceProviderHandler(handlerMap, reflectType));
+                                .addLast(RpcConstants.CODEC_HANDLER,
+                                        new RpcServiceProviderHandler(handlerMap, reflectType,
+                                                enableResultCache, resultCacheExpire));
                     }
                 }).childOption(ChannelOption.SO_KEEPALIVE, true);
 
