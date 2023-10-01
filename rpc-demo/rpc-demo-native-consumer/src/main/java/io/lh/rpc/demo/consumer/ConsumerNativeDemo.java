@@ -27,9 +27,16 @@ public class ConsumerNativeDemo {
     @Test
     public void testInterfaceRpc() throws InterruptedException {
         DemoService demoService = rpcClient.create(DemoService.class);
-        String result = demoService.helloDemo("00000000");
-        log.info("返回的结果数据===>>> " + result);
-        rpcClient.shutdown();
+
+        for (int i = 0; i < 4; i++) {
+            String result = demoService.helloDemo("00000000");
+            log.info("第{}次，返回的结果数据===>>>{} ", i+1, result);
+        }
+
+
+        //rpcClient.shutdown();
+
+        // 阻塞模拟
         while (true){
             Thread.sleep(1000);
         }

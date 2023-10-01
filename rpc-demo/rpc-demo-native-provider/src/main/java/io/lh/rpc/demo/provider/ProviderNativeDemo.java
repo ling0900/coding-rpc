@@ -23,7 +23,8 @@ public class ProviderNativeDemo {
                 RpcConstants.REFLECT_TYPE_JDK,
                 "8.130.123.59:2181",
                 "zookeeper", "random",
-                3000, 6000);
+                3000, 6000,
+                false, 30000);
         rpcSingleServer.startNettyServer();
 
     }
