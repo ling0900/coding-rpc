@@ -50,6 +50,20 @@ public class CacheResManager<T> {
      */
     private int resultCacheExpire;
 
+    private static volatile CacheResManager instance;
+
+
+    public static <T> CacheResManager<T> getInstance(int resultCacheExpire, boolean enableResCache) {
+        if (null == instance) {
+            synchronized (CacheResManager.class) {
+                if (null == instance) {
+                    instance = new CacheResManager(resultCacheExpire, enableResCache);
+                }
+            }
+        }
+        return instance;
+    }
+
     /**
      * Instantiates a new Cache res manager.
      *

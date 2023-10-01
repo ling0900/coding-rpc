@@ -1,9 +1,11 @@
 package io.lh.rpc.provider.common.handler;
 
 import com.alibaba.fastjson.JSONObject;
+import io.lh.rpc.cache.res.CacheResManager;
 import io.lh.rpc.commom.helper.RpcServiceHelper;
 import io.lh.rpc.commom.threadpool.ServerThreadPool;
 import io.lh.rpc.constants.RpcConstants;
+import io.lh.rpc.constants.RpcConstantsCache;
 import io.lh.rpc.protocol.RpcProtocol;
 import io.lh.rpc.protocol.enumeration.RpcStatus;
 import io.lh.rpc.protocol.enumeration.RpcType;
@@ -27,10 +29,9 @@ import java.util.Map;
  * 描述：服务提供者的消息处理工具类
  * SimpleChannelInboundHandler 是核心的类，基于netty封装。
  * 利用netty的tiger实现了定时心跳机制。
- * @methoduserEventTriggered
- * 版本：1.0.0
  *
  * @author ：lh 创建时间：2023/02/12
+ * @methoduserEventTriggered 版本  ：1.0.0
  */
 public class RpcServiceProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<RpcRequest>> {
 
@@ -51,12 +52,28 @@ public class RpcServiceProviderHandler extends SimpleChannelInboundHandler<RpcPr
     private final Map<String, Object> hadlerMap;
 
     /**
+     * The Enable res cache.
+     */
+    private final Boolean enableResCache;
+
+    /**
+     * The Cache res manager.
+     */
+    private final CacheResManager<RpcProtocol<RpcResponse>> cacheResManager;
+
+    /**
      * Instantiates a new Rpc service provider handler.
      *
-     * @param hadlerMap   the hadler map
-     * @param reflectType the reflect type
+     * @param hadlerMap      the hadler map
+     * @param reflectType    the reflect type
+     * @param enableResCache the enable res cache
+     * @param resCacheExpire the res cache expire
      */
-    public RpcServiceProviderHandler(Map<String, Object> hadlerMap, String reflectType) {
+    public RpcServiceProviderHandler(Map<String, Object> hadlerMap, String reflectType,
+                                     boolean enableResCache, int resCacheExpire) {
+        if (resCacheExpire <= 0) resCacheExpire = RpcConstantsCache.RPC_SCAN_RESULT_CACHE_EXPIRE;
+        this.cacheResManager = CacheResManager.getInstance(resCacheExpire, enableResCache);
+        this.enableResCache = enableResCache;
         this.hadlerMap = hadlerMap;
         this.reflectInvoker = ExtensionLoader.getExtension(ReflectInvoker.class, reflectType);
     }
@@ -95,6 +112,7 @@ public class RpcServiceProviderHandler extends SimpleChannelInboundHandler<RpcPr
      * Handler message rpc protocol.
      *
      * @param protocol the protocol
+     * @param channel  the channel
      * @return the rpc protocol
      */
     private RpcProtocol<RpcResponse> handlerMessage(RpcProtocol<RpcRequest> protocol, Channel channel) {
@@ -240,7 +258,7 @@ public class RpcServiceProviderHandler extends SimpleChannelInboundHandler<RpcPr
      * @param parameterTypes the parameter types
      * @param parameters     the parameters
      * @param serviceClass   the service class
-     * @return object
+     * @return object object
      * @throws Throwable the throwable
      */
     private Object invokeCglibMethod(Object serviceBean, String methodName,

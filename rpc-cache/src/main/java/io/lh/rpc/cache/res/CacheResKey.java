@@ -11,7 +11,7 @@ public class CacheResKey {
     /**
      * The constant serialVersionUID.
      */
-    private static final long serialVersionUID = 898989L;
+    private static final long serialVersionUID = 89878789989L;
 
     /**
      * 保存缓存时的时间戳
@@ -69,8 +69,11 @@ public class CacheResKey {
 
     @Override
     public boolean equals(Object o) {
+        // 先判断是否是同一个对象
         if (this == o) return true;
+        // 如果对象是null或则类不一致
         if (o == null || getClass() != o.getClass()) return false;
+        // 强转后，比较内容
         CacheResKey cacheKey = (CacheResKey) o;
         return  Objects.equals(className, cacheKey.className)
                 && Objects.equals(methodName, cacheKey.methodName)
